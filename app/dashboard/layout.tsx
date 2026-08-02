@@ -1,29 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import {
-  FiHome,
-  FiUsers,
-  FiDollarSign,
-  FiCreditCard,
-  FiFileText,
-  FiSettings,
-  FiLogOut,
-  FiShield,
-  FiFolder,
-  FiMenu,
-  FiGrid,
-} from "react-icons/fi";
+import { FiLogOut, FiMenu, FiGrid } from "react-icons/fi";
 import { logout } from "@/app/login/actions";
-
-const NAV_LINKS = [
-  { href: "/dashboard", label: "Overview", icon: FiHome },
-  { href: "/dashboard/keluarga", label: "Keluarga", icon: FiUsers },
-  { href: "/dashboard/iuran", label: "Setoran Iuran", icon: FiDollarSign },
-  { href: "/dashboard/transaksi", label: "Transaksi Kas", icon: FiCreditCard },
-  { href: "/dashboard/pocket", label: "Dompet Pocket", icon: FiFolder },
-  { href: "/dashboard/laporan", label: "Export Laporan", icon: FiFileText },
-  { href: "/dashboard/settings", label: "Pengaturan", icon: FiSettings },
-];
+import { ListDrawer } from "@/components/layout/list-drawer";
 
 export default function DashboardLayout({
   children,
@@ -38,7 +17,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="drawer-content flex flex-col">
         {/* Top Navbar Component (Microsoft Excel 365 Ribbon Header Style) */}
-        <div className="navbar bg-base-100 border-b border-base-300 shadow-xs px-4 sm:px-8">
+        <div className="navbar bg-base-100 border-b border-base-300 shadow-xs lg:px-8">
           <div className="flex-none lg:hidden">
             <label
               htmlFor="dashboard-drawer"
@@ -48,7 +27,7 @@ export default function DashboardLayout({
               <FiMenu className="w-5 h-5" />
             </label>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 ml-3">
             <div className="flex items-center gap-2">
               <span className="font-bold text-base sm:text-lg">
                 Panel Pengelolaan Kas Keluarga
@@ -88,33 +67,20 @@ export default function DashboardLayout({
               </div>
             </div>
 
-            {/* Navigation Menu (DaisyUI Menu with Excel Active State) */}
-            <ul className="menu w-full gap-1 p-0">
-              {NAV_LINKS.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-3 py-2.5 font-medium rounded-md active:bg-primary active:text-primary-content hover:bg-base-300/60"
-                    >
-                      <IconComponent className="w-4 h-4 shrink-0" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+            {/* Navigation Menu (ListDrawer Client Component) */}
+            <ListDrawer />
           </div>
 
           {/* Sidebar Footer Action (With REAL Logout Server Action!) */}
           <div className="pt-4 border-t border-base-300 space-y-2">
-            <Link
-              href="/"
-              className="btn btn-sm btn-outline border-base-300 w-full justify-center gap-2 font-semibold rounded-md"
-            >
-              Lihat Web Publik
-            </Link>
+            <label htmlFor="dashboard-drawer" className="w-full">
+              <Link
+                href="/"
+                className="btn btn-sm btn-outline border-base-300 w-full justify-center gap-2 font-semibold rounded-md"
+              >
+                Lihat Web Publik
+              </Link>
+            </label>
             <form action={logout}>
               <button
                 type="submit"
