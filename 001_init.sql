@@ -45,14 +45,13 @@ on conflict do nothing;
 create table if not exists pocket (
     id          uuid primary key default gen_random_uuid(),
     nama_pocket text not null,
-    jenis       text not null check (jenis in ('cash', 'bank')),
     saldo_awal  numeric(14,2) not null default 0,
     created_at  timestamptz not null default now()
 );
 
 -- Seed 2 pocket default
-insert into pocket (nama_pocket, jenis, saldo_awal)
-values ('Cash', 'cash', 0), ('Bank', 'bank', 0)
+insert into pocket (nama_pocket, saldo_awal)
+values ('Cash', 0), ('Bank', 0)
 on conflict do nothing;
 
 -- ---------------------------------------------------------
@@ -100,7 +99,6 @@ create or replace view v_saldo_pocket as
 select
     p.id                as pocket_id,
     p.nama_pocket,
-    p.jenis,
     p.saldo_awal
         + coalesce((select sum(i.nominal) from iuran i where i.pocket_id = p.id), 0)
         + coalesce((select sum(t.nominal) from transaksi t where t.pocket_id = p.id and t.jenis = 'masuk'), 0)
@@ -115,14 +113,68 @@ create or replace view v_status_iuran_bulan_ini as
 select
     keluarga.id            as keluarga_id,
     keluarga.nama_keluarga,
-    to_char(current_date, 'YYYY-MM') as periode,
     coalesce(sum(i.nominal), 0) as total_setor_bulan_ini,
     case when sum(i.nominal) > 0 then true else false end as sudah_setor
 from keluarga
 left join iuran i
     on i.keluarga_id = keluarga.id
-    and i.periode = to_char(current_date, 'YYYY-MM')
 group by keluarga.id, keluarga.nama_keluarga;
+
+-- ---------------------------------------------------------
+-- 7B. VIEW: Status setoran iuran per keluarga untuk Tahun berjalan
+-- ---------------------------------------------------------
+create or replace view v_status_iuran_tahun_ini as
+select
+    keluarga.id            as keluarga_id,
+    keluarga.nama_keluarga,
+    to_char(current_date, 'YYYY') as tahun,
+    coalesce(sum(i.nominal), 0)   as total_setor_tahun_ini,
+    count(i.id)                   as jumlah_bulan_setor,
+    case 
+      when count(i.id) >= 12 then true 
+      else false 
+    end as lunas_setahun
+from keluarga
+left join iuran i
+    on i.keluarga_id = keluarga.id
+    and i.periode like to_char(current_date, 'YYYY') || '-%'
+group by keluarga.id, keluarga.nama_keluarga;
+
+-- ---------------------------------------------------------
+-- 7C. VIEW: Rekap 1 baris untuk angka Pemasukan (Iuran + Transaksi Masuk) & Pengeluaran bulan berjalan
+-- ---------------------------------------------------------
+create or replace view v_rekap_bulan_ini as
+select
+    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk
+    (
+        coalesce((select sum(nominal) from iuran where periode = to_char(current_date, 'YYYY-MM')), 0)
+      + coalesce((select sum(nominal) from transaksi where jenis = 'masuk' and to_char(tanggal, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')), 0)
+    ) as total_pemasukan,
+    -- Total Pengeluaran: Transaksi Kas Keluar
+    coalesce((
+        select sum(nominal) 
+        from transaksi 
+        where jenis = 'keluar' 
+          and to_char(tanggal, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')
+    ), 0) as total_pengeluaran;
+
+-- ---------------------------------------------------------
+-- 7D. VIEW: Rekap 1 baris untuk angka Pemasukan (Iuran + Transaksi Masuk) & Pengeluaran tahun berjalan
+-- ---------------------------------------------------------
+create or replace view v_rekap_tahun_ini as
+select
+    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk tahun ini
+    (
+        coalesce((select sum(nominal) from iuran where periode like to_char(current_date, 'YYYY') || '-%'), 0)
+      + coalesce((select sum(nominal) from transaksi where jenis = 'masuk' and to_char(tanggal, 'YYYY') = to_char(current_date, 'YYYY')), 0)
+    ) as total_pemasukan,
+    -- Total Pengeluaran: Transaksi Kas Keluar tahun ini
+    coalesce((
+        select sum(nominal) 
+        from transaksi 
+        where jenis = 'keluar' 
+          and to_char(tanggal, 'YYYY') = to_char(current_date, 'YYYY')
+    ), 0) as total_pengeluaran;
 
 -- ---------------------------------------------------------
 -- 8. ROW LEVEL SECURITY (RLS)

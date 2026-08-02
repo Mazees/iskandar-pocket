@@ -83,6 +83,7 @@ middleware.ts         → Auth redirect (dashboard → login jika belum auth)
 6. **Transfer antar pocket** = 2 transaksi atomik (keluar dari sumber + masuk ke tujuan).
 7. **Upload bukti** ke Supabase Storage bucket `bukti` — public read, authenticated write.
 8. **Semua tabel punya RLS** — publik boleh SELECT, hanya authenticated boleh write.
+9. **Jangan Gunakan Emoji Untuk Icon** — gunakan React Icons
 
 ## Supabase Client Pattern
 
