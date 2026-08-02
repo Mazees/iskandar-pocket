@@ -1,28 +1,31 @@
 import Link from "next/link";
 import {
-  FiShield,
   FiEye,
   FiLock,
   FiArrowRight,
   FiUsers,
   FiCheckCircle,
-  FiFileText,
+  FiDollarSign,
+  FiHeart,
+  FiCreditCard,
 } from "react-icons/fi";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-base-100 text-base-content">
-      {/* DaisyUI Navbar Component */}
-      <div className="navbar bg-base-300 shadow-sm px-4 sm:px-8">
+    <div className="min-h-screen flex flex-col bg-base-100 text-base-content font-sans">
+      {/* Navbar */}
+      <header className="navbar bg-base-200 border-b border-base-300 px-4 sm:px-8 py-3">
         <div className="navbar-start">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <FiShield className="w-5 h-5 text-primary-content" />
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+              <FiHeart className="w-5 h-5 text-primary-content" />
             </div>
             <div>
-              <span className="font-bold text-lg block">Iskandar Pocket</span>
-              <span className="text-xs text-base-content/70 block">
-                Kas Keluarga Transparan
+              <span className="font-bold text-base sm:text-lg block leading-tight">
+                Keluarga Besar Iskandar
+              </span>
+              <span className="text-xs text-base-content/60 block">
+                Portal Kas &amp; Transparansi Keuangan
               </span>
             </div>
           </Link>
@@ -30,99 +33,111 @@ export default function Home() {
         <div className="navbar-end gap-2">
           <Link
             href="/laporan"
-            className="btn btn-sm btn-secondary font-medium"
+            className="btn btn-sm btn-secondary font-semibold"
           >
             <FiEye className="w-4 h-4 mr-1" />
-            Laporan Publik
+            Laporan Kas
           </Link>
-          <Link href="/login" className="btn btn-sm btn-primary font-medium">
+          <Link href="/login" className="btn btn-sm btn-primary font-semibold">
             <FiLock className="w-4 h-4 mr-1" />
             Login Admin
           </Link>
         </div>
-      </div>
+      </header>
 
-      {/* DaisyUI Hero Component */}
-      <div className="hero flex-1 bg-base-100">
-        <div className="hero-content text-center max-w-4xl py-12">
-          <div>
-            <div className="badge badge-primary badge-lg mb-6 gap-2 font-semibold">
-              <FiCheckCircle className="w-4 h-4" />
-              Sistem Pengelolaan Kas Keterbukaan Penuh
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col justify-center max-w-5xl mx-auto px-6 py-16 text-center">
+        <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-base-200 border border-base-300 text-primary text-xs font-semibold mx-auto mb-6">
+          <FiCheckCircle className="w-4 h-4" />
+          Portal Resmi Keluarga Besar Iskandar
+        </div>
+
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
+          Transparansi Kas Keluarga Besar Iskandar
+        </h1>
+
+        <p className="text-base sm:text-lg text-base-content/75 max-w-2xl mx-auto leading-relaxed mb-8">
+          Dari kita, oleh kita, dan untuk kita. Portal informasi keuangan
+          keluarga untuk memantau iuran bulanan per Kepala Keluarga, pengeluaran
+          acara silaturahmi, rekreasi, serta saldo kas bersama secara jujur dan
+          terbuka.
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/laporan"
+            className="btn btn-primary btn-md sm:btn-lg font-semibold px-6 shadow-md"
+          >
+            <FiEye className="w-5 h-5 mr-1.5" />
+            Lihat Laporan &amp; Bukti Struk
+          </Link>
+          <Link
+            href="/login"
+            className="btn btn-neutral btn-md sm:btn-lg font-semibold px-6 border border-base-300"
+          >
+            Masuk sebagai Bendahara
+            <FiArrowRight className="w-5 h-5 ml-1.5" />
+          </Link>
+        </div>
+      </main>
+
+      {/* Info Cards Section - 3 Equal Height Cards */}
+      <section className="bg-base-200/50 border-t border-base-300 py-16">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="card bg-base-200 border border-base-300 shadow-md">
+            <div className="card-body p-6">
+              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-3">
+                <FiDollarSign className="w-6 h-6 text-primary-content" />
+              </div>
+              <h2 className="card-title text-lg font-bold">
+                Iuran Bulanan per KK
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Nominal iuran standar adalah{" "}
+                <strong className="text-primary">Rp 100.000 / bulan</strong>{" "}
+                untuk setiap Kepala Keluarga, disetorkan setiap awal bulan untuk
+                operasional acara keluarga.
+              </p>
             </div>
+          </div>
 
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
-              Kelola Kas Keluarga Secara Terbuka &amp; Terpercaya
-            </h1>
+          <div className="card bg-base-200 border border-base-300 shadow-md">
+            <div className="card-body p-6">
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-3">
+                <FiCreditCard className="w-6 h-6 text-secondary-content" />
+              </div>
+              <h2 className="card-title text-lg font-bold">Cara Pembayaran</h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Setoran dapat ditransfer ke rekening resmi kas keluarga atau
+                diserahkan secara tunai langsung kepada Bendahara saat pertemuan
+                keluarga.
+              </p>
+            </div>
+          </div>
 
-            <p className="py-4 text-lg text-base-content/80 max-w-2xl mx-auto">
-              Pencatatan iuran per Kepala Keluarga, pengeluaran acara rekreasi, serta saldo kas tunai dan bank yang dapat dipantau oleh seluruh anggota keluarga kapan saja.
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-              <Link
-                href="/laporan"
-                className="btn btn-primary btn-lg font-semibold"
-              >
-                <FiEye className="w-5 h-5 mr-1" />
-                Lihat Transparansi Kas
-              </Link>
-              <Link
-                href="/login"
-                className="btn btn-neutral btn-lg font-semibold border border-base-300"
-              >
-                Masuk sebagai Bendahara
-                <FiArrowRight className="w-5 h-5 ml-1" />
-              </Link>
+          <div className="card bg-base-200 border border-base-300 shadow-md">
+            <div className="card-body p-6">
+              <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mb-3">
+                <FiUsers className="w-6 h-6 text-accent-content" />
+              </div>
+              <h2 className="card-title text-lg font-bold">
+                Transparan Untuk Semua
+              </h2>
+              <p className="text-sm text-base-content/75 leading-relaxed">
+                Seluruh anggota keluarga dapat memeriksa arus kas masuk,
+                pengeluaran acara, dan foto bukti struk kapan saja tanpa perlu
+                mendaftar akun.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Feature Section using DaisyUI Cards */}
-      <div className="max-w-6xl mx-auto w-full px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-2">
-              <FiUsers className="w-6 h-6 text-primary-content" />
-            </div>
-            <h2 className="card-title">Pencatatan per KK</h2>
-            <p className="text-sm text-base-content/80">
-              Rekap iuran bulanan dari setiap Kepala Keluarga tersusun rapi per periode tanpa terlewat.
-            </p>
-          </div>
-        </div>
-
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body">
-            <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-2">
-              <FiShield className="w-6 h-6 text-secondary-content" />
-            </div>
-            <h2 className="card-title">Transparan Tanpa Login</h2>
-            <p className="text-sm text-base-content/80">
-              Seluruh anggota keluarga dapat memeriksa arus kas dan bukti struk langsung melalui tautan publik.
-            </p>
-          </div>
-        </div>
-
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body">
-            <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mb-2">
-              <FiFileText className="w-6 h-6 text-accent-content" />
-            </div>
-            <h2 className="card-title">Laporan PDF &amp; Excel</h2>
-            <p className="text-sm text-base-content/80">
-              Unduh rekap bulanan siap cetak untuk dibagikan dalam pertemuan keluarga besar.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* DaisyUI Footer Component */}
-      <footer className="footer footer-center bg-base-300 text-base-content p-6 border-t border-base-300">
+      {/* Footer */}
+      <footer className="footer footer-center bg-base-300 text-base-content py-6 border-t border-base-300">
         <aside>
-          <p className="text-xs font-semibold">
-            &copy; 2026 Iskandar Pocket — Sistem Kas Keluarga
+          <p className="text-xs font-semibold text-base-content/60">
+            &copy; 2026 Keluarga Besar Iskandar — Guyub Rukun &amp; Transparan
           </p>
         </aside>
       </footer>
