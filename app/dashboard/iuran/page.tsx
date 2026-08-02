@@ -21,16 +21,14 @@ export default function IuranPage() {
       <div className="card bg-base-200 border border-base-300 shadow-sm">
         <div className="card-body p-4 flex-row flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-64">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-base-content/50">
-                <FiSearch className="w-4 h-4" />
-              </span>
+            <label className="flex w-64 input input-bordered input-sm">
+              <FiSearch className="w-4 h-4" />
               <input
                 type="text"
-                placeholder="Cari nama KK..."
-                className="input input-bordered input-sm w-full pl-10"
+                placeholder="Cari nama Keluarga..."
+                className="w-full"
               />
-            </div>
+            </label>
 
             <select className="select select-bordered select-sm font-medium">
               <option>Periode: Agustus 2026</option>
@@ -72,7 +70,9 @@ export default function IuranPage() {
                     2026-08
                   </span>
                 </td>
-                <td className="text-center text-base-content/80">01 Agu 2026</td>
+                <td className="text-center text-base-content/80">
+                  01 Agu 2026
+                </td>
                 <td className="text-center">
                   <span className="badge badge-outline text-xs font-semibold">
                     Transfer Bank
@@ -91,7 +91,9 @@ export default function IuranPage() {
                     2026-08
                   </span>
                 </td>
-                <td className="text-center text-base-content/80">02 Agu 2026</td>
+                <td className="text-center text-base-content/80">
+                  02 Agu 2026
+                </td>
                 <td className="text-center">
                   <span className="badge badge-outline text-xs font-semibold">
                     Tunai (Cash)

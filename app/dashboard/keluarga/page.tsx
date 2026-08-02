@@ -26,16 +26,14 @@ export default function KeluargaPage() {
       {/* Filter & Search Bar in DaisyUI Card */}
       <div className="card bg-base-200 border border-base-300 shadow-sm">
         <div className="card-body p-4 flex-row flex-wrap items-center justify-between gap-4">
-          <div className="relative w-full sm:w-80">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-base-content/50">
-              <FiSearch className="w-4 h-4" />
-            </span>
+          <label className="flex w-64 input input-bordered input-sm">
+            <FiSearch className="w-4 h-4" />
             <input
               type="text"
-              placeholder="Cari nama keluarga..."
-              className="input input-bordered input-sm w-full pl-10"
+              placeholder="Cari nama Keluarga..."
+              className="w-full"
             />
-          </div>
+          </label>
           <div className="text-xs font-semibold text-base-content/70">
             Total Terdaftar:{" "}
             <span className="text-base-content font-bold">15 Keluarga</span>
