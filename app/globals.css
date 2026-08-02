@@ -58,5 +58,5 @@
 body {
   background-color: var(--color-base-100);
   color: var(--color-base-content);
-  font-family: var(--font-poppins), sans-serif;
+  font-family: calibri;
 }

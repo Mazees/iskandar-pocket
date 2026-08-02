@@ -3,6 +3,7 @@ import {
   FiDollarSign,
   FiUsers,
   FiTrendingDown,
+  FiTrendingUp,
   FiPlus,
   FiCreditCard,
   FiArrowUpRight,
@@ -50,18 +51,17 @@ export default function DashboardOverviewPage() {
           <div className="stat-title">Total Saldo Kas &amp; Bank</div>
           <div className="stat-value text-primary">Rp 4.250.000</div>
           <div className="stat-desc flex items-center gap-1 text-accent font-semibold mt-1">
-            <FiArrowUpRight className="w-4 h-4" />
-            + Rp 1.200.000 bulan ini
+            <FiArrowUpRight className="w-4 h-4" />+ Rp 1.200.000 bulan ini
           </div>
         </div>
 
         <div className="stat">
           <div className="stat-figure text-secondary">
-            <FiUsers className="w-8 h-8" />
+            <FiTrendingUp className="w-8 h-8" />
           </div>
-          <div className="stat-title">Partisipasi Iuran (Agustus)</div>
-          <div className="stat-value text-secondary">12 / 15 KK</div>
-          <div className="stat-desc">3 KK belum setor bulan berjalan</div>
+          <div className="stat-title">Pemasukan Bulan Ini (Agustus)</div>
+          <div className="stat-value text-primary">Rp 1.500.000</div>
+          <div className="stat-desc">Total setoran iuran masuk</div>
         </div>
 
         <div className="stat">
@@ -69,7 +69,7 @@ export default function DashboardOverviewPage() {
             <FiTrendingDown className="w-8 h-8" />
           </div>
           <div className="stat-title">Pengeluaran Bulan Ini</div>
-          <div className="stat-value text-accent">Rp 750.000</div>
+          <div className="stat-value text-primary">Rp 750.000</div>
           <div className="stat-desc flex items-center gap-1 text-error font-semibold mt-1">
             <FiArrowDownRight className="w-4 h-4" />
             Sewa Tempat &amp; Konsumsi
@@ -87,7 +87,8 @@ export default function DashboardOverviewPage() {
                 Ringkasan Bulan Ini (Agustus 2026)
               </h2>
               <p className="text-xs text-base-content/70">
-                Status pembayaran iuran bulanan per Kepala Keluarga pada bulan berjalan
+                Status pembayaran iuran bulanan per Kepala Keluarga pada bulan
+                berjalan
               </p>
             </div>
             <Link
@@ -102,7 +103,7 @@ export default function DashboardOverviewPage() {
             <table className="table table-zebra w-full text-sm">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
-                  <th>Nama KK</th>
+                  <th>Nama Keluarga</th>
                   <th className="text-center">Status</th>
                   <th className="text-center">Tanggal Setor</th>
                   <th className="text-right">Nominal</th>
@@ -170,7 +171,8 @@ export default function DashboardOverviewPage() {
                 Ringkasan Tahun Ini (2026)
               </h2>
               <p className="text-xs text-base-content/70">
-                Rekapitulasi partisipasi iuran tahunan dari Januari hingga Desember per Kepala Keluarga
+                Rekapitulasi partisipasi iuran tahunan dari Januari hingga
+                Desember per Kepala Keluarga
               </p>
             </div>
             <span className="badge badge-secondary font-bold">
@@ -182,7 +184,7 @@ export default function DashboardOverviewPage() {
             <table className="table table-zebra w-full text-xs sm:text-sm">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
-                  <th className="min-w-44">Nama KK</th>
+                  <th className="min-w-44">Nama Keluarga</th>
                   <th className="text-center">Jan</th>
                   <th className="text-center">Feb</th>
                   <th className="text-center">Mar</th>
@@ -278,26 +280,10 @@ export default function DashboardOverviewPage() {
             </div>
 
             <div className="space-y-4 mt-2">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-base-300">
-                <div>
-                  <p className="font-bold">Cash (Tunai Bendahara)</p>
-                  <p className="text-xs text-base-content/70">
-                    Uang fisik di tangan
-                  </p>
-                </div>
+              <div className="flex flex-col items-left justify-between p-4 rounded-xl bg-base-300">
+                <p className="font-bold">Tunai</p>
                 <p className="text-lg font-extrabold text-primary">
                   Rp 1.050.000
-                </p>
-              </div>
-              <div className="flex items-center justify-between p-4 rounded-xl bg-base-300">
-                <div>
-                  <p className="font-bold">Bank / E-Wallet</p>
-                  <p className="text-xs text-base-content/70">
-                    Rekening Resmi Kas
-                  </p>
-                </div>
-                <p className="text-lg font-extrabold text-primary">
-                  Rp 3.200.000
                 </p>
               </div>
             </div>

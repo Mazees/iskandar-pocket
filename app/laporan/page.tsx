@@ -6,6 +6,7 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiTrendingDown,
+  FiTrendingUp,
   FiArrowUpRight,
   FiArrowDownRight,
 } from "react-icons/fi";
@@ -60,15 +61,18 @@ export default function LaporanPublikPage() {
             <div className="card-body p-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
-                  Partisipasi Bulan Ini
+                  Pemasukan Bulan Ini
                 </span>
                 <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center">
-                  <FiUsers className="w-5 h-5 text-secondary-content" />
+                  <FiTrendingUp className="w-5 h-5 text-secondary-content" />
                 </div>
               </div>
-              <p className="text-3xl font-extrabold">12 / 15 KK</p>
-              <p className="text-xs font-semibold text-secondary mt-2">
-                80% keluarga telah menyetor
+              <p className="text-3xl font-extrabold text-secondary">
+                Rp 1.500.000
+              </p>
+              <p className="text-xs font-semibold text-secondary mt-2 flex items-center gap-1">
+                <FiArrowUpRight className="w-4 h-4" />
+                Dari iuran &amp; setoran kas
               </p>
             </div>
           </div>
@@ -97,7 +101,7 @@ export default function LaporanPublikPage() {
           <div className="card-body p-6">
             <div className="border-b border-base-300 pb-4 mb-2">
               <h2 className="card-title text-lg font-bold">
-                Status Setoran per Kepala Keluarga
+                Status Setoran per Keluarga
               </h2>
               <p className="text-xs text-base-content/60">
                 Catatan partisipasi iuran bulanan (Nominal per bulan: Rp 100.000)

@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      data-theme="halloween"
+      data-theme="excel"
       className={`${poppins.variable} h-full antialiased`}
     >
       <body
