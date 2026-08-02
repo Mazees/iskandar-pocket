@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { logout } from "../login/actions";
 import {
   FiHome,
   FiUsers,
@@ -47,9 +48,7 @@ export default function DashboardLayout({
             </label>
           </div>
           <div className="flex-1">
-            <span className="font-bold text-lg">
-              Panel Pengelolaan Kas
-            </span>
+            <span className="font-bold text-lg">Panel Pengelolaan Kas</span>
           </div>
         </div>
 
@@ -102,14 +101,21 @@ export default function DashboardLayout({
           </div>
 
           {/* Sidebar Footer Action */}
-          <div className="pt-4 border-t border-base-content/10">
-            <Link
-              href="/"
-              className="btn btn-neutral w-full justify-center gap-2 font-semibold"
-            >
-              <FiLogOut className="w-4 h-4" />
-              Keluar ke Web Publik
-            </Link>
+          <div
+            className="pt-4 border-t border-    
+  base-content/10"
+          >
+            <form action={logout}>
+              <button
+                type="submit"
+                className="btn btn-error btn-      
+  outline w-full justify-center gap-2 font-  
+  semibold"
+              >
+                <FiLogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </form>
           </div>
         </div>
       </div>

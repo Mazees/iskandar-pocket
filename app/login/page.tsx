@@ -1,7 +1,11 @@
+"use client";
 import Link from "next/link";
+import { useActionState } from "react";
 import { FiLock, FiMail, FiKey, FiArrowLeft, FiShield } from "react-icons/fi";
+import { login } from "./actions";
 
 export default function LoginPage() {
+  const [state, formAction, isPending] = useActionState(login, null);
   return (
     <div className="hero min-h-screen bg-base-100">
       <div className="hero-content flex-col w-full max-w-sm">
@@ -17,50 +21,57 @@ export default function LoginPage() {
 
         <div className="card bg-base-200 w-full shrink-0 shadow-2xl border border-base-300">
           <div className="card-body">
-            <form className="space-y-4">
+            <form action={formAction} className="space-y-4">
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold">Email Admin</span>
                 </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-base-content/50">
-                    <FiMail className="w-4 h-4" />
-                  </span>
+                <label className="flex input input-bordered">
+                  <FiMail className="w-4 h-4" />
                   <input
                     type="email"
-                    placeholder="admin@iskandarpocket.com"
-                    className="input input-bordered w-full pl-10"
+                    name="email"
+                    placeholder="Masukkan Email"
+                    className="w-full"
                     required
                   />
-                </div>
+                </label>
               </div>
 
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold">Password</span>
                 </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-base-content/50">
-                    <FiKey className="w-4 h-4" />
-                  </span>
+                <label className="flex input input-bordered">
+                  <FiMail className="w-4 h-4" />
                   <input
                     type="password"
-                    placeholder="••••••••"
-                    className="input input-bordered w-full pl-10"
+                    name="password"
+                    placeholder="Masukkan Password"
+                    className="w-full"
                     required
                   />
-                </div>
+                </label>
               </div>
 
               <div className="form-control mt-6">
                 <button
-                  type="button"
+                  type="submit"
+                  disabled={isPending}
                   className="btn btn-primary w-full font-semibold"
                 >
                   <FiLock className="w-4 h-4 mr-1" />
-                  Masuk ke Dashboard
+                  {isPending ? "Sedang Memeriksa..." : "Masuk ke Dashboard"}
                 </button>
               </div>
+              {state?.error && (
+                <div
+                  className="alert alert-error text-xs    
+  font-semibold"
+                >
+                  {state.error}
+                </div>
+              )}
             </form>
 
             <div className="text-center pt-4 mt-2 border-t border-base-300">
