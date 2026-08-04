@@ -138,7 +138,7 @@ export function TransaksiTable({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl">
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -153,7 +153,7 @@ export function TransaksiTable({
         </div>
         <button
           onClick={handleOpenCreate}
-          className="btn btn-primary font-semibold shadow-xs"
+          className="btn btn-primary font-semibold shadow-sm"
         >
           <FiPlus className="w-4 h-4 mr-1" />
           Catat Transaksi Baru
@@ -291,7 +291,7 @@ export function TransaksiTable({
       </div>
 
       {/* Table Transaksi */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-0 overflow-x-auto">
           <table className="table table-zebra w-full text-sm">
             <thead className="bg-base-300 text-base-content font-bold">

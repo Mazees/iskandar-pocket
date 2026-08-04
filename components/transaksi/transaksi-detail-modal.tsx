@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   FiX,
   FiCalendar,
@@ -40,8 +41,12 @@ export function TransaksiDetailModal({
   data,
 }: TransaksiDetailModalProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  if (!isOpen || !data) return null;
+  if (!isOpen || !data || !mounted) return null;
 
   const isMasuk = data.jenis === "masuk";
   const formattedTanggal = new Date(data.tanggal).toLocaleDateString("id-ID", {
@@ -51,9 +56,9 @@ export function TransaksiDetailModal({
     year: "numeric",
   });
 
-  return (
-    <div className="modal modal-open z-50">
-      <div className="modal-box bg-base-100 border border-base-300 shadow-2xl max-w-lg p-6">
+  return createPortal(
+    <div className="modal modal-open z-[99999] fixed inset-0 flex items-center justify-center p-4">
+      <div className="modal-box bg-base-100 border border-base-300 shadow-2xl max-w-lg p-6 max-h-[90vh] overflow-y-auto z-10">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-base-300">
           <div className="flex items-center gap-2">
@@ -218,9 +223,14 @@ export function TransaksiDetailModal({
         </div>
       )}
 
-      <label className="modal-backdrop" onClick={onClose}>
-        Close
-      </label>
-    </div>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Close modal"
+        className="modal-backdrop fixed inset-0 bg-black/50 -z-10 cursor-pointer"
+        onClick={onClose}
+      />
+    </div>,
+    document.body
   );
 }

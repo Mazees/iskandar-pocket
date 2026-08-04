@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiCalendar,
+  FiGrid,
 } from "react-icons/fi";
 import { MdAccountBalanceWallet } from "react-icons/md";
 import { createClient } from "@/utils/supabase/server";
@@ -175,11 +176,14 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
   );
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-6 max-w-6xl">
       {/* Title & Quick Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-base sm:text-lg font-bold">Ringkasan Keuangan</h1>
+          <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <FiGrid className="w-5 h-5 text-primary shrink-0" />
+            Ringkasan Keuangan
+          </h1>
           <p className="text-xs text-base-content/70">
             Pantau arus kas masuk dari iuran dan pengeluaran operasional
           </p>
@@ -254,7 +258,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
 
       {/* Grid: Saldo Per Pocket & Transaksi Terakhir */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card bg-base-200 shadow-xl border border-base-300">
+        <div className="card bg-base-200 shadow-sm border border-base-300">
           <div className="card-body">
             <h2 className="card-title text-base">Rincian Saldo Per Pocket</h2>
             <div className="space-y-3 mt-2">
@@ -281,9 +285,9 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
           </div>
         </div>
 
-        <div className="card bg-base-200 shadow-xl border border-base-300 lg:col-span-2">
+        <div className="card bg-base-200 shadow-sm border border-base-300 lg:col-span-2">
           <div className="card-body">
-            <div className="flex items-center justify-between">
+            <div className="flex not-lg:flex-col lg:items-center lg:justify-between not-lg:gap-2">
               <h2 className="card-title text-base">Transaksi Kas Terakhir</h2>
               <Link
                 href="/dashboard/transaksi"
@@ -355,12 +359,12 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
         </div>
       </div>
 
-      {/* 1. Ringkasan Bulanan (Tabel Status per KK dengan Client Month Input) */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      {/* 1. Ringkasan Bulanan (Tabel Status per Keluarga dengan Client Month Input) */}
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="card-title text-sm font-bold flex items-center gap-2">
+              <h2 className="card-title text-lg font-bold flex items-center gap-2">
                 <FiCalendar className="w-4 h-4 text-primary" />
                 Rekap Iuran Bulanan
               </h2>
@@ -435,17 +439,16 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
       </div>
 
       {/* 2. Ringkasan Tahun Ini (Matriks 12 Bulan dengan Client Year Date Input) */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="card-title text-sm font-bold flex items-center gap-2">
+              <h2 className="card-title text-lg font-bold flex items-center gap-2">
                 <FiUsers className="w-4 h-4 text-primary" />
-                Rekap Iuran Tahunan (Jan - Des)
+                Rekap Iuran Tahunan
               </h2>
               <p className="text-xs text-base-content/70">
-                Matriks rincian pembayaran iuran bulanan per Kepala Keluarga
-                sepanjang tahun terpilih
+                Status pembayaran iuran bulanan per Keluarga pada bulan terpilih
               </p>
             </div>
             <YearFilter defaultValue={selectedTahun} />
