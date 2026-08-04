@@ -1,12 +1,19 @@
-import { FiPlus, FiRefreshCw, FiDollarSign, FiCreditCard } from "react-icons/fi";
+import {
+  FiPlus,
+  FiRefreshCw,
+  FiDollarSign,
+  FiCreditCard,
+} from "react-icons/fi";
 
 export default function PocketPage() {
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Dompet Pocket (Cash &amp; Bank)</h1>
+          <h1 className="text-2xl font-bold">
+            Dompet Pocket (Cash &amp; Bank)
+          </h1>
           <p className="text-sm text-base-content/70">
             Tempat penyimpanan dana kas dan saldo otomatis
           </p>
@@ -89,7 +96,9 @@ export default function PocketPage() {
         <div className="card-body">
           <h3 className="card-title text-base">Penghitungan Saldo Otomatis</h3>
           <p className="text-sm text-base-content/80">
-            Saldo seluruh dompet dihitung secara langsung dari akumulasi setoran iuran dan transaksi kas masuk/keluar melalui database, sehingga tidak akan terjadi kesalahan pencatatan manual.
+            Saldo seluruh dompet dihitung secara langsung dari akumulasi setoran
+            iuran dan transaksi kas masuk/keluar melalui database, sehingga
+            tidak akan terjadi kesalahan pencatatan manual.
           </p>
         </div>
       </div>

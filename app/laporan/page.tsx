@@ -1,35 +1,28 @@
-import Link from "next/link";
 import {
-  FiArrowLeft,
   FiDollarSign,
-  FiUsers,
   FiCheckCircle,
-  FiXCircle,
   FiTrendingDown,
   FiTrendingUp,
   FiArrowUpRight,
   FiArrowDownRight,
+  FiGrid,
+  FiXCircle,
 } from "react-icons/fi";
+import { PublicNavbar } from "@/components/layout/public-navbar";
 
 export default function LaporanPublikPage() {
   return (
-    <div className="min-h-screen bg-base-100 text-base-content pb-20">
-      {/* Top Navbar */}
-      <div className="navbar bg-base-200 border-b border-base-300 px-6 py-3">
-        <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">Laporan Transparansi Kas</h1>
-            <p className="text-xs text-base-content/60">
-              Keluarga Besar Iskandar — Dapat diakses publik
-            </p>
-          </div>
-          <Link
-            href="/"
-            className="btn btn-sm btn-neutral font-semibold rounded-lg"
-          >
-            <FiArrowLeft className="w-4 h-4 mr-1" />
-            Kembali
-          </Link>
+    <PublicNavbar>
+      {/* Page Title Header */}
+      <div className="bg-base-200/60 border-b border-base-300 py-6 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">
+            Laporan Transparansi Kas
+          </h1>
+          <p className="text-xs lg:text-sm text-base-content/70 mt-1">
+            Keluarga Besar Iskandar — Transparan, Terbuka &amp; Dapat diakses
+            publik
+          </p>
         </div>
       </div>
 
@@ -51,8 +44,7 @@ export default function LaporanPublikPage() {
                 Rp 4.250.000
               </p>
               <p className="text-xs font-semibold text-accent mt-2 flex items-center gap-1">
-                <FiArrowUpRight className="w-4 h-4" />
-                + Rp 1.200.000 bulan ini
+                <FiArrowUpRight className="w-4 h-4" />+ Rp 1.200.000 bulan ini
               </p>
             </div>
           </div>
@@ -104,7 +96,8 @@ export default function LaporanPublikPage() {
                 Status Setoran per Keluarga
               </h2>
               <p className="text-xs text-base-content/60">
-                Catatan partisipasi iuran bulanan (Nominal per bulan: Rp 100.000)
+                Catatan partisipasi iuran bulanan (Nominal per bulan: Rp
+                100.000)
               </p>
             </div>
 
@@ -239,6 +232,19 @@ export default function LaporanPublikPage() {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Official DaisyUI Footer Component */}
+      <footer className="footer footer-center bg-base-100 text-base-content py-8 border-t border-base-300 mt-16">
+        <aside>
+          <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center mx-auto mb-2">
+            <FiGrid className="w-4 h-4 text-primary" />
+          </div>
+          <p className="text-sm font-bold">Keluarga Besar Iskandar</p>
+          <p className="text-xs font-semibold text-base-content/60">
+            &copy; 2026 — Guyub Rukun, Transparan &amp; Selamanya Bersatu
+          </p>
+        </aside>
+      </footer>
+    </PublicNavbar>
   );
 }

@@ -62,24 +62,24 @@ export default async function DashboardOverviewPage() {
   return (
     <div className="space-y-8 max-w-6xl">
       {/* Title & Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Ringkasan Keuangan</h1>
           <p className="text-sm text-base-content/70">
             Pantau arus kas masuk dari iuran dan pengeluaran operasional
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex not-lg:flex-col items-center gap-3">
           <Link
             href="/dashboard/iuran"
-            className="btn btn-primary font-semibold"
+            className="btn btn-primary font-semibold not-lg:w-full"
           >
             <FiPlus className="w-4 h-4 mr-1" />
             Catat Iuran Baru
           </Link>
           <Link
             href="/dashboard/transaksi"
-            className="btn btn-secondary font-semibold"
+            className="btn btn-secondary font-semibold not-lg:w-full"
           >
             <FiCreditCard className="w-4 h-4 mr-1" />
             Catat Pengeluaran
@@ -130,11 +130,11 @@ export default async function DashboardOverviewPage() {
       {/* 1. Ringkasan Bulan Ini */}
       <div className="card bg-base-200 shadow-xl border border-base-300">
         <div className="card-body">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
             <div>
               <h2 className="card-title text-lg flex items-center gap-2">
                 <FiCalendar className="w-5 h-5 text-primary" />
-                Status Setoran Bulan Ini
+                Rekap Iuran Bulan Ini
               </h2>
               <p className="text-xs text-base-content/70">
                 Status pembayaran iuran bulanan per Keluarga pada bulan ini
@@ -199,18 +199,18 @@ export default async function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* 2. Ringkasan Tahun Ini (Opsi 1: Progres Setoran Responsive) */}
+      {/* 2. Ringkasan Tahun Ini (Matriks 12 Bulan: Jan - Des) */}
       <div className="card bg-base-200 shadow-xl border border-base-300">
         <div className="card-body">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
             <div>
               <h2 className="card-title text-lg flex items-center gap-2">
                 <FiUsers className="w-5 h-5 text-secondary" />
-                Rekap Tahunan per Keluarga
+                Rekap Iuran Tahun Ini (Jan - Des)
               </h2>
               <p className="text-xs text-base-content/70">
-                Rekapitulasi partisipasi iuran tahun berjalan dari Januari
-                hingga Desember
+                Matriks rincian pembayaran iuran bulanan per Kepala Keluarga
+                sepanjang tahun berjalan
               </p>
             </div>
             <span className="badge badge-secondary font-bold">
@@ -219,49 +219,76 @@ export default async function DashboardOverviewPage() {
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-sm">
+            <table className="table table-zebra w-full text-xs lg:text-sm">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
-                  <th>Nama Keluarga</th>
-                  <th className="text-center">Progres Setoran</th>
-                  <th className="text-center">Status Tahunan</th>
-                  <th className="text-right">Total Terkumpul</th>
+                  <th className="min-w-44">Nama Keluarga</th>
+                  <th className="text-center">Jan</th>
+                  <th className="text-center">Feb</th>
+                  <th className="text-center">Mar</th>
+                  <th className="text-center">Apr</th>
+                  <th className="text-center">Mei</th>
+                  <th className="text-center">Jun</th>
+                  <th className="text-center">Jul</th>
+                  <th className="text-center">Agu</th>
+                  <th className="text-center">Sep</th>
+                  <th className="text-center">Okt</th>
+                  <th className="text-center">Nov</th>
+                  <th className="text-center">Des</th>
+                  <th className="text-right font-extrabold text-primary">
+                    Total
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {statusTahunIni && statusTahunIni.length > 0 ? (
-                  (statusTahunIni as any[]).map((item) => (
-                    <tr key={item.keluarga_id}>
-                      <td className="font-bold">{item.nama_keluarga}</td>
-                      <td className="text-center">
-                        <span className="badge badge-neutral font-semibold">
-                          {item.jumlah_bulan_setor || 0} / 12 Bulan
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        {item.lunas_setahun ? (
-                          <span className="badge badge-success font-semibold text-success-content gap-1">
-                            <FiCheckCircle className="w-3.5 h-3.5" />
-                            Lunas Setahun
-                          </span>
-                        ) : (
-                          <span className="badge badge-warning font-semibold text-warning-content gap-1">
-                            Berjalan
-                          </span>
-                        )}
-                      </td>
-                      <td className="text-right font-extrabold text-primary">
-                        Rp{" "}
-                        {Number(item.total_setor_tahun_ini || 0).toLocaleString(
-                          "id-ID",
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                  (statusTahunIni as any[]).map((item) => {
+                    const months = [
+                      "jan",
+                      "feb",
+                      "mar",
+                      "apr",
+                      "mei",
+                      "jun",
+                      "jul",
+                      "agu",
+                      "sep",
+                      "okt",
+                      "nov",
+                      "des",
+                    ];
+                    return (
+                      <tr key={item.keluarga_id}>
+                        <td className="font-bold">{item.nama_keluarga}</td>
+                        {months.map((m) => {
+                          const nominal = Number(item[m] || 0);
+                          return (
+                            <td key={m} className="text-center">
+                              {nominal > 0 ? (
+                                <span className="badge badge-xs lg:badge-sm badge-primary font-bold">
+                                  {nominal >= 1000
+                                    ? `${nominal / 1000}K`
+                                    : nominal}
+                                </span>
+                              ) : (
+                                <span className="text-base-content/30">-</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                        <td className="text-right font-extrabold text-primary">
+                          Rp{" "}
+                          {Number(
+                            item.total_setor_tahun_ini || 0,
+                          ).toLocaleString("id-ID")}
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={14}
                       className="text-center py-6 text-base-content/60"
                     >
                       Belum ada data rekap tahunan.

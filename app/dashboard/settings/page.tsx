@@ -32,7 +32,7 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="py-4 bg-base-300 rounded-xl px-4 my-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="py-4 bg-base-300 rounded-xl px-4 my-2 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <p className="text-xs font-bold text-base-content/70 uppercase tracking-wider">
                 Nominal Aktif Saat Ini

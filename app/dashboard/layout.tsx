@@ -29,7 +29,7 @@ export default function DashboardLayout({
           </div>
           <div className="flex-1 ml-3">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base sm:text-lg">
+              <span className="font-bold text-base lg:text-lg">
                 Panel Pengelolaan Kas Keluarga
               </span>
             </div>
@@ -37,7 +37,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 sm:p-8 overflow-y-auto bg-base-100">
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-base-100">
           {children}
         </main>
       </div>

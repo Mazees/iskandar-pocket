@@ -125,20 +125,29 @@ group by keluarga.id, keluarga.nama_keluarga;
 -- ---------------------------------------------------------
 create or replace view v_status_iuran_tahun_ini as
 select
-    keluarga.id            as keluarga_id,
-    keluarga.nama_keluarga,
+    k.id as keluarga_id,
+    k.nama_keluarga,
     to_char(current_date, 'YYYY') as tahun,
-    coalesce(sum(i.nominal), 0)   as total_setor_tahun_ini,
-    count(i.id)                   as jumlah_bulan_setor,
-    case 
-      when count(i.id) >= 12 then true 
-      else false 
-    end as lunas_setahun
-from keluarga
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-01' then i.nominal else 0 end), 0) as jan,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-02' then i.nominal else 0 end), 0) as feb,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-03' then i.nominal else 0 end), 0) as mar,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-04' then i.nominal else 0 end), 0) as apr,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-05' then i.nominal else 0 end), 0) as mei,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-06' then i.nominal else 0 end), 0) as jun,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-07' then i.nominal else 0 end), 0) as jul,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-08' then i.nominal else 0 end), 0) as agu,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-09' then i.nominal else 0 end), 0) as sep,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-10' then i.nominal else 0 end), 0) as okt,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-11' then i.nominal else 0 end), 0) as nov,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-12' then i.nominal else 0 end), 0) as des,
+    coalesce(sum(i.nominal), 0) as total_setor_tahun_ini,
+    count(i.id) as jumlah_bulan_setor,
+    case when count(i.id) >= 12 then true else false end as lunas_setahun
+from keluarga k
 left join iuran i
-    on i.keluarga_id = keluarga.id
+    on i.keluarga_id = k.id
     and i.periode like to_char(current_date, 'YYYY') || '-%'
-group by keluarga.id, keluarga.nama_keluarga;
+group by k.id, k.nama_keluarga;
 
 -- ---------------------------------------------------------
 -- 7C. VIEW: Rekap 1 baris untuk angka Pemasukan (Iuran + Transaksi Masuk) & Pengeluaran bulan berjalan

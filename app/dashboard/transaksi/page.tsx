@@ -4,7 +4,7 @@ export default function TransaksiPage() {
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Transaksi Kas &amp; Bank</h1>
           <p className="text-sm text-base-content/70">
@@ -87,8 +87,7 @@ export default function TransaksiPage() {
                 <td className="text-center font-medium">Bank</td>
                 <td className="text-center">
                   <button className="btn btn-xs btn-outline">
-                    <FiImage className="w-3.5 h-3.5 mr-1" />
-                    1 Struk
+                    <FiImage className="w-3.5 h-3.5 mr-1" />1 Struk
                   </button>
                 </td>
                 <td className="text-right font-extrabold text-error">
@@ -115,8 +114,7 @@ export default function TransaksiPage() {
                 <td className="text-center font-medium">Cash</td>
                 <td className="text-center">
                   <button className="btn btn-xs btn-outline">
-                    <FiImage className="w-3.5 h-3.5 mr-1" />
-                    2 Struk
+                    <FiImage className="w-3.5 h-3.5 mr-1" />2 Struk
                   </button>
                 </td>
                 <td className="text-right font-extrabold text-error">
