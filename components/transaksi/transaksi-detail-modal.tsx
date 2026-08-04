@@ -87,7 +87,7 @@ export function TransaksiDetailModal({
             Total Nominal Transaksi
           </p>
           <h2
-            className={`text-3xl font-extrabold mt-1 ${
+            className={`text-sm sm:text-base font-extrabold mt-1 ${
               isMasuk ? "text-primary" : "text-error"
             }`}
           >

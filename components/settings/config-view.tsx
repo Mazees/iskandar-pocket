@@ -32,11 +32,11 @@ export function ConfigView({
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <FiSettings className="w-7 h-7 text-primary" />
+        <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+          <FiSettings className="w-5 h-5 text-primary" />
           Pengaturan Sistem Kas
         </h1>
-        <p className="text-sm text-base-content/70">
+        <p className="text-xs text-base-content/70">
           Konfigurasi nominal iuran bulanan dan histori kebijakan keuangan
         </p>
       </div>
@@ -50,7 +50,7 @@ export function ConfigView({
                 <FiSettings className="w-5 h-5 text-primary-content" />
               </div>
               <div>
-                <h2 className="card-title text-lg">
+                <h2 className="card-title text-sm">
                   Nominal Iuran Bulanan per KK
                 </h2>
                 <p className="text-xs text-base-content/70">
@@ -73,7 +73,7 @@ export function ConfigView({
               <p className="text-xs font-bold text-base-content/70 uppercase tracking-wider">
                 Nominal Tarif Aktif saat ini
               </p>
-              <p className="text-3xl font-extrabold text-primary mt-1">
+              <p className="text-sm sm:text-base font-extrabold text-primary mt-1">
                 Rp {activeNominal.toLocaleString("id-ID")}{" "}
                 <span className="text-sm font-normal text-base-content/70">
                   / bulan

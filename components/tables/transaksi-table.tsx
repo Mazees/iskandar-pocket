@@ -59,7 +59,9 @@ export function TransaksiTable({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editData, setEditData] = useState<TransaksiItem | null>(null);
 
-  const [detailData, setDetailData] = useState<TransaksiDetailItem | null>(null);
+  const [detailData, setDetailData] = useState<TransaksiDetailItem | null>(
+    null,
+  );
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -70,8 +72,7 @@ export function TransaksiTable({
       const matchSearch = (item.keterangan || "")
         .toLowerCase()
         .includes(search.toLowerCase());
-      const matchJenis =
-        filterJenis === "all" || item.jenis === filterJenis;
+      const matchJenis = filterJenis === "all" || item.jenis === filterJenis;
       const matchPocket =
         filterPocket === "all" || item.pocket_id === filterPocket;
       const matchStartDate = !startDate || item.tanggal >= startDate;
@@ -115,7 +116,7 @@ export function TransaksiTable({
     const result = await showConfirmModal({
       title: "Hapus Transaksi Kas?",
       text: `Apakah Anda yakin ingin menghapus transaksi ${labelKet} nominal Rp ${nominal.toLocaleString(
-        "id-ID"
+        "id-ID",
       )}?`,
       confirmButtonText: "Ya, Hapus Transaksi",
       cancelButtonText: "Batal",
@@ -146,7 +147,8 @@ export function TransaksiTable({
             Catatan Transaksi Kas
           </h1>
           <p className="text-xs text-base-content/70">
-            Kelola transaksi kas masuk dan pengeluaran operasional / acara keluarga
+            Kelola transaksi kas masuk dan pengeluaran operasional / acara
+            keluarga
           </p>
         </div>
         <button
@@ -174,19 +176,13 @@ export function TransaksiTable({
 
       {/* Filter Toolbar Card */}
       <div className="card bg-base-200 border border-base-300 shadow-xs">
-        <div className="card-body p-4 space-y-3">
+        <div className="card-body">
           <div className="flex items-center justify-between border-b border-base-300/80 pb-2">
-            <span className="text-xs font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-sm font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-1.5">
               <FiFilter className="w-3.5 h-3.5 text-primary" />
-              Filter &amp; Pencarian Transaksi
+              Filter Transaksi
             </span>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-base-content/70">
-                Menampilkan:{" "}
-                <span className="text-primary font-extrabold">
-                  {filteredList.length} Catatan
-                </span>
-              </span>
               {(search ||
                 filterJenis !== "all" ||
                 filterPocket !== "all" ||
@@ -206,7 +202,7 @@ export function TransaksiTable({
             {/* 1. Cari Keterangan */}
             <div className="form-control w-full">
               <label className="label py-0.5">
-                <span className="label-text text-[11px] font-bold text-base-content/70">
+                <span className="label-text text-[11px] font-semibold text-base-content/70">
                   Cari Keterangan
                 </span>
               </label>
@@ -225,7 +221,7 @@ export function TransaksiTable({
             {/* 2. Jenis Transaksi */}
             <div className="form-control w-full">
               <label className="label py-0.5">
-                <span className="label-text text-[11px] font-bold text-base-content/70">
+                <span className="label-text text-[11px] font-semibold text-base-content/70">
                   Jenis Transaksi
                 </span>
               </label>
@@ -243,7 +239,7 @@ export function TransaksiTable({
             {/* 3. Akun Pocket */}
             <div className="form-control w-full">
               <label className="label py-0.5">
-                <span className="label-text text-[11px] font-bold text-base-content/70">
+                <span className="label-text text-[11px] font-semibold text-base-content/70">
                   Akun Pocket
                 </span>
               </label>
@@ -264,7 +260,7 @@ export function TransaksiTable({
             {/* 4. Dari Tanggal */}
             <div className="form-control w-full">
               <label className="label py-0.5">
-                <span className="label-text text-[11px] font-bold text-base-content/70">
+                <span className="label-text text-[11px] font-semibold text-base-content/70">
                   Dari Tanggal
                 </span>
               </label>
@@ -279,7 +275,7 @@ export function TransaksiTable({
             {/* 5. Sampai Tanggal */}
             <div className="form-control w-full">
               <label className="label py-0.5">
-                <span className="label-text text-[11px] font-bold text-base-content/70">
+                <span className="label-text text-[11px] font-semibold text-base-content/70">
                   Sampai Tanggal
                 </span>
               </label>
@@ -386,7 +382,11 @@ export function TransaksiTable({
                           </button>
                           <button
                             onClick={() =>
-                              handleDelete(item.id, item.keterangan || "", item.nominal)
+                              handleDelete(
+                                item.id,
+                                item.keterangan || "",
+                                item.nominal,
+                              )
                             }
                             disabled={deletingId === item.id}
                             className="btn btn-xs btn-ghost text-error"

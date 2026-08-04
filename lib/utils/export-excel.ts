@@ -58,7 +58,17 @@ export function generateLaporanExcel(data: LaporanPDFData) {
     XLSX.utils.book_append_sheet(wb, ws3, "Riwayat Transaksi");
   }
 
-  // Download Excel File
+  // Download Excel File via Blob (works safely in client browsers & mobile without Node.js fs dependency)
   const sanitizePeriode = data.periodeLabel.replace(/[^a-zA-Z0-9]/g, "_");
-  XLSX.writeFile(wb, `Laporan_Kas_Iskandar_Pocket_${sanitizePeriode}.xlsx`);
+  const filename = `Laporan_Kas_Iskandar_Pocket_${sanitizePeriode}.xlsx`;
+  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([wbout], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }

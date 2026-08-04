@@ -165,104 +165,109 @@ export function LaporanView({
   ]);
 
   const handleExportPDF = () => {
-    generateLaporanPDF(exportDataFormatted);
+    try {
+      generateLaporanPDF(exportDataFormatted);
+    } catch (err: any) {
+      console.error("Gagal export PDF:", err);
+      alert("Gagal mengunduh file PDF: " + (err?.message || "Terjadi kesalahan"));
+    }
   };
 
   const handleExportExcel = () => {
-    generateLaporanExcel(exportDataFormatted);
+    try {
+      generateLaporanExcel(exportDataFormatted);
+    } catch (err: any) {
+      console.error("Gagal export Excel:", err);
+      alert("Gagal mengunduh file Excel: " + (err?.message || "Terjadi kesalahan"));
+    }
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-4 max-w-4xl mx-auto">
       {/* Header */}
-      <div>
-        <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-          <FiFileText className="w-5 h-5 text-primary shrink-0" />
-          Export Laporan Kas Keluarga
-        </h1>
-        <p className="text-xs text-base-content/70">
-          Pilih periode kas dan unduh laporan pertanggungjawaban resmi dalam format PDF atau Excel.
-        </p>
-      </div>
+      <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+        <FiFileText className="w-5 h-5 text-primary shrink-0" />
+        EXPORT LAPORAN
+      </h1>
 
       {/* Filter Periode Card */}
-      <div className="card bg-base-200 border border-base-300 shadow-sm">
-        <div className="card-body p-4 space-y-3">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setModeFilter("bulan")}
-                className={`btn btn-xs sm:btn-sm font-bold ${
-                  modeFilter === "bulan" ? "btn-primary" : "btn-ghost"
-                }`}
-              >
-                Laporan Bulanan
-              </button>
-              <button
-                onClick={() => setModeFilter("tahun")}
-                className={`btn btn-xs sm:btn-sm font-bold ${
-                  modeFilter === "tahun" ? "btn-primary" : "btn-ghost"
-                }`}
-              >
-                Laporan Tahunan
-              </button>
-            </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div
+          role="tablist"
+          className="tabs tabs-lift gap-5 tabs-sm flex flex-nowrap"
+        >
+          <button
+            role="tab"
+            onClick={() => setModeFilter("bulan")}
+            className={`tab text-nowrap text-sm ${
+              modeFilter === "bulan" ? "tab-active" : ""
+            }`}
+          >
+            Laporan Bulanan
+          </button>
+          <button
+            role="tab"
+            onClick={() => setModeFilter("tahun")}
+            className={`tab text-nowrap text-sm ${
+              modeFilter === "tahun" ? "tab-active" : ""
+            }`}
+          >
+            Laporan Tahunan
+          </button>
+        </div>
 
-            <div className="flex items-center gap-2">
-              <FiCalendar className="w-4 h-4 text-primary shrink-0" />
-              {modeFilter === "bulan" ? (
-                <input
-                  type="month"
-                  value={selectedBulan}
-                  onChange={(e) => handleFilterBulanChange(e.target.value)}
-                  className="input input-bordered input-sm font-semibold text-xs bg-base-100"
-                />
-              ) : (
-                <input
-                  type="number"
-                  min="2000"
-                  max="2099"
-                  step="1"
-                  placeholder="YYYY"
-                  value={selectedTahun}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setSelectedTahun(val);
-                    if (val.length === 4) {
-                      handleFilterTahunChange(val);
-                    }
-                  }}
-                  className="input input-bordered input-sm font-bold text-xs bg-base-100 w-24 text-center"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="text-xs text-base-content/70 flex items-center gap-1.5 pt-1 border-t border-base-300">
-            <span className="font-semibold">Periode Terpilih:</span>
-            <span className="badge badge-primary badge-sm font-bold">
-              {periodeLabelFormatted}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <FiCalendar className="w-4 h-4 text-primary shrink-0" />
+          {modeFilter === "bulan" ? (
+            <input
+              type="month"
+              value={selectedBulan}
+              onChange={(e) => handleFilterBulanChange(e.target.value)}
+              className="input input-bordered input-sm font-semibold text-xs bg-base-100"
+            />
+          ) : (
+            <input
+              type="number"
+              min="2000"
+              max="2099"
+              step="1"
+              placeholder="YYYY"
+              value={selectedTahun}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedTahun(val);
+                if (val.length === 4) {
+                  handleFilterTahunChange(val);
+                }
+              }}
+              className="input input-bordered input-sm font-bold text-xs bg-base-100 w-24 text-center"
+            />
+          )}
         </div>
       </div>
 
       {/* Ringkasan Singkat Periode */}
       <div className="grid grid-cols-3 gap-3">
         <div className="p-3 rounded-lg bg-base-200 border border-base-300">
-          <span className="text-[11px] font-semibold text-base-content/70 block">Pemasukan</span>
+          <span className="text-[11px] font-semibold text-base-content/70 block">
+            Pemasukan
+          </span>
           <span className="text-xs sm:text-sm font-bold text-primary">
             Rp {totalPemasukan.toLocaleString("id-ID")}
           </span>
         </div>
         <div className="p-3 rounded-lg bg-base-200 border border-base-300">
-          <span className="text-[11px] font-semibold text-base-content/70 block">Pengeluaran</span>
+          <span className="text-[11px] font-semibold text-base-content/70 block">
+            Pengeluaran
+          </span>
           <span className="text-xs sm:text-sm font-bold text-error">
             Rp {totalPengeluaranPeriode.toLocaleString("id-ID")}
           </span>
         </div>
         <div className="p-3 rounded-lg bg-base-200 border border-base-300">
-          <span className="text-[11px] font-semibold text-base-content/70 block">Saldo Bersih</span>
+          <span className="text-[11px] font-semibold text-base-content/70 block">
+            Saldo Bersih
+          </span>
           <span className="text-xs sm:text-sm font-bold text-primary">
             Rp {saldoBersih.toLocaleString("id-ID")}
           </span>
@@ -280,11 +285,15 @@ export function LaporanView({
               </div>
               <div>
                 <h3 className="font-bold text-sm">Unduh File PDF</h3>
-                <p className="text-xs text-base-content/60">Siap Cetak &amp; Share WA</p>
+                <p className="text-xs text-base-content/60">
+                  Siap Cetak &amp; Share WA
+                </p>
               </div>
             </div>
             <p className="text-xs text-base-content/70 leading-relaxed">
-              Format laporan PDF resmi berlogo Iskandar Pocket. Berisi ringkasan kas, rekap pocket, status setoran iuran keluarga, dan riwayat transaksi.
+              Format laporan PDF resmi berlogo Iskandar Pocket. Berisi ringkasan
+              kas, rekap pocket, status setoran iuran keluarga, dan riwayat
+              transaksi.
             </p>
             <button
               onClick={handleExportPDF}
@@ -305,11 +314,14 @@ export function LaporanView({
               </div>
               <div>
                 <h3 className="font-bold text-sm">Unduh File Excel (.xlsx)</h3>
-                <p className="text-xs text-base-content/60">Multisheet Spreadsheet</p>
+                <p className="text-xs text-base-content/60">
+                  Multisheet Spreadsheet
+                </p>
               </div>
             </div>
             <p className="text-xs text-base-content/70 leading-relaxed">
-              Format file Excel (.xlsx) dengan 3 sheet terpisah: Ringkasan Kas, Status Setoran Iuran Keluarga, dan Riwayat Transaksi Kas.
+              Format file Excel (.xlsx) dengan 3 sheet terpisah: Ringkasan Kas,
+              Status Setoran Iuran Keluarga, dan Riwayat Transaksi Kas.
             </p>
             <button
               onClick={handleExportExcel}

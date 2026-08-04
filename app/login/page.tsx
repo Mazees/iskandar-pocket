@@ -15,8 +15,8 @@ export default function LoginPage() {
             alt="Iskandar Pocket Logo"
             className="w-16 h-16 object-contain mx-auto mb-3"
           />
-          <h1 className="text-2xl font-bold">Login Bendahara</h1>
-          <p className="text-sm text-base-content/70 mt-1">
+          <h1 className="text-base sm:text-lg font-bold">Login Bendahara</h1>
+          <p className="text-xs text-base-content/70 mt-1">
             Akses Admin Iskandar Pocket
           </p>
         </div>

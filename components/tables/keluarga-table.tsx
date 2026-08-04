@@ -167,9 +167,6 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
                   <tr key={item.id}>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary/20 text-primary font-bold flex items-center justify-center text-xs">
-                          {getInitials(item.nama_keluarga)}
-                        </div>
                         <div>
                           <p className="font-bold text-base-content">
                             {item.nama_keluarga}

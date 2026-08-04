@@ -183,7 +183,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
                   <span className="text-xs font-semibold text-base-content/70">
                     Saldo Real-Time saat ini:
                   </span>
-                  <span className="text-xl font-extrabold text-primary">
+                  <span className="text-sm sm:text-base font-extrabold text-primary">
                     Rp {Number(pocket.saldo || 0).toLocaleString("id-ID")}
                   </span>
                 </div>
