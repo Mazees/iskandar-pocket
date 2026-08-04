@@ -1,250 +1,177 @@
+import { createClient } from "@/utils/supabase/server";
 import {
-  FiDollarSign,
-  FiCheckCircle,
-  FiTrendingDown,
-  FiTrendingUp,
-  FiArrowUpRight,
-  FiArrowDownRight,
-  FiGrid,
-  FiXCircle,
-} from "react-icons/fi";
+  LaporanView,
+  LaporanPocketItem,
+  LaporanStatusKKItem,
+  LaporanTransaksiItem,
+} from "@/components/laporan/laporan-view";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 
-export default function LaporanPublikPage() {
+export const metadata = {
+  title: "Laporan Transparansi Kas — Iskandar Pocket",
+  description: "Laporan transparansi kas publik kas keluarga Iskandar Pocket",
+};
+
+interface PublicLaporanPageProps {
+  searchParams: Promise<{ bulan?: string; tahun?: string }>;
+}
+
+export default async function PublicLaporanPage({
+  searchParams,
+}: PublicLaporanPageProps) {
+  const supabase = await createClient();
+  const params = await searchParams;
+
+  const now = new Date();
+  const currentBulanStr =
+    params.bulan ||
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const currentTahunStr = params.tahun || `${now.getFullYear()}`;
+
+  // 1. Ambil rekap saldo per pocket dari view v_saldo_pocket
+  const { data: listPocketRaw } = await supabase
+    .from("v_saldo_pocket")
+    .select("*");
+
+  // 2. Ambil daftar keluarga & iuran pada periode terpilih
+  const { data: listKeluarga } = await supabase
+    .from("keluarga")
+    .select("id, nama_keluarga")
+    .order("nama_keluarga", { ascending: true });
+
+  let queryIuranPeriode = supabase.from("iuran").select("keluarga_id, nominal");
+  if (params.tahun) {
+    queryIuranPeriode = queryIuranPeriode
+      .gte("periode", `${currentTahunStr}-01`)
+      .lte("periode", `${currentTahunStr}-12`);
+  } else {
+    queryIuranPeriode = queryIuranPeriode.eq("periode", currentBulanStr);
+  }
+  const { data: iuranPeriodeRaw } = await queryIuranPeriode;
+
+  const totalSetorPerKK: Record<string, number> = {};
+  (iuranPeriodeRaw || []).forEach((row: any) => {
+    totalSetorPerKK[row.keluarga_id] =
+      (totalSetorPerKK[row.keluarga_id] || 0) + Number(row.nominal || 0);
+  });
+
+  const nominalWajib = params.tahun ? 1200000 : 100000;
+  const formattedStatusKK: LaporanStatusKKItem[] = (listKeluarga || []).map(
+    (k: any) => {
+      const nominalSetor = totalSetorPerKK[k.id] || 0;
+      let status: "Lunas" | "Kurang" | "Belum Bayar" = "Belum Bayar";
+      if (nominalSetor >= nominalWajib) {
+        status = "Lunas";
+      } else if (nominalSetor > 0) {
+        status = "Kurang";
+      }
+      return {
+        keluarga_id: k.id,
+        nama_keluarga: k.nama_keluarga,
+        nominal_setor: nominalSetor,
+        nominal_wajib: nominalWajib,
+        status,
+      };
+    }
+  );
+
+  // 3. Ambil riwayat transaksi kas pada periode terpilih
+  let queryTx = supabase
+    .from("transaksi")
+    .select(
+      `
+      id,
+      tanggal,
+      jenis,
+      nominal,
+      keterangan,
+      bukti_url,
+      pocket_id,
+      pocket (
+        id,
+        nama_pocket
+      )
+    `
+    )
+    .order("tanggal", { ascending: false });
+
+  if (params.tahun) {
+    queryTx = queryTx
+      .gte("tanggal", `${currentTahunStr}-01-01`)
+      .lte("tanggal", `${currentTahunStr}-12-31`);
+  } else {
+    const [y, m] = currentBulanStr.split("-");
+    const lastDay = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+    queryTx = queryTx
+      .gte("tanggal", `${currentBulanStr}-01`)
+      .lte("tanggal", `${currentBulanStr}-${String(lastDay).padStart(2, "0")}`);
+  }
+  const { data: listTransaksiRaw } = await queryTx;
+
+  // 4. Hitung Total Iuran pada periode terpilih
+  let queryIuranSum = supabase.from("iuran").select("nominal");
+  if (params.tahun) {
+    queryIuranSum = queryIuranSum
+      .gte("periode", `${currentTahunStr}-01`)
+      .lte("periode", `${currentTahunStr}-12`);
+  } else {
+    queryIuranSum = queryIuranSum.eq("periode", currentBulanStr);
+  }
+  const { data: iuranSumRaw } = await queryIuranSum;
+  const totalIuranPeriode = (iuranSumRaw || []).reduce(
+    (acc, row) => acc + Number(row.nominal || 0),
+    0
+  );
+
+  const formattedPocket: LaporanPocketItem[] = (listPocketRaw || []).map(
+    (p: any) => ({
+      pocket_id: p.pocket_id,
+      nama_pocket: p.nama_pocket,
+      saldo_awal: Number(p.saldo_awal || 0),
+      saldo: Number(p.saldo || 0),
+    })
+  );
+
+
+
+  const formattedTransaksi: LaporanTransaksiItem[] = (
+    listTransaksiRaw || []
+  ).map((t: any) => ({
+    id: t.id,
+    tanggal: t.tanggal,
+    jenis: t.jenis,
+    nominal: Number(t.nominal || 0),
+    keterangan: t.keterangan || undefined,
+    bukti_url: t.bukti_url || undefined,
+    pocket: {
+      id: t.pocket?.id || t.pocket_id,
+      nama_pocket: t.pocket?.nama_pocket || "Pocket Unmapped",
+    },
+  }));
+
+  const totalTransaksiMasuk = formattedTransaksi
+    .filter((t) => t.jenis === "masuk")
+    .reduce((acc, t) => acc + t.nominal, 0);
+
+  const totalPengeluaran = formattedTransaksi
+    .filter((t) => t.jenis === "keluar")
+    .reduce((acc, t) => acc + t.nominal, 0);
+
   return (
     <PublicNavbar>
-      {/* Page Title Header */}
-      <div className="bg-base-200/60 border-b border-base-300 py-6 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">
-            Laporan Transparansi Kas
-          </h1>
-          <p className="text-xs lg:text-sm text-base-content/70 mt-1">
-            Keluarga Besar Iskandar — Transparan, Terbuka &amp; Dapat diakses
-            publik
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 mt-8 space-y-8">
-        {/* 3-Column Metric Cards (Replace Stats for 100% predictable neat layout) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card bg-base-200 border border-base-300 shadow-sm">
-            <div className="card-body p-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
-                  Total Saldo Kas &amp; Bank
-                </span>
-                <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-                  <FiDollarSign className="w-5 h-5 text-primary-content" />
-                </div>
-              </div>
-              <p className="text-3xl font-extrabold text-primary">
-                Rp 4.250.000
-              </p>
-              <p className="text-xs font-semibold text-accent mt-2 flex items-center gap-1">
-                <FiArrowUpRight className="w-4 h-4" />+ Rp 1.200.000 bulan ini
-              </p>
-            </div>
-          </div>
-
-          <div className="card bg-base-200 border border-base-300 shadow-sm">
-            <div className="card-body p-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
-                  Pemasukan Bulan Ini
-                </span>
-                <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center">
-                  <FiTrendingUp className="w-5 h-5 text-secondary-content" />
-                </div>
-              </div>
-              <p className="text-3xl font-extrabold text-secondary">
-                Rp 1.500.000
-              </p>
-              <p className="text-xs font-semibold text-secondary mt-2 flex items-center gap-1">
-                <FiArrowUpRight className="w-4 h-4" />
-                Dari iuran &amp; setoran kas
-              </p>
-            </div>
-          </div>
-
-          <div className="card bg-base-200 border border-base-300 shadow-sm">
-            <div className="card-body p-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
-                  Pengeluaran Bulan Ini
-                </span>
-                <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center">
-                  <FiTrendingDown className="w-5 h-5 text-accent-content" />
-                </div>
-              </div>
-              <p className="text-3xl font-extrabold">Rp 750.000</p>
-              <p className="text-xs font-semibold text-error mt-2 flex items-center gap-1">
-                <FiArrowDownRight className="w-4 h-4" />
-                Bukti struk terlampir di bawah
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Status Setoran Bulanan per KK */}
-        <div className="card bg-base-200 border border-base-300 shadow-md">
-          <div className="card-body p-6">
-            <div className="border-b border-base-300 pb-4 mb-2">
-              <h2 className="card-title text-lg font-bold">
-                Status Setoran per Keluarga
-              </h2>
-              <p className="text-xs text-base-content/60">
-                Catatan partisipasi iuran bulanan (Nominal per bulan: Rp
-                100.000)
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="table table-zebra w-full text-sm">
-                <thead className="bg-base-300 text-base-content font-bold">
-                  <tr>
-                    <th className="py-3 px-4">Nama Keluarga</th>
-                    <th className="py-3 px-4 text-center">Agu 2026</th>
-                    <th className="py-3 px-4 text-center">Jul 2026</th>
-                    <th className="py-3 px-4 text-center">Jun 2026</th>
-                    <th className="py-3 px-4 text-right">Total Terkumpul</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="font-semibold py-3 px-4">
-                      Keluarga Budi Iskandar
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-primary font-medium gap-1">
-                        <FiCheckCircle className="w-3.5 h-3.5" />
-                        Rp 100.000
-                      </span>
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-primary font-medium gap-1">
-                        <FiCheckCircle className="w-3.5 h-3.5" />
-                        Rp 100.000
-                      </span>
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-primary font-medium gap-1">
-                        <FiCheckCircle className="w-3.5 h-3.5" />
-                        Rp 100.000
-                      </span>
-                    </td>
-                    <td className="text-right font-bold py-3 px-4">
-                      Rp 300.000
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td className="font-semibold py-3 px-4">
-                      Keluarga Andi Iskandar
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-error font-medium gap-1 text-error-content">
-                        <FiXCircle className="w-3.5 h-3.5" />
-                        Belum Setor
-                      </span>
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-primary font-medium gap-1">
-                        <FiCheckCircle className="w-3.5 h-3.5" />
-                        Rp 150.000
-                      </span>
-                    </td>
-                    <td className="text-center">
-                      <span className="badge badge-primary font-medium gap-1">
-                        <FiCheckCircle className="w-3.5 h-3.5" />
-                        Rp 100.000
-                      </span>
-                    </td>
-                    <td className="text-right font-bold py-3 px-4">
-                      Rp 250.000
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Riwayat Transaksi Terbaru */}
-        <div className="card bg-base-200 border border-base-300 shadow-md">
-          <div className="card-body p-6">
-            <div className="border-b border-base-300 pb-4 mb-2">
-              <h2 className="card-title text-lg font-bold">
-                Riwayat Pengeluaran &amp; Transaksi
-              </h2>
-              <p className="text-xs text-base-content/60">
-                Catatan penggunaan dana kas keluarga beserta keterangan
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="table table-zebra w-full text-sm">
-                <thead className="bg-base-300 text-base-content font-bold">
-                  <tr>
-                    <th className="py-3 px-4">Tanggal</th>
-                    <th className="py-3 px-4">Kategori</th>
-                    <th className="py-3 px-4">Keterangan</th>
-                    <th className="py-3 px-4">Pocket</th>
-                    <th className="py-3 px-4 text-right">Nominal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="py-3 px-4">01 Agu 2026</td>
-                    <td className="py-3 px-4">
-                      <span className="badge badge-neutral font-medium">
-                        Sewa Tempat
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      DP Sewa Villa untuk Acara Keluarga di Puncak
-                    </td>
-                    <td className="py-3 px-4 font-medium">Bank</td>
-                    <td className="py-3 px-4 text-right font-bold text-error">
-                      - Rp 750.000
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4">28 Jul 2026</td>
-                    <td className="py-3 px-4">
-                      <span className="badge badge-neutral font-medium">
-                        Konsumsi
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      Pembelian snack dan kopi untuk rapat panitia rekreasi
-                    </td>
-                    <td className="py-3 px-4 font-medium">Cash</td>
-                    <td className="py-3 px-4 text-right font-bold text-error">
-                      - Rp 120.000
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Official DaisyUI Footer Component */}
-      <footer className="footer footer-center bg-base-100 text-base-content py-8 border-t border-base-300 mt-16">
-        <aside>
-          <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center mx-auto mb-2">
-            <FiGrid className="w-4 h-4 text-primary" />
-          </div>
-          <p className="text-sm font-bold">Keluarga Besar Iskandar</p>
-          <p className="text-xs font-semibold text-base-content/60">
-            &copy; 2026 — Guyub Rukun, Transparan &amp; Selamanya Bersatu
-          </p>
-        </aside>
-      </footer>
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8">
+        <LaporanView
+          currentBulanStr={currentBulanStr}
+          currentTahunStr={currentTahunStr}
+          listPocket={formattedPocket}
+          listStatusKK={formattedStatusKK}
+          listTransaksi={formattedTransaksi}
+          totalIuranPeriode={totalIuranPeriode}
+          totalTransaksiMasukPeriode={totalTransaksiMasuk}
+          totalPengeluaranPeriode={totalPengeluaran}
+          isPublic={true}
+        />
+      </main>
     </PublicNavbar>
   );
 }

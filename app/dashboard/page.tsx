@@ -371,17 +371,23 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
             <table className="table table-zebra w-full text-sm">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
-                  <th>Nama Keluarga</th>
-                  <th className="text-center">Status</th>
-                  <th className="text-right">Nominal Setor</th>
+                  <th className="text-left">Nama Keluarga</th>
+                  <th className="text-left">Nominal Setor</th>
+                  <th className="text-left">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {statusBulanIni && statusBulanIni.length > 0 ? (
                   (statusBulanIni as any[]).map((item) => (
                     <tr key={item.keluarga_id}>
-                      <td className="font-bold">{item.nama_keluarga}</td>
-                      <td className="text-center">
+                      <td className="text-left font-bold">{item.nama_keluarga}</td>
+                      <td className="text-left font-extrabold text-primary">
+                        Rp{" "}
+                        {Number(
+                          item.total_setor_bulan_ini || 0
+                        ).toLocaleString("id-ID")}
+                      </td>
+                      <td className="text-left">
                         {item.lunas_bulan_ini ? (
                           <span className="badge badge-success font-semibold gap-1 text-success-content">
                             <FiCheckCircle className="w-3.5 h-3.5" />
@@ -398,12 +404,6 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
                             Belum Setor
                           </span>
                         )}
-                      </td>
-                      <td className="text-right font-extrabold text-primary">
-                        Rp{" "}
-                        {Number(
-                          item.total_setor_bulan_ini || 0
-                        ).toLocaleString("id-ID")}
                       </td>
                     </tr>
                   ))
