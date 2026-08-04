@@ -1,8 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import { FiLogOut, FiMenu, FiGrid } from "react-icons/fi";
-import { logout } from "@/app/login/actions";
+import { FiMenu } from "react-icons/fi";
 import { ListDrawer } from "@/components/layout/list-drawer";
+import { LogoutButton } from "@/components/layout/logout-button";
 
 export default function DashboardLayout({
   children,
@@ -29,15 +29,15 @@ export default function DashboardLayout({
           </div>
           <div className="flex-1 ml-3">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base sm:text-lg">
-                Panel Pengelolaan Kas Keluarga
+              <span className="font-bold text-base lg:text-lg">
+                Dashboard
               </span>
             </div>
           </div>
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 sm:p-8 overflow-y-auto bg-base-100">
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-base-100">
           {children}
         </main>
       </div>
@@ -54,9 +54,11 @@ export default function DashboardLayout({
           <div>
             {/* Brand Title (Microsoft Excel Green Style) */}
             <div className="p-2 mb-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-md bg-primary flex items-center justify-center shadow-xs">
-                <FiGrid className="w-5 h-5 text-primary-content" />
-              </div>
+              <img
+                src="/icon.svg"
+                alt="Iskandar Pocket Logo"
+                className="w-9 h-9 object-contain shrink-0"
+              />
               <div>
                 <h2 className="font-bold text-base tracking-tight leading-none text-base-content">
                   Iskandar Pocket
@@ -81,15 +83,7 @@ export default function DashboardLayout({
                 Lihat Web Publik
               </Link>
             </label>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="btn btn-sm btn-error w-full justify-center gap-2 font-semibold rounded-md"
-              >
-                <FiLogOut className="w-4 h-4" />
-                Keluar (Logout)
-              </button>
-            </form>
+            <LogoutButton />
           </div>
         </div>
       </div>

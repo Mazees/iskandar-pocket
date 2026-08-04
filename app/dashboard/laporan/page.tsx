@@ -1,68 +1,175 @@
-import { FiFileText, FiDownload, FiFile } from "react-icons/fi";
+import { createClient } from "@/utils/supabase/server";
+import {
+  LaporanView,
+  LaporanPocketItem,
+  LaporanStatusKKItem,
+  LaporanTransaksiItem,
+} from "@/components/laporan/laporan-view";
 
-export default function ExportLaporanPage() {
+export const metadata = {
+  title: "Laporan Transparansi Kas — Iskandar Pocket",
+  description: "Laporan transparansi kas keluarga lengkap dengan cetak PDF & Excel",
+};
+
+interface LaporanPageProps {
+  searchParams: Promise<{ bulan?: string; tahun?: string }>;
+}
+
+export default async function DashboardLaporanPage({
+  searchParams,
+}: LaporanPageProps) {
+  const supabase = await createClient();
+  const params = await searchParams;
+
+  const now = new Date();
+  const currentBulanStr =
+    params.bulan ||
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const currentTahunStr = params.tahun || `${now.getFullYear()}`;
+
+  // 1. Ambil rekap saldo per pocket dari view v_saldo_pocket
+  const { data: listPocketRaw } = await supabase
+    .from("v_saldo_pocket")
+    .select("*");
+
+  // 2. Ambil daftar keluarga & iuran pada periode terpilih
+  const { data: listKeluarga } = await supabase
+    .from("keluarga")
+    .select("id, nama_keluarga")
+    .order("nama_keluarga", { ascending: true });
+
+  let queryIuranPeriode = supabase.from("iuran").select("keluarga_id, nominal");
+  if (params.tahun) {
+    queryIuranPeriode = queryIuranPeriode
+      .gte("periode", `${currentTahunStr}-01`)
+      .lte("periode", `${currentTahunStr}-12`);
+  } else {
+    queryIuranPeriode = queryIuranPeriode.eq("periode", currentBulanStr);
+  }
+  const { data: iuranPeriodeRaw } = await queryIuranPeriode;
+
+  const totalSetorPerKK: Record<string, number> = {};
+  (iuranPeriodeRaw || []).forEach((row: any) => {
+    totalSetorPerKK[row.keluarga_id] =
+      (totalSetorPerKK[row.keluarga_id] || 0) + Number(row.nominal || 0);
+  });
+
+  const nominalWajib = params.tahun ? 1200000 : 100000;
+  const formattedStatusKK: LaporanStatusKKItem[] = (listKeluarga || []).map(
+    (k: any) => {
+      const nominalSetor = totalSetorPerKK[k.id] || 0;
+      let status: "Lunas" | "Kurang" | "Belum Bayar" = "Belum Bayar";
+      if (nominalSetor >= nominalWajib) {
+        status = "Lunas";
+      } else if (nominalSetor > 0) {
+        status = "Kurang";
+      }
+      return {
+        keluarga_id: k.id,
+        nama_keluarga: k.nama_keluarga,
+        nominal_setor: nominalSetor,
+        nominal_wajib: nominalWajib,
+        status,
+      };
+    }
+  );
+
+  // 3. Ambil riwayat transaksi kas pada periode terpilih
+  let queryTx = supabase
+    .from("transaksi")
+    .select(
+      `
+      id,
+      tanggal,
+      jenis,
+      nominal,
+      keterangan,
+      bukti_url,
+      pocket_id,
+      pocket (
+        id,
+        nama_pocket
+      )
+    `
+    )
+    .order("tanggal", { ascending: false });
+
+  if (params.tahun) {
+    queryTx = queryTx
+      .gte("tanggal", `${currentTahunStr}-01-01`)
+      .lte("tanggal", `${currentTahunStr}-12-31`);
+  } else {
+    // Bulanan: misal "2026-08" -> dari "2026-08-01" s/d "2026-08-31"
+    const [y, m] = currentBulanStr.split("-");
+    const lastDay = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+    queryTx = queryTx
+      .gte("tanggal", `${currentBulanStr}-01`)
+      .lte("tanggal", `${currentBulanStr}-${String(lastDay).padStart(2, "0")}`);
+  }
+  const { data: listTransaksiRaw } = await queryTx;
+
+  // 4. Hitung Total Iuran pada periode terpilih
+  let queryIuranSum = supabase.from("iuran").select("nominal");
+  if (params.tahun) {
+    queryIuranSum = queryIuranSum
+      .gte("periode", `${currentTahunStr}-01`)
+      .lte("periode", `${currentTahunStr}-12`);
+  } else {
+    queryIuranSum = queryIuranSum.eq("periode", currentBulanStr);
+  }
+  const { data: iuranSumRaw } = await queryIuranSum;
+  const totalIuranPeriode = (iuranSumRaw || []).reduce(
+    (acc, row) => acc + Number(row.nominal || 0),
+    0
+  );
+
+  // Formatting Data
+  const formattedPocket: LaporanPocketItem[] = (listPocketRaw || []).map(
+    (p: any) => ({
+      pocket_id: p.pocket_id,
+      nama_pocket: p.nama_pocket,
+      saldo_awal: Number(p.saldo_awal || 0),
+      saldo: Number(p.saldo || 0),
+    })
+  );
+
+
+
+  const formattedTransaksi: LaporanTransaksiItem[] = (
+    listTransaksiRaw || []
+  ).map((t: any) => ({
+    id: t.id,
+    tanggal: t.tanggal,
+    jenis: t.jenis,
+    nominal: Number(t.nominal || 0),
+    keterangan: t.keterangan || undefined,
+    bukti_url: t.bukti_url || undefined,
+    pocket: {
+      id: t.pocket?.id || t.pocket_id,
+      nama_pocket: t.pocket?.nama_pocket || "Pocket Unmapped",
+    },
+  }));
+
+  const totalTransaksiMasuk = formattedTransaksi
+    .filter((t) => t.jenis === "masuk")
+    .reduce((acc, t) => acc + t.nominal, 0);
+
+  const totalPengeluaran = formattedTransaksi
+    .filter((t) => t.jenis === "keluar")
+    .reduce((acc, t) => acc + t.nominal, 0);
+
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div>
-        <h1 className="text-2xl font-bold">Export Laporan Keuangan</h1>
-        <p className="text-sm text-base-content/70">
-          Unduh dokumen pertanggungjawaban kas keluarga dalam format PDF atau Excel
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-xl bg-error flex items-center justify-center">
-                  <FiFileText className="w-6 h-6 text-error-content" />
-                </div>
-                <span className="badge badge-error font-bold text-xs uppercase text-error-content">
-                  PDF DOKUMEN
-                </span>
-              </div>
-              <h2 className="card-title mt-4">Laporan Rekap Kas Bulanan</h2>
-              <p className="text-sm text-base-content/80 mt-2">
-                Format siap cetak berisi ringkasan saldo awal, total pemasukan, total pengeluaran, saldo akhir, dan status partisipasi KK.
-              </p>
-            </div>
-
-            <div className="card-actions mt-6 pt-4 border-t border-base-300">
-              <button className="btn btn-primary w-full font-semibold">
-                <FiDownload className="w-4 h-4 mr-1.5" />
-                Generate Dokumen PDF
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center">
-                  <FiFile className="w-6 h-6 text-accent-content" />
-                </div>
-                <span className="badge badge-accent font-bold text-xs uppercase text-accent-content">
-                  XLSX SPREADSHEET
-                </span>
-              </div>
-              <h2 className="card-title mt-4">Data Mentah Transaksi</h2>
-              <p className="text-sm text-base-content/80 mt-2">
-                Unduh seluruh tabel riwayat setoran iuran dan mutasi pengeluaran kas dalam bentuk spreadsheet untuk olah data mandiri.
-              </p>
-            </div>
-
-            <div className="card-actions mt-6 pt-4 border-t border-base-300">
-              <button className="btn btn-secondary w-full font-semibold">
-                <FiDownload className="w-4 h-4 mr-1.5" />
-                Export ke Excel / CSV
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="max-w-6xl">
+      <LaporanView
+        currentBulanStr={currentBulanStr}
+        currentTahunStr={currentTahunStr}
+        listPocket={formattedPocket}
+        listStatusKK={formattedStatusKK}
+        listTransaksi={formattedTransaksi}
+        totalIuranPeriode={totalIuranPeriode}
+        totalTransaksiMasukPeriode={totalTransaksiMasuk}
+        totalPengeluaranPeriode={totalPengeluaran}
+      />
     </div>
   );
 }

@@ -114,10 +114,21 @@ select
     keluarga.id            as keluarga_id,
     keluarga.nama_keluarga,
     coalesce(sum(i.nominal), 0) as total_setor_bulan_ini,
-    case when sum(i.nominal) > 0 then true else false end as sudah_setor
+    case when coalesce(sum(i.nominal), 0) > 0 then true else false end as sudah_setor,
+    case 
+      when coalesce(sum(i.nominal), 0) >= coalesce((
+        select nominal_iuran_bulanan 
+        from configuration 
+        where berlaku_mulai <= current_date 
+        order by berlaku_mulai desc, created_at desc 
+        limit 1
+      ), 100000) then true 
+      else false 
+    end as lunas_bulan_ini
 from keluarga
 left join iuran i
     on i.keluarga_id = keluarga.id
+    and i.periode = to_char(current_date, 'YYYY-MM')
 group by keluarga.id, keluarga.nama_keluarga;
 
 -- ---------------------------------------------------------
@@ -125,20 +136,29 @@ group by keluarga.id, keluarga.nama_keluarga;
 -- ---------------------------------------------------------
 create or replace view v_status_iuran_tahun_ini as
 select
-    keluarga.id            as keluarga_id,
-    keluarga.nama_keluarga,
+    k.id as keluarga_id,
+    k.nama_keluarga,
     to_char(current_date, 'YYYY') as tahun,
-    coalesce(sum(i.nominal), 0)   as total_setor_tahun_ini,
-    count(i.id)                   as jumlah_bulan_setor,
-    case 
-      when count(i.id) >= 12 then true 
-      else false 
-    end as lunas_setahun
-from keluarga
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-01' then i.nominal else 0 end), 0) as jan,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-02' then i.nominal else 0 end), 0) as feb,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-03' then i.nominal else 0 end), 0) as mar,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-04' then i.nominal else 0 end), 0) as apr,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-05' then i.nominal else 0 end), 0) as mei,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-06' then i.nominal else 0 end), 0) as jun,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-07' then i.nominal else 0 end), 0) as jul,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-08' then i.nominal else 0 end), 0) as agu,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-09' then i.nominal else 0 end), 0) as sep,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-10' then i.nominal else 0 end), 0) as okt,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-11' then i.nominal else 0 end), 0) as nov,
+    coalesce(sum(case when i.periode = to_char(current_date, 'YYYY') || '-12' then i.nominal else 0 end), 0) as des,
+    coalesce(sum(i.nominal), 0) as total_setor_tahun_ini,
+    count(i.id) as jumlah_bulan_setor,
+    case when count(i.id) >= 12 then true else false end as lunas_setahun
+from keluarga k
 left join iuran i
-    on i.keluarga_id = keluarga.id
+    on i.keluarga_id = k.id
     and i.periode like to_char(current_date, 'YYYY') || '-%'
-group by keluarga.id, keluarga.nama_keluarga;
+group by k.id, k.nama_keluarga;
 
 -- ---------------------------------------------------------
 -- 7C. VIEW: Rekap 1 baris untuk angka Pemasukan (Iuran + Transaksi Masuk) & Pengeluaran bulan berjalan
@@ -205,3 +225,23 @@ create policy "admin write iuran" on iuran for all
     using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 create policy "admin write transaksi" on transaksi for all
     using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+-- ---------------------------------------------------------
+-- 9. SUPABASE STORAGE: Bucket 'bukti' & Policies
+-- ---------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('bukti', 'bukti', true)
+on conflict (id) do nothing;
+
+create policy "Public Read Bukti Storage"
+on storage.objects for select
+using (bucket_id = 'bukti');
+
+create policy "Authenticated Write Bukti Storage"
+on storage.objects for insert
+with check (bucket_id = 'bukti' and auth.role() = 'authenticated');
+
+create policy "Authenticated Delete Bukti Storage"
+on storage.objects for delete
+using (bucket_id = 'bukti' and auth.role() = 'authenticated');
+
