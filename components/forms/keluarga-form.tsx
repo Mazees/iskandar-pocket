@@ -6,6 +6,7 @@ import {
   createKeluarga,
   updateKeluarga,
 } from "@/lib/actions/keluarga-actions";
+import { showErrorAlert, showSuccessToast } from "@/lib/utils/swal";
 
 interface KeluargaFormProps {
   isOpen: boolean;
@@ -56,12 +57,20 @@ export function KeluargaForm({
 
       if (res.error) {
         setError(res.error);
+        showErrorAlert("Validasi Gagal", res.error);
       } else {
         setNamaKeluarga("");
         onClose();
+        showSuccessToast(
+          editData
+            ? "Data keluarga berhasil diperbarui!"
+            : "Keluarga baru berhasil ditambahkan!"
+        );
       }
     } catch {
-      setError("Terjadi kesalahan pada sistem. Silakan coba kembali.");
+      const msg = "Terjadi kesalahan pada sistem. Silakan coba kembali.";
+      setError(msg);
+      showErrorAlert("Terjadi Kesalahan", msg);
     } finally {
       setLoading(false);
     }

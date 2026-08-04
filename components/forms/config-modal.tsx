@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FiX, FiCheck, FiAlertCircle, FiSettings } from "react-icons/fi";
 import { createConfiguration } from "@/lib/actions/config-actions";
+import { showErrorAlert, showSuccessToast } from "@/lib/utils/swal";
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -52,11 +53,15 @@ export function ConfigModal({
 
       if (res.error) {
         setError(res.error);
+        showErrorAlert("Validasi Gagal", res.error);
       } else {
         onClose();
+        showSuccessToast("Kebijakan tarif nominal iuran berhasil diperbarui!");
       }
     } catch {
-      setError("Terjadi kesalahan pada sistem. Silakan coba kembali.");
+      const msg = "Terjadi kesalahan pada sistem. Silakan coba kembali.";
+      setError(msg);
+      showErrorAlert("Terjadi Kesalahan", msg);
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import { FiLogOut, FiMenu, FiGrid } from "react-icons/fi";
-import { logout } from "@/app/login/actions";
+import { FiMenu } from "react-icons/fi";
 import { ListDrawer } from "@/components/layout/list-drawer";
+import { LogoutButton } from "@/components/layout/logout-button";
 
 export default function DashboardLayout({
   children,
@@ -83,15 +83,7 @@ export default function DashboardLayout({
                 Lihat Web Publik
               </Link>
             </label>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="btn btn-sm btn-error w-full justify-center gap-2 font-semibold rounded-md"
-              >
-                <FiLogOut className="w-4 h-4" />
-                Keluar (Logout)
-              </button>
-            </form>
+            <LogoutButton />
           </div>
         </div>
       </div>

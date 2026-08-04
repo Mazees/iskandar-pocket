@@ -11,6 +11,11 @@ import {
 } from "react-icons/fi";
 import { IuranForm } from "@/components/forms/iuran-form";
 import { deleteIuran } from "@/lib/actions/iuran-actions";
+import {
+  showConfirmModal,
+  showSuccessToast,
+  showErrorAlert,
+} from "@/lib/utils/swal";
 
 export interface IuranItem {
   id: string;
@@ -74,10 +79,14 @@ export function IuranTable({
   }, [listIuran, search, selectedPeriode]);
 
   const handleDelete = async (id: string, nama: string, periode: string) => {
-    const konfirmasi = window.confirm(
-      `Apakah Anda yakin ingin menghapus catatan iuran "${nama}" periode ${periode}?`
-    );
-    if (!konfirmasi) return;
+    const result = await showConfirmModal({
+      title: "Hapus Setoran Iuran?",
+      text: `Apakah Anda yakin ingin menghapus catatan iuran "${nama}" periode ${periode}?`,
+      confirmButtonText: "Ya, Hapus Setoran",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
 
     setDeletingId(id);
     setDeleteError(null);
@@ -85,6 +94,9 @@ export function IuranTable({
     const res = await deleteIuran(id);
     if (res.error) {
       setDeleteError(res.error);
+      showErrorAlert("Gagal Menghapus", res.error);
+    } else {
+      showSuccessToast(`Setoran iuran "${nama}" berhasil dihapus.`);
     }
     setDeletingId(null);
   };

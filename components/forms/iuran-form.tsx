@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FiX, FiCheck, FiAlertCircle, FiDollarSign } from "react-icons/fi";
 import { createIuran } from "@/lib/actions/iuran-actions";
+import { showErrorAlert, showSuccessToast } from "@/lib/utils/swal";
 
 interface KeluargaOption {
   id: string;
@@ -84,11 +85,15 @@ export function IuranForm({
 
       if (res.error) {
         setError(res.error);
+        showErrorAlert("Validasi Gagal", res.error);
       } else {
         onClose();
+        showSuccessToast("Setoran iuran berhasil dicatat!");
       }
     } catch {
-      setError("Terjadi kesalahan pada sistem. Silakan coba kembali.");
+      const msg = "Terjadi kesalahan pada sistem. Silakan coba kembali.";
+      setError(msg);
+      showErrorAlert("Terjadi Kesalahan", msg);
     } finally {
       setLoading(false);
     }

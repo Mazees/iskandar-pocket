@@ -11,6 +11,11 @@ import {
 } from "react-icons/fi";
 import { KeluargaForm } from "@/components/forms/keluarga-form";
 import { deleteKeluarga } from "@/lib/actions/keluarga-actions";
+import {
+  showConfirmModal,
+  showSuccessToast,
+  showErrorAlert,
+} from "@/lib/utils/swal";
 
 export interface KeluargaItem {
   id: string;
@@ -54,10 +59,14 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
   };
 
   const handleDelete = async (id: string, nama: string) => {
-    const konfirmasi = window.confirm(
-      `Apakah Anda yakin ingin menghapus "${nama}"?`,
-    );
-    if (!konfirmasi) return;
+    const result = await showConfirmModal({
+      title: "Hapus Data Keluarga?",
+      text: `Apakah Anda yakin ingin menghapus "${nama}"?`,
+      confirmButtonText: "Ya, Hapus Data",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
 
     setDeletingId(id);
     setDeleteError(null);
@@ -65,6 +74,9 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
     const res = await deleteKeluarga(id);
     if (res.error) {
       setDeleteError(res.error);
+      showErrorAlert("Gagal Menghapus", res.error);
+    } else {
+      showSuccessToast(`Keluarga "${nama}" berhasil dihapus.`);
     }
     setDeletingId(null);
   };
