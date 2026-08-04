@@ -106,11 +106,11 @@ export function IuranTable({
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FiDollarSign className="w-7 h-7 text-primary" />
+          <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <FiDollarSign className="w-5 h-5 text-primary shrink-0" />
             Catatan Setoran Iuran
           </h1>
-          <p className="text-sm text-base-content/70">
+          <p className="text-xs text-base-content/70">
             Daftar pembayaran iuran bulanan per Kepala Keluarga
           </p>
         </div>

@@ -173,344 +173,154 @@ export function LaporanView({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header & Export Action Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FiFileText className="w-7 h-7 text-primary" />
-            Laporan Transparansi Kas Keluarga
-          </h1>
-          <p className="text-sm text-base-content/70">
-            Laporan pertanggungjawaban kas transparan untuk seluruh anggota
-            keluarga
-          </p>
-        </div>
-
-        {/* Buttons Export PDF & Excel */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExportPDF}
-            className="btn btn-sm btn-primary font-semibold shadow-xs gap-1.5"
-          >
-            <FiPrinter className="w-4 h-4" />
-            Cetak PDF
-          </button>
-          <button
-            onClick={handleExportExcel}
-            className="btn btn-sm btn-outline border-base-300 font-semibold gap-1.5"
-          >
-            <FiDownload className="w-4 h-4 text-success" />
-            Export Excel
-          </button>
-        </div>
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Header */}
+      <div>
+        <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+          <FiFileText className="w-5 h-5 text-primary shrink-0" />
+          Export Laporan Kas Keluarga
+        </h1>
+        <p className="text-xs text-base-content/70">
+          Pilih periode kas dan unduh laporan pertanggungjawaban resmi dalam format PDF atau Excel.
+        </p>
       </div>
 
-      {/* Filter Toolbar Card */}
-      <div className="card bg-base-200 border border-base-300 shadow-xs">
-        <div className="card-body p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              onClick={() => setModeFilter("bulan")}
-              className={`btn btn-xs sm:btn-sm font-bold ${
-                modeFilter === "bulan" ? "btn-primary" : "btn-ghost"
-              }`}
-            >
-              Laporan Bulanan
-            </button>
-            <button
-              onClick={() => setModeFilter("tahun")}
-              className={`btn btn-xs sm:btn-sm font-bold ${
-                modeFilter === "tahun" ? "btn-primary" : "btn-ghost"
-              }`}
-            >
-              Laporan Tahunan
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <FiCalendar className="w-4 h-4 text-primary shrink-0" />
-            {modeFilter === "bulan" ? (
-              <input
-                type="month"
-                value={selectedBulan}
-                onChange={(e) => handleFilterBulanChange(e.target.value)}
-                className="input input-bordered input-sm font-semibold text-xs sm:text-sm"
-              />
-            ) : (
-              <select
-                value={selectedTahun}
-                onChange={(e) => handleFilterTahunChange(e.target.value)}
-                className="select select-bordered select-sm font-semibold text-xs sm:text-sm bg-base-100"
+      {/* Filter Periode Card */}
+      <div className="card bg-base-200 border border-base-300 shadow-sm">
+        <div className="card-body p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setModeFilter("bulan")}
+                className={`btn btn-xs sm:btn-sm font-bold ${
+                  modeFilter === "bulan" ? "btn-primary" : "btn-ghost"
+                }`}
               >
-                <option value="2026">Tahun 2026</option>
-                <option value="2025">Tahun 2025</option>
-                <option value="2027">Tahun 2027</option>
-              </select>
-            )}
+                Laporan Bulanan
+              </button>
+              <button
+                onClick={() => setModeFilter("tahun")}
+                className={`btn btn-xs sm:btn-sm font-bold ${
+                  modeFilter === "tahun" ? "btn-primary" : "btn-ghost"
+                }`}
+              >
+                Laporan Tahunan
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <FiCalendar className="w-4 h-4 text-primary shrink-0" />
+              {modeFilter === "bulan" ? (
+                <input
+                  type="month"
+                  value={selectedBulan}
+                  onChange={(e) => handleFilterBulanChange(e.target.value)}
+                  className="input input-bordered input-sm font-semibold text-xs bg-base-100"
+                />
+              ) : (
+                <input
+                  type="number"
+                  min="2000"
+                  max="2099"
+                  step="1"
+                  placeholder="YYYY"
+                  value={selectedTahun}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSelectedTahun(val);
+                    if (val.length === 4) {
+                      handleFilterTahunChange(val);
+                    }
+                  }}
+                  className="input input-bordered input-sm font-bold text-xs bg-base-100 w-24 text-center"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="text-xs text-base-content/70 flex items-center gap-1.5 pt-1 border-t border-base-300">
+            <span className="font-semibold">Periode Terpilih:</span>
+            <span className="badge badge-primary badge-sm font-bold">
+              {periodeLabelFormatted}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Executive Summary Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Pemasukan */}
-        <div className="card bg-base-200 border border-base-300 shadow-xs">
-          <div className="card-body p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-base-content/70">
-                Pemasukan Kas Periode Ini
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <FiTrendingUp className="w-4 h-4" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-extrabold text-primary mt-2">
-              Rp {totalPemasukan.toLocaleString("id-ID")}
-            </h2>
-            <p className="text-[11px] text-base-content/60 font-medium">
-              Iuran: Rp {totalIuranPeriode.toLocaleString("id-ID")} | Kas Umum:
-              Rp {totalTransaksiMasukPeriode.toLocaleString("id-ID")}
-            </p>
-          </div>
+      {/* Ringkasan Singkat Periode */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-3 rounded-lg bg-base-200 border border-base-300">
+          <span className="text-[11px] font-semibold text-base-content/70 block">Pemasukan</span>
+          <span className="text-xs sm:text-sm font-bold text-primary">
+            Rp {totalPemasukan.toLocaleString("id-ID")}
+          </span>
         </div>
-
-        {/* Pengeluaran */}
-        <div className="card bg-base-200 border border-base-300 shadow-xs">
-          <div className="card-body p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-base-content/70">
-                Pengeluaran Periode Ini
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-error/15 text-error flex items-center justify-center">
-                <FiTrendingDown className="w-4 h-4" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-extrabold text-error mt-2">
-              Rp {totalPengeluaranPeriode.toLocaleString("id-ID")}
-            </h2>
-            <p className="text-[11px] text-base-content/60 font-medium">
-              Beban operasional &amp; belanja acara
-            </p>
-          </div>
+        <div className="p-3 rounded-lg bg-base-200 border border-base-300">
+          <span className="text-[11px] font-semibold text-base-content/70 block">Pengeluaran</span>
+          <span className="text-xs sm:text-sm font-bold text-error">
+            Rp {totalPengeluaranPeriode.toLocaleString("id-ID")}
+          </span>
         </div>
-
-        {/* Saldo Bersih */}
-        <div className="card bg-base-200 border border-base-300 shadow-xs">
-          <div className="card-body p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-base-content/70">
-                Saldo Kas Bersih Periode
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <FiDollarSign className="w-4 h-4" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-extrabold text-primary mt-2">
-              Rp {saldoBersih.toLocaleString("id-ID")}
-            </h2>
-            <p className="text-[11px] text-base-content/60 font-medium">
-              Selisih Pemasukan - Pengeluaran
-            </p>
-          </div>
-        </div>
-
-        {/* Kelancaran Setoran Keluarga */}
-        <div className="card bg-base-200 border border-base-300 shadow-xs">
-          <div className="card-body p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-base-content/70">
-                Kelancaran Setoran Keluarga
-              </span>
-              <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <FiCheckCircle className="w-4 h-4" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-extrabold text-primary mt-2">
-              {kelancaranKK}%
-            </h2>
-            <p className="text-[11px] text-base-content/60 font-medium">
-              Keluarga yang sudah lunas iuran
-            </p>
-          </div>
+        <div className="p-3 rounded-lg bg-base-200 border border-base-300">
+          <span className="text-[11px] font-semibold text-base-content/70 block">Saldo Bersih</span>
+          <span className="text-xs sm:text-sm font-bold text-primary">
+            Rp {saldoBersih.toLocaleString("id-ID")}
+          </span>
         </div>
       </div>
 
-      {/* Grid Rekap Pocket & Status Iuran Keluarga */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Rekap Saldo Pocket */}
-        <div className="card bg-base-200 border border-base-300 shadow-lg">
-          <div className="card-body p-5">
-            <h3 className="font-bold text-base flex items-center gap-2 border-b border-base-300 pb-3">
-              <FiFolder className="w-5 h-5 text-primary" />
-              Saldo Per Pocket / Akun
-            </h3>
-            <div className="space-y-3 pt-2">
-              {listPocket.map((p) => (
-                <div
-                  key={p.pocket_id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-300"
-                >
-                  <span className="font-bold text-sm">{p.nama_pocket}</span>
-                  <span className="font-extrabold text-primary text-base">
-                    Rp {Number(p.saldo || 0).toLocaleString("id-ID")}
-                  </span>
-                </div>
-              ))}
+      {/* Export Options Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        {/* Export PDF */}
+        <div className="card bg-base-200 border border-base-300 shadow-md hover:border-primary transition-colors">
+          <div className="card-body p-5 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <FiPrinter className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm">Unduh File PDF</h3>
+                <p className="text-xs text-base-content/60">Siap Cetak &amp; Share WA</p>
+              </div>
             </div>
+            <p className="text-xs text-base-content/70 leading-relaxed">
+              Format laporan PDF resmi berlogo Iskandar Pocket. Berisi ringkasan kas, rekap pocket, status setoran iuran keluarga, dan riwayat transaksi.
+            </p>
+            <button
+              onClick={handleExportPDF}
+              className="btn btn-sm btn-primary font-semibold w-full gap-2 mt-2"
+            >
+              <FiPrinter className="w-4 h-4" />
+              Download File PDF
+            </button>
           </div>
         </div>
 
-        {/* Tabel Status Setoran Iuran Keluarga */}
-        <div className="lg:col-span-2 card bg-base-200 border border-base-300 shadow-lg">
-          <div className="card-body p-5">
-            <h3 className="font-bold text-base flex items-center gap-2 border-b border-base-300 pb-3">
-              <FiCheckCircle className="w-5 h-5 text-primary" />
-              Status Setoran Iuran Keluarga ({periodeLabelFormatted})
-            </h3>
-
-            <div className="overflow-x-auto pt-2">
-              <table className="table table-sm w-full text-xs">
-                <thead className="bg-base-300 text-base-content font-bold">
-                  <tr>
-                    <th className="text-left">Nama Keluarga</th>
-                    <th className="text-left">Nominal Setor</th>
-                    <th className="text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listStatusKK.map((s) => (
-                    <tr key={s.keluarga_id}>
-                      <td className="text-left font-bold text-sm">
-                        {s.nama_keluarga}
-                      </td>
-                      <td className="text-left font-extrabold text-primary">
-                        Rp {Number(s.nominal_setor).toLocaleString("id-ID")}
-                      </td>
-                      <td className="text-left">
-                        <span
-                          className={`badge badge-xs font-semibold ${
-                            s.status === "Lunas"
-                              ? "badge-success text-success-content"
-                              : s.status === "Kurang"
-                                ? "badge-warning text-warning-content"
-                                : "badge-error text-error-content"
-                          }`}
-                        >
-                          {s.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {/* Export Excel */}
+        <div className="card bg-base-200 border border-base-300 shadow-md hover:border-primary transition-colors">
+          <div className="card-body p-5 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <FiDownload className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm">Unduh File Excel (.xlsx)</h3>
+                <p className="text-xs text-base-content/60">Multisheet Spreadsheet</p>
+              </div>
             </div>
+            <p className="text-xs text-base-content/70 leading-relaxed">
+              Format file Excel (.xlsx) dengan 3 sheet terpisah: Ringkasan Kas, Status Setoran Iuran Keluarga, dan Riwayat Transaksi Kas.
+            </p>
+            <button
+              onClick={handleExportExcel}
+              className="btn btn-sm btn-primary font-semibold w-full gap-2 mt-2"
+            >
+              <FiDownload className="w-4 h-4" />
+              Download File Excel (.xlsx)
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Tabel Detail Transaksi Kas Periode Ini */}
-      <div className="card bg-base-200 border border-base-300 shadow-xl">
-        <div className="card-body p-5 space-y-3">
-          <h3 className="font-bold text-base flex items-center gap-2 border-b border-base-300 pb-3">
-            <FiFileText className="w-5 h-5 text-primary" />
-            Catatan Transaksi Kas ({periodeLabelFormatted})
-          </h3>
-
-          <div className="overflow-x-auto">
-            <table className="table table-zebra w-full text-xs">
-              <thead className="bg-base-300 text-base-content font-bold">
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Jenis</th>
-                  <th>Pocket</th>
-                  <th>Keterangan</th>
-                  <th className="text-center">Bukti Transaksi</th>
-                  <th className="text-right">Nominal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {listTransaksi.length > 0 ? (
-                  listTransaksi.map((t) => {
-                    const isMasuk = t.jenis === "masuk";
-                    const hasBukti = t.bukti_url && t.bukti_url.length > 0;
-                    return (
-                      <tr key={t.id}>
-                        <td className="font-medium whitespace-nowrap">
-                          {new Date(t.tanggal).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td>
-                          <span
-                            className={`badge badge-xs font-semibold ${
-                              isMasuk
-                                ? "badge-success text-success-content"
-                                : "badge-error text-error-content"
-                            }`}
-                          >
-                            {isMasuk ? "Masuk" : "Keluar"}
-                          </span>
-                        </td>
-                        <td className="font-semibold text-primary">
-                          {t.pocket?.nama_pocket || "-"}
-                        </td>
-                        <td className="max-w-xs truncate font-medium">
-                          {t.keterangan || "-"}
-                        </td>
-                        <td className="text-center">
-                          {hasBukti ? (
-                            <button
-                              onClick={() => {
-                                setDetailData(t);
-                                setIsDetailOpen(true);
-                              }}
-                              className="badge badge-primary badge-sm font-semibold gap-1"
-                            >
-                              <FiImage className="w-3 h-3" />
-                              {t.bukti_url?.length} Foto
-                            </button>
-                          ) : (
-                            <span className="text-base-content/40 italic">
-                              Tanpa Bukti
-                            </span>
-                          )}
-                        </td>
-                        <td
-                          className={`text-right font-extrabold text-sm ${
-                            isMasuk ? "text-primary" : "text-error"
-                          }`}
-                        >
-                          {isMasuk ? "+" : "-"} Rp{" "}
-                          {Number(t.nominal).toLocaleString("id-ID")}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="text-center py-6 text-base-content/60"
-                    >
-                      Belum ada catatan transaksi pada periode ini.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Lightbox / Detail Modal */}
-      <TransaksiDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        data={detailData}
-      />
     </div>
   );
 }

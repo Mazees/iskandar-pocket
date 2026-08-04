@@ -141,11 +141,11 @@ export function TransaksiTable({
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FiCreditCard className="w-7 h-7 text-primary" />
+          <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <FiCreditCard className="w-5 h-5 text-primary shrink-0" />
             Catatan Transaksi Kas
           </h1>
-          <p className="text-sm text-base-content/70">
+          <p className="text-xs text-base-content/70">
             Kelola transaksi kas masuk dan pengeluaran operasional / acara keluarga
           </p>
         </div>

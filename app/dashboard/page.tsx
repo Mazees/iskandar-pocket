@@ -19,7 +19,11 @@ import {
 } from "@/components/dashboard/dashboard-filters";
 
 interface DashboardPageProps {
-  searchParams: Promise<{ bulan?: string; tahun_date?: string; tahun?: string }>;
+  searchParams: Promise<{
+    bulan?: string;
+    tahun_date?: string;
+    tahun?: string;
+  }>;
 }
 
 export default async function DashboardOverviewPage(props: DashboardPageProps) {
@@ -35,7 +39,9 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
   // Tanggal untuk filter tahunan (diambil dari date input)
   const selectedTahunDate =
     searchParams.tahun_date ||
-    (searchParams.tahun ? `${searchParams.tahun}-01-01` : `${defaultTahun}-01-01`);
+    (searchParams.tahun
+      ? `${searchParams.tahun}-01-01`
+      : `${defaultTahun}-01-01`);
   const selectedTahun = selectedTahunDate.slice(0, 4);
 
   // 1. Ambil data Pocket, Rekap, dan Transaksi Terakhir
@@ -78,7 +84,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
     .single();
 
   const targetNominalBulanan = Number(
-    configSelectedBulan?.nominal_iuran_bulanan || 100000
+    configSelectedBulan?.nominal_iuran_bulanan || 100000,
   );
 
   const totalSetorMap: Record<string, number> = {};
@@ -159,13 +165,13 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
   const totalSaldo =
     (listPocket as any[])?.reduce(
       (acc, item) => acc + Number(item.saldo || 0),
-      0
+      0,
     ) ?? 0;
   const totalPemasukanBulanIni = Number(
-    (rekapBulanIni as any)?.total_pemasukan ?? 0
+    (rekapBulanIni as any)?.total_pemasukan ?? 0,
   );
   const totalPengeluaran = Number(
-    (rekapBulanIni as any)?.total_pengeluaran ?? 0
+    (rekapBulanIni as any)?.total_pengeluaran ?? 0,
   );
 
   return (
@@ -173,8 +179,8 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
       {/* Title & Quick Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Ringkasan Keuangan</h1>
-          <p className="text-sm text-base-content/70">
+          <h1 className="text-base sm:text-lg font-bold">Ringkasan Keuangan</h1>
+          <p className="text-xs text-base-content/70">
             Pantau arus kas masuk dari iuran dan pengeluaran operasional
           </p>
         </div>
@@ -198,39 +204,45 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
 
       {/* DaisyUI Stats Component */}
       <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-200 border border-base-300">
-        <div className="stat">
+        <div className="stat gap-1">
           <div className="stat-figure text-primary">
-            <MdAccountBalanceWallet className="w-8 h-8" />
+            <MdAccountBalanceWallet className="w-6 h-6" />
           </div>
-          <div className="stat-title">Total Saldo Kas</div>
-          <div className="stat-value text-primary">
+          <div className="stat-title text-sm font-semibold">
+            Total Saldo Kas
+          </div>
+          <div className="stat-value text-sm sm:text-base font-bold text-primary">
             Rp {totalSaldo.toLocaleString("id-ID")}
           </div>
-          <div className="stat-desc">
+          <div className="stat-desc text-[11px]">
             Gabungan Kas Tunai &amp; Rekening Bank
           </div>
         </div>
 
-        <div className="stat">
+        <div className="stat gap-1">
           <div className="stat-figure text-primary">
-            <FiTrendingUp className="w-8 h-8" />
+            <FiTrendingUp className="w-6 h-6" />
           </div>
-          <div className="stat-title">Pemasukan Bulan Ini</div>
-          <div className="stat-value text-primary">
+          <div className="stat-title text-sm font-semibold">
+            Pemasukan Bulan Ini
+          </div>
+          <div className="stat-value text-sm sm:text-base font-bold text-primary">
             Rp {totalPemasukanBulanIni.toLocaleString("id-ID")}
           </div>
-          <div className="stat-desc flex items-center text-primary gap-1">
-            <FiArrowUpRight className="w-4 h-4" />
+          <div className="stat-desc text-[11px] flex items-center text-primary gap-1">
+            <FiArrowUpRight className="w-3.5 h-3.5" />
             Setoran iuran &amp; kas masuk
           </div>
         </div>
 
-        <div className="stat">
+        <div className="stat gap-1">
           <div className="stat-figure text-primary">
-            <FiTrendingDown className="w-8 h-8" />
+            <FiTrendingDown className="w-6 h-6" />
           </div>
-          <div className="stat-title">Pengeluaran Bulan Ini</div>
-          <div className="stat-value text-primary">
+          <div className="stat-title text-sm font-semibold">
+            Pengeluaran Bulan Ini
+          </div>
+          <div className="stat-value text-sm sm:text-base font-bold text-primary">
             Rp {totalPengeluaran.toLocaleString("id-ID")}
           </div>
           <div className="stat-desc flex items-center text-primary gap-1">
@@ -348,8 +360,8 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
         <div className="card-body">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="card-title text-lg flex items-center gap-2">
-                <FiCalendar className="w-5 h-5 text-primary" />
+              <h2 className="card-title text-sm font-bold flex items-center gap-2">
+                <FiCalendar className="w-4 h-4 text-primary" />
                 Rekap Iuran Bulanan
               </h2>
               <p className="text-xs text-base-content/70">
@@ -368,7 +380,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-sm">
+            <table className="table table-zebra w-full text-xs">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="text-left">Nama Keluarga</th>
@@ -380,27 +392,26 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
                 {statusBulanIni && statusBulanIni.length > 0 ? (
                   (statusBulanIni as any[]).map((item) => (
                     <tr key={item.keluarga_id}>
-                      <td className="text-left font-bold">{item.nama_keluarga}</td>
+                      <td className="text-left font-bold">
+                        {item.nama_keluarga}
+                      </td>
                       <td className="text-left font-extrabold text-primary">
                         Rp{" "}
-                        {Number(
-                          item.total_setor_bulan_ini || 0
-                        ).toLocaleString("id-ID")}
+                        {Number(item.total_setor_bulan_ini || 0).toLocaleString(
+                          "id-ID",
+                        )}
                       </td>
-                      <td className="text-left">
+                      <td className="text-left text-xs">
                         {item.lunas_bulan_ini ? (
-                          <span className="badge badge-success font-semibold gap-1 text-success-content">
-                            <FiCheckCircle className="w-3.5 h-3.5" />
+                          <span className="badge badge-xs w-20 font-semibold gap-1 text-success-content badge-success">
                             Lunas
                           </span>
                         ) : item.sudah_setor ? (
-                          <span className="badge badge-warning font-semibold gap-1 text-warning-content">
-                            <FiCheckCircle className="w-3.5 h-3.5" />
+                          <span className="badge badge-xs w-20 font-semibold gap-1 text-warning-content badge-warning">
                             Kurang
                           </span>
                         ) : (
-                          <span className="badge badge-error font-semibold gap-1 text-error-content">
-                            <FiXCircle className="w-3.5 h-3.5" />
+                          <span className="badge badge-xs w-20 font-semibold gap-1 text-error-content badge-error">
                             Belum Setor
                           </span>
                         )}
@@ -428,8 +439,8 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
         <div className="card-body">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="card-title text-lg flex items-center gap-2">
-                <FiUsers className="w-5 h-5 text-primary" />
+              <h2 className="card-title text-sm font-bold flex items-center gap-2">
+                <FiUsers className="w-4 h-4 text-primary" />
                 Rekap Iuran Tahunan (Jan - Des)
               </h2>
               <p className="text-xs text-base-content/70">
@@ -441,7 +452,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-xs lg:text-sm">
+            <table className="table table-zebra w-full text-xs">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="min-w-44">Nama Keluarga</th>
@@ -501,7 +512,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
                         <td className="text-right font-extrabold text-primary">
                           Rp{" "}
                           {Number(
-                            item.total_setor_tahun_ini || 0
+                            item.total_setor_tahun_ini || 0,
                           ).toLocaleString("id-ID")}
                         </td>
                       </tr>

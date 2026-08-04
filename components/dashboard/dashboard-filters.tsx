@@ -44,40 +44,30 @@ export function MonthDateFilter({ defaultValue }: MonthDateFilterProps) {
  * YearFilter (Client Component)
  * Dropdown pilihan Tahun yang sleek (HTML5 tidak memiliki type="year" bawaan)
  */
-export function YearFilter({ defaultValue, availableYears }: YearFilterProps) {
+export function YearFilter({ defaultValue }: YearFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const currentYearNum = new Date().getFullYear();
-  const defaultList = [
-    (currentYearNum + 1).toString(),
-    currentYearNum.toString(),
-    (currentYearNum - 1).toString(),
-    (currentYearNum - 2).toString(),
-    (currentYearNum - 3).toString(),
-  ];
-
-  const yearList =
-    availableYears && availableYears.length > 0 ? availableYears : defaultList;
 
   return (
     <div className="flex items-center gap-1.5">
       <FiFilter className="w-4 h-4 text-base-content/60" />
-      <select
-        value={defaultValue}
+      <input
+        type="number"
+        min="2000"
+        max="2099"
+        step="1"
+        defaultValue={defaultValue}
+        placeholder="YYYY"
         onChange={(e) => {
-          const params = new URLSearchParams(searchParams.toString());
-          params.set("tahun", e.target.value);
-          router.push(`/dashboard?${params.toString()}`);
+          const val = e.target.value;
+          if (val.length === 4) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("tahun", val);
+            router.push(`/dashboard?${params.toString()}`);
+          }
         }}
-        className="select select-bordered select-sm font-bold bg-base-100"
-      >
-        {yearList.map((y) => (
-          <option key={y} value={y}>
-            Tahun {y}
-          </option>
-        ))}
-      </select>
+        className="input input-bordered input-sm font-bold text-xs bg-base-100 w-24 text-center"
+      />
     </div>
   );
 }
