@@ -11,11 +11,6 @@ interface PocketFormProps {
   editData?: { id: string; nama_pocket: string; saldo_awal: number } | null;
 }
 
-/**
- * PocketForm Component
- * --------------------
- * Modal Client Component untuk menambah atau mengedit Akun Pocket (Cash/Bank).
- */
 export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
   const [namaPocket, setNamaPocket] = useState("");
   const [saldoAwal, setSaldoAwal] = useState("0");
@@ -78,7 +73,7 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
     <div className="modal modal-open z-50">
       <div className="modal-box bg-base-100 border border-base-300 shadow-2xl max-w-md">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-base-300">
+        <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
             <FiFolder className="w-5 h-5 text-primary" />
             {editData ? "Edit Akun Pocket" : "Tambah Pocket Baru"}
@@ -94,7 +89,7 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
         </div>
 
         {/* Modal Body Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-3 pt-3">
           {error && (
             <div className="alert alert-error py-2 text-xs font-semibold">
               <FiAlertCircle className="w-4 h-4 shrink-0" />
@@ -102,28 +97,28 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
             </div>
           )}
 
-          {/* 1. Nama Pocket */}
+          {/* Nama Pocket */}
           <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold">Nama Pocket / Akun Kas</span>
+            <label className="label py-1">
+              <span className="label-text font-semibold">Nama Pocket</span>
             </label>
             <input
               type="text"
               required
-              placeholder="Contoh: Kas Cash Bendahara, Rekening BCA, dll"
+              placeholder="Contoh: Kas Cash, Bank BCA"
               value={namaPocket}
               onChange={(e) => setNamaPocket(e.target.value)}
-              className="input input-bordered w-full font-medium"
+              className="input input-bordered input-sm w-full font-medium"
               disabled={loading}
             />
           </div>
 
-          {/* 2. Saldo Awal */}
+          {/* Saldo Awal */}
           <div className="form-control w-full">
-            <label className="label">
+            <label className="label py-1">
               <span className="label-text font-semibold">Saldo Awal (Rp)</span>
             </label>
-            <label className="input input-bordered flex items-center gap-2 font-bold text-primary">
+            <label className="input input-bordered input-sm flex items-center gap-1 font-bold text-primary">
               <span>Rp</span>
               <input
                 type="number"
@@ -132,14 +127,9 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
                 placeholder="0"
                 value={saldoAwal}
                 onChange={(e) => setSaldoAwal(e.target.value)}
-                className="grow text-base"
+                className="grow text-sm"
                 disabled={loading}
               />
-            </label>
-            <label className="label">
-              <span className="label-text-alt text-base-content/60">
-                Nominal saldo saat pertama kali pocket dibuka
-              </span>
             </label>
           </div>
 
@@ -148,14 +138,14 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-ghost font-semibold"
+              className="btn btn-sm btn-ghost font-semibold"
               disabled={loading}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="btn btn-primary font-semibold"
+              className="btn btn-sm btn-primary font-semibold"
               disabled={loading}
             >
               {loading ? (
@@ -163,7 +153,7 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
               ) : (
                 <FiCheck className="w-4 h-4 mr-1" />
               )}
-              {editData ? "Simpan Perubahan" : "Tambah Pocket"}
+              {editData ? "Simpan" : "Tambah Pocket"}
             </button>
           </div>
         </form>

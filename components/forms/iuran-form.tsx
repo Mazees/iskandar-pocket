@@ -23,13 +23,6 @@ interface IuranFormProps {
   defaultNominal?: number;
 }
 
-/**
- * IuranForm Component
- * -------------------
- * Form Modal minimalis untuk mencatat setoran iuran baru.
- * Hanya butuh Pilih Keluarga, Nominal Diterima, dan Pocket (Cash/Bank).
- * Sistem secara otomatis membagi setoran ke bulan-bulan tertunggak (FIFO).
- */
 export function IuranForm({
   isOpen,
   onClose,
@@ -75,7 +68,6 @@ export function IuranForm({
       formData.append("keterangan", keterangan.trim());
     }
 
-    // Tentukan metode berdasarkan nama pocket (misal "Bank" -> transfer, "Cash" -> cash)
     const selectedPocket = listPocket.find((p) => p.id === pocketId);
     const isBank = selectedPocket?.nama_pocket.toLowerCase().includes("bank");
     formData.append("metode", isBank ? "transfer" : "cash");
@@ -103,10 +95,10 @@ export function IuranForm({
     <div className="modal modal-open z-50">
       <div className="modal-box bg-base-100 border border-base-300 shadow-2xl max-w-md">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-base-300">
+        <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
             <FiDollarSign className="w-5 h-5 text-primary" />
-            Catat Setoran Iuran Baru
+            Catat Setoran Iuran
           </h3>
           <button
             type="button"
@@ -119,7 +111,7 @@ export function IuranForm({
         </div>
 
         {/* Modal Body Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-3 pt-3">
           {error && (
             <div className="alert alert-error py-2 text-xs font-semibold">
               <FiAlertCircle className="w-4 h-4 shrink-0" />
@@ -127,84 +119,71 @@ export function IuranForm({
             </div>
           )}
 
-          {/* 1. Input Pilih Nama Kepala Keluarga */}
+          {/* Pilih Keluarga */}
           <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold">
-                Nama Kepala Keluarga
-              </span>
+            <label className="label py-1">
+              <span className="label-text font-semibold">Pilih Keluarga</span>
             </label>
             <select
               required
               value={keluargaId}
               onChange={(e) => setKeluargaId(e.target.value)}
-              className="select select-bordered w-full font-medium"
+              className="select select-bordered select-sm w-full font-medium"
               disabled={loading}
             >
-              <option value="" disabled>
-                -- Pilih Kepala Keluarga --
-              </option>
-              {listKeluarga.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nama_keluarga}
+              {listKeluarga.map((k) => (
+                <option key={k.id} value={k.id}>
+                  {k.nama_keluarga}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* 2. Input Nominal Diterima */}
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold">Nominal Diterima</span>
-            </label>
+          {/* Nominal & Pocket Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="form-control w-full">
+              <label className="label py-1">
+                <span className="label-text font-semibold">Nominal (Rp)</span>
+              </label>
+              <label className="input input-bordered input-sm flex items-center gap-1 font-bold text-primary">
+                <span>Rp</span>
+                <input
+                  type="number"
+                  required
+                  min={1000}
+                  step={1000}
+                  placeholder="100000"
+                  value={nominal}
+                  onChange={(e) => setNominal(e.target.value)}
+                  className="grow text-sm"
+                  disabled={loading}
+                />
+              </label>
+            </div>
 
-            <label className="input input-bordered flex items-center gap-2 font-bold text-primary">
-              <span>Rp</span>
-              <input
-                type="number"
+            <div className="form-control w-full">
+              <label className="label py-1">
+                <span className="label-text font-semibold">Pocket</span>
+              </label>
+              <select
                 required
-                min={1000}
-                step={1000}
-                placeholder="100000"
-                value={nominal}
-                onChange={(e) => setNominal(e.target.value)}
-                className="grow text-base"
+                value={pocketId}
+                onChange={(e) => setPocketId(e.target.value)}
+                className="select select-bordered select-sm w-full font-medium"
                 disabled={loading}
-              />
-            </label>
-            <label className="label">
-              <span className="label-text-alt text-base-content/60 text-wrap text-xs">
-                Sistem akan membagi otomatis nominal ini ke bulan-bulan
-                tertunggak
-              </span>
-            </label>
+              >
+                {listPocket.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nama_pocket}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* 3. Input Pocket / Dompet Tujuan */}
+          {/* Tanggal Setor */}
           <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold">
-                Masuk ke Pocket / Dompet
-              </span>
-            </label>
-            <select
-              required
-              value={pocketId}
-              onChange={(e) => setPocketId(e.target.value)}
-              className="select select-bordered w-full font-medium"
-              disabled={loading}
-            >
-              {listPocket.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nama_pocket}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 4. Input Tanggal Setor */}
-          <div className="form-control w-full">
-            <label className="label">
+            <label className="label py-1">
               <span className="label-text font-semibold">Tanggal Setor</span>
             </label>
             <input
@@ -212,24 +191,22 @@ export function IuranForm({
               required
               value={tanggalSetor}
               onChange={(e) => setTanggalSetor(e.target.value)}
-              className="input input-bordered w-full font-medium"
+              className="input input-bordered input-sm w-full font-medium"
               disabled={loading}
             />
           </div>
 
-          {/* 5. Catatan / Keterangan (Opsional) */}
+          {/* Keterangan */}
           <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold">
-                Catatan (Opsional)
-              </span>
+            <label className="label py-1">
+              <span className="label-text font-semibold">Catatan (Opsional)</span>
             </label>
             <input
               type="text"
-              placeholder="Contoh: Titip via Mas Budi"
+              placeholder="Catatan tambahan..."
               value={keterangan}
               onChange={(e) => setKeterangan(e.target.value)}
-              className="input input-bordered w-full text-sm font-medium"
+              className="input input-bordered input-sm w-full font-medium"
               disabled={loading}
             />
           </div>
@@ -239,14 +216,14 @@ export function IuranForm({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-ghost font-semibold"
+              className="btn btn-sm btn-ghost font-semibold"
               disabled={loading}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="btn btn-primary font-semibold"
+              className="btn btn-sm btn-primary font-semibold"
               disabled={loading}
             >
               {loading ? (

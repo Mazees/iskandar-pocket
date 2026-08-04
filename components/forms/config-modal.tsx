@@ -11,12 +11,6 @@ interface ConfigModalProps {
   activeNominal?: number;
 }
 
-/**
- * ConfigModal Component
- * --------------------
- * Form Modal murni berbasis Bulan (Month Picker YYYY-MM) untuk
- * mengubah / menetapkan tarif iuran bulanan baru.
- */
 export function ConfigModal({
   isOpen,
   onClose,
@@ -24,7 +18,7 @@ export function ConfigModal({
 }: ConfigModalProps) {
   const [nominal, setNominal] = useState(activeNominal.toString());
   const [berlakuMulaiBulan, setBerlakuMulaiBulan] = useState(
-    new Date().toISOString().slice(0, 7) // Format "YYYY-MM"
+    new Date().toISOString().slice(0, 7)
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -71,10 +65,10 @@ export function ConfigModal({
     <div className="modal modal-open z-50">
       <div className="modal-box bg-base-100 border border-base-300 shadow-2xl max-w-md">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-base-300">
+        <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
             <FiSettings className="w-5 h-5 text-primary" />
-            Ubah Nominal Iuran Bulanan
+            Ubah Nominal Iuran
           </h3>
           <button
             type="button"
@@ -87,7 +81,7 @@ export function ConfigModal({
         </div>
 
         {/* Modal Body Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-3 pt-3">
           {error && (
             <div className="alert alert-error py-2 text-xs font-semibold">
               <FiAlertCircle className="w-4 h-4 shrink-0" />
@@ -95,15 +89,14 @@ export function ConfigModal({
             </div>
           )}
 
-          {/* 1. Input Nominal Baru */}
+          {/* Nominal Tarif Baru */}
           <div className="form-control w-full">
-            <label className="label">
+            <label className="label py-1">
               <span className="label-text font-semibold">
                 Nominal Tarif Baru (Per Bulan)
               </span>
             </label>
-
-            <label className="input input-bordered flex items-center gap-2 font-bold text-primary">
+            <label className="input input-bordered input-sm flex items-center gap-1 font-bold text-primary">
               <span>Rp</span>
               <input
                 type="number"
@@ -113,20 +106,15 @@ export function ConfigModal({
                 placeholder="100000"
                 value={nominal}
                 onChange={(e) => setNominal(e.target.value)}
-                className="grow text-base"
+                className="grow text-sm"
                 disabled={loading}
               />
             </label>
-            <label className="label">
-              <span className="label-text-alt text-base-content/60">
-                Nominal ini akan menjadi tarif wajib iuran per KK
-              </span>
-            </label>
           </div>
 
-          {/* 2. Input Month Picker (Berlaku Mulai Bulan) */}
+          {/* Month Picker */}
           <div className="form-control w-full">
-            <label className="label">
+            <label className="label py-1">
               <span className="label-text font-semibold">
                 Berlaku Mulai Bulan
               </span>
@@ -136,14 +124,9 @@ export function ConfigModal({
               required
               value={berlakuMulaiBulan}
               onChange={(e) => setBerlakuMulaiBulan(e.target.value)}
-              className="input input-bordered w-full font-medium"
+              className="input input-bordered input-sm w-full font-medium"
               disabled={loading}
             />
-            <label className="label">
-              <span className="label-text-alt text-base-content/60">
-                Pilih bulan mulai berlakunya tarif baru ini
-              </span>
-            </label>
           </div>
 
           {/* Modal Actions */}
@@ -151,14 +134,14 @@ export function ConfigModal({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-ghost font-semibold"
+              className="btn btn-sm btn-ghost font-semibold"
               disabled={loading}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="btn btn-primary font-semibold"
+              className="btn btn-sm btn-primary font-semibold"
               disabled={loading}
             >
               {loading ? (
@@ -166,7 +149,7 @@ export function ConfigModal({
               ) : (
                 <FiCheck className="w-4 h-4 mr-1" />
               )}
-              Simpan Kebijakan Baru
+              Simpan Kebijakan
             </button>
           </div>
         </form>

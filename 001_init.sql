@@ -225,3 +225,23 @@ create policy "admin write iuran" on iuran for all
     using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 create policy "admin write transaksi" on transaksi for all
     using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+-- ---------------------------------------------------------
+-- 9. SUPABASE STORAGE: Bucket 'bukti' & Policies
+-- ---------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('bukti', 'bukti', true)
+on conflict (id) do nothing;
+
+create policy "Public Read Bukti Storage"
+on storage.objects for select
+using (bucket_id = 'bukti');
+
+create policy "Authenticated Write Bukti Storage"
+on storage.objects for insert
+with check (bucket_id = 'bukti' and auth.role() = 'authenticated');
+
+create policy "Authenticated Delete Bukti Storage"
+on storage.objects for delete
+using (bucket_id = 'bukti' and auth.role() = 'authenticated');
+

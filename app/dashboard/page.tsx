@@ -285,7 +285,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
                 <thead>
                   <tr>
                     <th>Tanggal</th>
-                    <th>Kategori</th>
+                    <th>Jenis</th>
                     <th>Keterangan</th>
                     <th className="text-right">Nominal</th>
                   </tr>
@@ -301,17 +301,23 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
                           })}
                         </td>
                         <td>
-                          <span className="badge badge-sm badge-neutral font-medium">
-                            {item.kategori}
+                          <span
+                            className={`badge badge-xs font-semibold ${
+                              item.jenis === "masuk"
+                                ? "badge-success text-success-content"
+                                : "badge-error text-error-content"
+                            }`}
+                          >
+                            {item.jenis === "masuk" ? "Masuk" : "Keluar"}
                           </span>
                         </td>
-                        <td className="text-xs truncate max-w-xs">
+                        <td className="text-xs truncate max-w-xs font-medium">
                           {item.keterangan || "-"}
                         </td>
                         <td
                           className={`text-right font-bold text-xs ${
                             item.jenis === "masuk"
-                              ? "text-secondary"
+                              ? "text-primary"
                               : "text-error"
                           }`}
                         >
