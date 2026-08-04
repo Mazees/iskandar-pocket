@@ -13,30 +13,38 @@ import {
 } from "react-icons/fi";
 import { MdAccountBalanceWallet } from "react-icons/md";
 import { createClient } from "@/utils/supabase/server";
+import {
+  MonthDateFilter,
+  YearFilter,
+} from "@/components/dashboard/dashboard-filters";
 
-export default async function DashboardOverviewPage() {
+interface DashboardPageProps {
+  searchParams: Promise<{ bulan?: string; tahun_date?: string; tahun?: string }>;
+}
+
+export default async function DashboardOverviewPage(props: DashboardPageProps) {
+  const searchParams = await props.searchParams;
   const supabase = await createClient();
 
-  // 1. Ambil data dari 5 View dan 1 Tabel Transaksi Terakhir
+  const currentDate = new Date();
+  const defaultBulan = currentDate.toISOString().slice(0, 7); // e.g. "2026-08"
+  const defaultTahun = currentDate.getFullYear().toString(); // e.g. "2026"
+
+  const selectedBulan = searchParams.bulan || defaultBulan;
+
+  // Tanggal untuk filter tahunan (diambil dari date input)
+  const selectedTahunDate =
+    searchParams.tahun_date ||
+    (searchParams.tahun ? `${searchParams.tahun}-01-01` : `${defaultTahun}-01-01`);
+  const selectedTahun = selectedTahunDate.slice(0, 4);
+
+  // 1. Ambil data Pocket, Rekap, dan Transaksi Terakhir
   const { data: listPocket } = await supabase
     .from("v_saldo_pocket")
     .select("*");
 
-  const { data: statusBulanIni } = await supabase
-    .from("v_status_iuran_bulan_ini")
-    .select("*");
-
-  const { data: statusTahunIni } = await supabase
-    .from("v_status_iuran_tahun_ini")
-    .select("*");
-
   const { data: rekapBulanIni } = await supabase
     .from("v_rekap_bulan_ini")
-    .select("*")
-    .single();
-
-  const { data: rekapTahunIni } = await supabase
-    .from("v_rekap_tahun_ini")
     .select("*")
     .single();
 
@@ -46,17 +54,118 @@ export default async function DashboardOverviewPage() {
     .order("tanggal", { ascending: false })
     .limit(5);
 
-  // 2. Hitung statistik kartu atas (aman dari TS error & null)
+  // 2. Ambil seluruh data keluarga (urut abjad)
+  const { data: listKeluarga } = await supabase
+    .from("keluarga")
+    .select("id, nama_keluarga")
+    .order("nama_keluarga", { ascending: true });
+
+  // 3. Hitung Status Bulanan (Tabel 1) untuk selectedBulan
+  const { data: iuranBulanSelected } = await supabase
+    .from("iuran")
+    .select("keluarga_id, nominal")
+    .eq("periode", selectedBulan);
+
+  // Ambil tarif wajib untuk selectedBulan
+  const firstDateOfSelectedBulan = `${selectedBulan}-01`;
+  const { data: configSelectedBulan } = await supabase
+    .from("configuration")
+    .select("nominal_iuran_bulanan")
+    .lte("berlaku_mulai", firstDateOfSelectedBulan)
+    .order("berlaku_mulai", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  const targetNominalBulanan = Number(
+    configSelectedBulan?.nominal_iuran_bulanan || 100000
+  );
+
+  const totalSetorMap: Record<string, number> = {};
+  (iuranBulanSelected || []).forEach((row: any) => {
+    totalSetorMap[row.keluarga_id] =
+      (totalSetorMap[row.keluarga_id] || 0) + Number(row.nominal);
+  });
+
+  const statusBulanIni = (listKeluarga || []).map((k: any) => {
+    const totalSetor = totalSetorMap[k.id] || 0;
+    return {
+      keluarga_id: k.id,
+      nama_keluarga: k.nama_keluarga,
+      total_setor_bulan_ini: totalSetor,
+      sudah_setor: totalSetor > 0,
+      lunas_bulan_ini: totalSetor >= targetNominalBulanan,
+    };
+  });
+
+  // 4. Hitung Matriks 12 Bulan (Tabel 2) untuk selectedTahun
+  const { data: iuranTahunSelected } = await supabase
+    .from("iuran")
+    .select("keluarga_id, periode, nominal")
+    .gte("periode", `${selectedTahun}-01`)
+    .lte("periode", `${selectedTahun}-12`);
+
+  const monthKeys = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "mei",
+    "jun",
+    "jul",
+    "agu",
+    "sep",
+    "okt",
+    "nov",
+    "des",
+  ];
+
+  const matrixMap: Record<string, any> = {};
+  (listKeluarga || []).forEach((k: any) => {
+    matrixMap[k.id] = {
+      keluarga_id: k.id,
+      nama_keluarga: k.nama_keluarga,
+      jan: 0,
+      feb: 0,
+      mar: 0,
+      apr: 0,
+      mei: 0,
+      jun: 0,
+      jul: 0,
+      agu: 0,
+      sep: 0,
+      okt: 0,
+      nov: 0,
+      des: 0,
+      total_setor_tahun_ini: 0,
+    };
+  });
+
+  (iuranTahunSelected || []).forEach((row: any) => {
+    if (matrixMap[row.keluarga_id] && row.periode) {
+      const mIndex = parseInt(row.periode.split("-")[1], 10) - 1;
+      if (mIndex >= 0 && mIndex < 12) {
+        const mKey = monthKeys[mIndex];
+        const val = Number(row.nominal);
+        matrixMap[row.keluarga_id][mKey] += val;
+        matrixMap[row.keluarga_id].total_setor_tahun_ini += val;
+      }
+    }
+  });
+
+  const statusTahunIni = Object.values(matrixMap);
+
+  // 5. Hitung statistik kartu atas
   const totalSaldo =
     (listPocket as any[])?.reduce(
       (acc, item) => acc + Number(item.saldo || 0),
-      0,
+      0
     ) ?? 0;
   const totalPemasukanBulanIni = Number(
-    (rekapBulanIni as any)?.total_pemasukan ?? 0,
+    (rekapBulanIni as any)?.total_pemasukan ?? 0
   );
   const totalPengeluaran = Number(
-    (rekapBulanIni as any)?.total_pengeluaran ?? 0,
+    (rekapBulanIni as any)?.total_pengeluaran ?? 0
   );
 
   return (
@@ -87,7 +196,7 @@ export default async function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* DaisyUI Stats Component (Responsive: vertical on mobile, horizontal on lg) */}
+      {/* DaisyUI Stats Component */}
       <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-200 border border-base-300">
         <div className="stat">
           <div className="stat-figure text-primary">
@@ -98,7 +207,7 @@ export default async function DashboardOverviewPage() {
             Rp {totalSaldo.toLocaleString("id-ID")}
           </div>
           <div className="stat-desc">
-            Gabungan seluruh dompet kas &amp; rekening
+            Gabungan Kas Tunai &amp; Rekening Bank
           </div>
         </div>
 
@@ -110,7 +219,10 @@ export default async function DashboardOverviewPage() {
           <div className="stat-value text-primary">
             Rp {totalPemasukanBulanIni.toLocaleString("id-ID")}
           </div>
-          <div className="stat-desc">Total setoran iuran &amp; kas masuk</div>
+          <div className="stat-desc flex items-center text-primary gap-1">
+            <FiArrowUpRight className="w-4 h-4" />
+            Setoran iuran &amp; kas masuk
+          </div>
         </div>
 
         <div className="stat">
@@ -121,31 +233,132 @@ export default async function DashboardOverviewPage() {
           <div className="stat-value text-primary">
             Rp {totalPengeluaran.toLocaleString("id-ID")}
           </div>
-          <div className="stat-desc">
-            Total pengeluaran operasional &amp; acara
+          <div className="stat-desc flex items-center text-primary gap-1">
+            <FiArrowDownRight className="w-4 h-4" />
+            Beban operasional &amp; acara
           </div>
         </div>
       </div>
 
-      {/* 1. Ringkasan Bulan Ini */}
+      {/* Grid: Saldo Per Pocket & Transaksi Terakhir */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="card bg-base-200 shadow-xl border border-base-300">
+          <div className="card-body">
+            <h2 className="card-title text-base">Rincian Saldo Per Pocket</h2>
+            <div className="space-y-3 mt-2">
+              {listPocket && listPocket.length > 0 ? (
+                (listPocket as any[]).map((pocket) => (
+                  <div
+                    key={pocket.pocket_id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-base-100 border border-base-300"
+                  >
+                    <span className="font-semibold text-sm">
+                      {pocket.nama_pocket}
+                    </span>
+                    <span className="font-extrabold text-primary">
+                      Rp {Number(pocket.saldo || 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-base-content/60">
+                  Belum ada data pocket.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-base-200 shadow-xl border border-base-300 lg:col-span-2">
+          <div className="card-body">
+            <div className="flex items-center justify-between">
+              <h2 className="card-title text-base">Transaksi Kas Terakhir</h2>
+              <Link
+                href="/dashboard/transaksi"
+                className="text-xs text-primary font-bold hover:underline"
+              >
+                Lihat Semua &rarr;
+              </Link>
+            </div>
+            <div className="overflow-x-auto mt-2">
+              <table className="table table-sm w-full">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Kategori</th>
+                    <th>Keterangan</th>
+                    <th className="text-right">Nominal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transaksiTerakhir && transaksiTerakhir.length > 0 ? (
+                    (transaksiTerakhir as any[]).map((item) => (
+                      <tr key={item.id}>
+                        <td className="text-xs">
+                          {new Date(item.tanggal).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </td>
+                        <td>
+                          <span className="badge badge-sm badge-neutral font-medium">
+                            {item.kategori}
+                          </span>
+                        </td>
+                        <td className="text-xs truncate max-w-xs">
+                          {item.keterangan || "-"}
+                        </td>
+                        <td
+                          className={`text-right font-bold text-xs ${
+                            item.jenis === "masuk"
+                              ? "text-secondary"
+                              : "text-error"
+                          }`}
+                        >
+                          {item.jenis === "masuk" ? "+" : "-"} Rp{" "}
+                          {Number(item.nominal).toLocaleString("id-ID")}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="text-center py-4 text-xs text-base-content/60"
+                      >
+                        Belum ada transaksi kas tercatat.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 1. Ringkasan Bulanan (Tabel Status per KK dengan Client Month Input) */}
       <div className="card bg-base-200 shadow-xl border border-base-300">
         <div className="card-body">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="card-title text-lg flex items-center gap-2">
                 <FiCalendar className="w-5 h-5 text-primary" />
-                Rekap Iuran Bulan Ini
+                Rekap Iuran Bulanan
               </h2>
               <p className="text-xs text-base-content/70">
-                Status pembayaran iuran bulanan per Keluarga pada bulan ini
+                Status pembayaran iuran bulanan per Keluarga pada bulan terpilih
               </p>
             </div>
-            <Link
-              href="/dashboard/iuran"
-              className="btn btn-sm btn-outline font-semibold"
-            >
-              Lihat Seluruh Iuran &rarr;
-            </Link>
+            <div className="flex items-center gap-3">
+              <MonthDateFilter defaultValue={selectedBulan} />
+              <Link
+                href="/dashboard/iuran"
+                className="btn btn-sm btn-outline font-semibold hidden lg:inline-flex"
+              >
+                Lihat Seluruh Iuran &rarr;
+              </Link>
+            </div>
           </div>
 
           <div className="overflow-x-auto mt-4">
@@ -182,9 +395,9 @@ export default async function DashboardOverviewPage() {
                       </td>
                       <td className="text-right font-extrabold text-primary">
                         Rp{" "}
-                        {Number(item.total_setor_bulan_ini || 0).toLocaleString(
-                          "id-ID",
-                        )}
+                        {Number(
+                          item.total_setor_bulan_ini || 0
+                        ).toLocaleString("id-ID")}
                       </td>
                     </tr>
                   ))
@@ -204,23 +417,21 @@ export default async function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* 2. Ringkasan Tahun Ini (Matriks 12 Bulan: Jan - Des) */}
+      {/* 2. Ringkasan Tahun Ini (Matriks 12 Bulan dengan Client Year Date Input) */}
       <div className="card bg-base-200 shadow-xl border border-base-300">
         <div className="card-body">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="card-title text-lg flex items-center gap-2">
-                <FiUsers className="w-5 h-5 text-secondary" />
-                Rekap Iuran Tahun Ini (Jan - Des)
+                <FiUsers className="w-5 h-5 text-primary" />
+                Rekap Iuran Tahunan (Jan - Des)
               </h2>
               <p className="text-xs text-base-content/70">
                 Matriks rincian pembayaran iuran bulanan per Kepala Keluarga
-                sepanjang tahun berjalan
+                sepanjang tahun terpilih
               </p>
             </div>
-            <span className="badge badge-secondary font-bold">
-              Tahun Aktif: {new Date().getFullYear()}
-            </span>
+            <YearFilter defaultValue={selectedTahun} />
           </div>
 
           <div className="overflow-x-auto mt-4">
@@ -284,7 +495,7 @@ export default async function DashboardOverviewPage() {
                         <td className="text-right font-extrabold text-primary">
                           Rp{" "}
                           {Number(
-                            item.total_setor_tahun_ini || 0,
+                            item.total_setor_tahun_ini || 0
                           ).toLocaleString("id-ID")}
                         </td>
                       </tr>
@@ -302,96 +513,6 @@ export default async function DashboardOverviewPage() {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Saldo per Dompet / Pocket & Transaksi Terbaru */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Rincian Saldo Dompet */}
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body">
-            <div className="flex items-center justify-between">
-              <h2 className="card-title">Rincian Saldo Dompet</h2>
-              <Link
-                href="/dashboard/pocket"
-                className="text-xs font-semibold text-primary hover:underline"
-              >
-                Kelola Pocket &rarr;
-              </Link>
-            </div>
-
-            <div className="space-y-3 mt-2">
-              {listPocket && listPocket.length > 0 ? (
-                (listPocket as any[]).map((pocket) => (
-                  <div
-                    key={pocket.pocket_id}
-                    className="flex flex-col items-left justify-between p-4 rounded-xl bg-base-300 border border-base-100"
-                  >
-                    <p className="font-bold">{pocket.nama_pocket}</p>
-                    <p className="text-base font-extrabold text-primary">
-                      Rp {Number(pocket.saldo || 0).toLocaleString("id-ID")}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-base-content/60 py-4 text-center">
-                  Belum ada pocket terdaftar.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Transaksi Terbaru */}
-        <div className="card bg-base-200 shadow-xl border border-base-300">
-          <div className="card-body">
-            <div className="flex items-center justify-between">
-              <h2 className="card-title">Transaksi Terakhir</h2>
-              <Link
-                href="/dashboard/transaksi"
-                className="text-xs font-semibold text-primary hover:underline"
-              >
-                Lihat Semua &rarr;
-              </Link>
-            </div>
-
-            <div className="overflow-x-auto mt-2">
-              <table className="table table-zebra w-full text-sm">
-                <tbody>
-                  {transaksiTerakhir && transaksiTerakhir.length > 0 ? (
-                    (transaksiTerakhir as any[]).map((tx) => (
-                      <tr key={tx.id}>
-                        <td>
-                          <p className="font-semibold">{tx.keterangan}</p>
-                          <p className="text-xs text-base-content/70">
-                            {tx.tanggal} &bull;{" "}
-                            <span className="capitalize">{tx.jenis}</span>
-                          </p>
-                        </td>
-                        <td
-                          className={`text-right font-bold ${
-                            tx.jenis === "masuk" ? "text-success" : "text-error"
-                          }`}
-                        >
-                          {tx.jenis === "masuk" ? "+ " : "- "}
-                          Rp {Number(tx.nominal || 0).toLocaleString("id-ID")}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={2}
-                        className="text-center py-6 text-base-content/60"
-                      >
-                        Belum ada riwayat transaksi.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
       </div>

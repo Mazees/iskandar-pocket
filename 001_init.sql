@@ -120,7 +120,7 @@ select
         select nominal_iuran_bulanan 
         from configuration 
         where berlaku_mulai <= current_date 
-        order by berlaku_mulai desc 
+        order by berlaku_mulai desc, created_at desc 
         limit 1
       ), 100000) then true 
       else false 

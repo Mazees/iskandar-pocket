@@ -41,9 +41,11 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
               onClick={handleCloseDrawer}
               className="flex items-center gap-3"
             >
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-xs">
-                <FiGrid className="w-5 h-5 text-primary-content" />
-              </div>
+              <img
+                src="/icon.svg"
+                alt="Iskandar Pocket Logo"
+                className="w-10 h-10 object-contain shrink-0"
+              />
               <div className="truncate">
                 <span className="font-bold text-base lg:text-lg block leading-tight truncate tracking-tight">
                   ISKANDAR POCKET
@@ -115,9 +117,11 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
           <div>
             {/* Brand Header */}
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-base-300">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-xs">
-                <FiGrid className="w-5 h-5 text-primary-content" />
-              </div>
+              <img
+                src="/icon.svg"
+                alt="Iskandar Pocket Logo"
+                className="w-10 h-10 object-contain shrink-0"
+              />
               <div>
                 <h2 className="font-bold text-base tracking-tight leading-none">
                   ISKANDAR POCKET

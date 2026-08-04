@@ -18,12 +18,15 @@ const IuranSchema = z.object({
  * Helper Server-Side: Mengambil nominal wajib iuran yang berlaku pada periode tertentu (format 'YYYY-MM')
  */
 async function getNominalWajibForPeriod(supabase: any, periodeStr: string) {
-  // Cari konfigurasi yang tanggal berlaku_mulai-nya berada di bulan tersebut atau sebelumnya
+  // Karena konfigurasi iuran berbasis bulan, kita bandingkan terhadap awal bulan `${periodeStr}-01`
+  const firstDateOfMonth = `${periodeStr}-01`;
+
   const { data } = await supabase
     .from("configuration")
     .select("nominal_iuran_bulanan")
-    .lte("berlaku_mulai", `${periodeStr}-31`)
+    .lte("berlaku_mulai", firstDateOfMonth)
     .order("berlaku_mulai", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
@@ -178,7 +181,7 @@ export async function createIuran(formData: FormData) {
   if (iuranInserts.length > 0) {
     const { error: insertErr } = await supabase
       .from("iuran")
-      .insert(iuranInserts);
+      .upsert(iuranInserts);
 
     if (insertErr) {
       return { error: `Gagal mencatat setoran iuran: ${insertErr.message}` };

@@ -10,9 +10,11 @@ export default function LoginPage() {
     <div className="hero min-h-screen bg-base-100">
       <div className="hero-content flex-col w-full max-w-sm">
         <div className="text-center mb-4">
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mx-auto mb-3">
-            <FiShield className="w-6 h-6 text-primary-content" />
-          </div>
+          <img
+            src="/icon.svg"
+            alt="Iskandar Pocket Logo"
+            className="w-16 h-16 object-contain mx-auto mb-3"
+          />
           <h1 className="text-2xl font-bold">Login Bendahara</h1>
           <p className="text-sm text-base-content/70 mt-1">
             Akses Admin Iskandar Pocket
