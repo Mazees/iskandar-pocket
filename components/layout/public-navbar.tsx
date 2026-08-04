@@ -73,7 +73,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
             <Link
               href="/laporan"
               className={`btn btn-sm lg:btn-md font-semibold rounded-lg hidden lg:inline-flex items-center ${
-                pathname === "/laporan"
+                pathname.startsWith("/laporan")
                   ? "btn-primary"
                   : "btn-outline border-base-300"
               }`}
@@ -153,7 +153,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
                   href="/laporan"
                   onClick={handleCloseDrawer}
                   className={`flex items-center gap-3 py-3 px-4 font-semibold rounded-lg w-full transition-colors ${
-                    pathname === "/laporan"
+                    pathname.startsWith("/laporan")
                       ? "bg-primary text-primary-content"
                       : "hover:bg-base-300/60"
                   }`}

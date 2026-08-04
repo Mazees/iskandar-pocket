@@ -102,7 +102,7 @@ export function IuranTable({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl">
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -111,7 +111,7 @@ export function IuranTable({
             Catatan Setoran Iuran
           </h1>
           <p className="text-xs text-base-content/70">
-            Daftar pembayaran iuran bulanan per Kepala Keluarga
+            Daftar pembayaran iuran bulanan per Keluarga
           </p>
         </div>
         <button
@@ -174,12 +174,12 @@ export function IuranTable({
       </div>
 
       {/* Table Data Setoran Iuran */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-0 overflow-x-auto">
           <table className="table table-zebra w-full text-sm">
             <thead className="bg-base-300 text-base-content font-bold">
               <tr>
-                <th>Nama KK</th>
+                <th>Nama Keluarga</th>
                 <th className="text-center">Periode</th>
                 <th className="text-center">Tanggal Setor</th>
                 <th className="text-center">Metode</th>

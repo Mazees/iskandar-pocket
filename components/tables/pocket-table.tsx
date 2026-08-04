@@ -96,7 +96,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl">
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -110,7 +110,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
         </div>
         <button
           onClick={handleOpenCreate}
-          className="btn btn-primary font-semibold shadow-xs"
+          className="btn btn-primary font-semibold shadow-sm"
         >
           <FiPlus className="w-4 h-4 mr-1" />
           Tambah Pocket Baru
@@ -138,7 +138,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
           return (
             <div
               key={pocket.pocket_id}
-              className="card bg-base-200 shadow-lg border border-base-300 relative overflow-hidden"
+              className="card bg-base-200 shadow-sm border border-base-300 relative overflow-hidden"
             >
               <div className="card-body p-5">
                 <div className="flex items-center justify-between">
@@ -194,7 +194,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
       </div>
 
       {/* Table Data Pocket */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-2">
             <label className="flex w-full sm:w-72 input input-bordered input-sm items-center gap-2">

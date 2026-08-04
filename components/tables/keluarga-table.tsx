@@ -94,7 +94,7 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl">
       {/* Header & Quick Action */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -152,7 +152,7 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
       </div>
 
       {/* Table Data Keluarga */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-0 overflow-x-auto">
           <table className="table table-zebra w-full text-sm">
             <thead className="bg-base-300 text-base-content font-bold">

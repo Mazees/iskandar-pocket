@@ -183,12 +183,17 @@ export function LaporanView({
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-6xl">
       {/* Header */}
-      <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-        <FiFileText className="w-5 h-5 text-primary shrink-0" />
-        EXPORT LAPORAN
-      </h1>
+      <div>
+        <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
+          <FiFileText className="w-5 h-5 text-primary shrink-0" />
+          Export Laporan &amp; Transparansi
+        </h1>
+        <p className="text-xs text-base-content/70">
+          Unduh rekap kas resmi keluarga dalam format PDF atau Excel (.xlsx)
+        </p>
+      </div>
 
       {/* Filter Periode Card */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -277,7 +282,7 @@ export function LaporanView({
       {/* Export Options Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
         {/* Export PDF */}
-        <div className="card bg-base-200 border border-base-300 shadow-md hover:border-primary transition-colors">
+        <div className="card bg-base-200 border border-base-300 shadow-sm hover:border-primary transition-colors">
           <div className="card-body p-5 space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
@@ -306,7 +311,7 @@ export function LaporanView({
         </div>
 
         {/* Export Excel */}
-        <div className="card bg-base-200 border border-base-300 shadow-md hover:border-primary transition-colors">
+        <div className="card bg-base-200 border border-base-300 shadow-sm hover:border-primary transition-colors">
           <div className="card-body p-5 space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">

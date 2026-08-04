@@ -30,7 +30,7 @@ export function ConfigView({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-6xl">
       <div>
         <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
           <FiSettings className="w-5 h-5 text-primary" />
@@ -42,25 +42,25 @@ export function ConfigView({
       </div>
 
       {/* Card Nominal Aktif & Action */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-6">
-          <div className="flex items-center justify-between border-b border-base-300 pb-4">
+          <div className="flex not-lg:flex-col items-center justify-between border-b border-base-300 pb-4 gap-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
                 <FiSettings className="w-5 h-5 text-primary-content" />
               </div>
               <div>
                 <h2 className="card-title text-sm">
-                  Nominal Iuran Bulanan per KK
+                  Nominal Iuran Bulanan per Keluarga
                 </h2>
                 <p className="text-xs text-base-content/70">
-                  Nominal standar yang berlaku untuk setiap Kepala Keluarga
+                  Nominal standar yang berlaku untuk setiap Keluarga
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn btn-sm btn-primary font-semibold shadow-xs"
+              className="btn btn-sm not-lg:w-full btn-primary font-semibold shadow-sm"
             >
               <FiEdit2 className="w-4 h-4 mr-1" />
               Ubah / Tambah Tarif Baru
@@ -80,8 +80,8 @@ export function ConfigView({
                 </span>
               </p>
             </div>
-            <div className="text-right">
-              <span className="badge badge-success font-semibold text-xs gap-1 text-success-content">
+            <div className="lg:text-right">
+              <span className="badge badge-success font-semibold text-xs gap-1 text-white">
                 <FiCheckCircle className="w-3.5 h-3.5" />
                 Berlaku sejak:{" "}
                 {activeBerlakuMulai
@@ -118,14 +118,14 @@ export function ConfigView({
                               {
                                 month: "long",
                                 year: "numeric",
-                              }
+                              },
                             )}
                           </td>
                           <td className="font-extrabold text-primary">
                             Rp{" "}
-                            {Number(
-                              item.nominal_iuran_bulanan
-                            ).toLocaleString("id-ID")}
+                            {Number(item.nominal_iuran_bulanan).toLocaleString(
+                              "id-ID",
+                            )}
                           </td>
                         </tr>
                       );
@@ -148,10 +148,10 @@ export function ConfigView({
       </div>
 
       {/* Card Info Keamanan Admin */}
-      <div className="card bg-base-200 shadow-xl border border-base-300">
+      <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body flex-row items-center justify-between p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shadow-sm">
               <FiShield className="w-5 h-5 text-secondary-content" />
             </div>
             <div>
