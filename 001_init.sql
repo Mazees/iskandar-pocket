@@ -114,10 +114,21 @@ select
     keluarga.id            as keluarga_id,
     keluarga.nama_keluarga,
     coalesce(sum(i.nominal), 0) as total_setor_bulan_ini,
-    case when sum(i.nominal) > 0 then true else false end as sudah_setor
+    case when coalesce(sum(i.nominal), 0) > 0 then true else false end as sudah_setor,
+    case 
+      when coalesce(sum(i.nominal), 0) >= coalesce((
+        select nominal_iuran_bulanan 
+        from configuration 
+        where berlaku_mulai <= current_date 
+        order by berlaku_mulai desc 
+        limit 1
+      ), 100000) then true 
+      else false 
+    end as lunas_bulan_ini
 from keluarga
 left join iuran i
     on i.keluarga_id = keluarga.id
+    and i.periode = to_char(current_date, 'YYYY-MM')
 group by keluarga.id, keluarga.nama_keluarga;
 
 -- ---------------------------------------------------------

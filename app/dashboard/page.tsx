@@ -163,10 +163,15 @@ export default async function DashboardOverviewPage() {
                     <tr key={item.keluarga_id}>
                       <td className="font-bold">{item.nama_keluarga}</td>
                       <td className="text-center">
-                        {item.sudah_setor ? (
-                          <span className="badge badge-primary font-semibold gap-1">
+                        {item.lunas_bulan_ini ? (
+                          <span className="badge badge-success font-semibold gap-1 text-success-content">
                             <FiCheckCircle className="w-3.5 h-3.5" />
-                            Sudah Setor
+                            Lunas
+                          </span>
+                        ) : item.sudah_setor ? (
+                          <span className="badge badge-warning font-semibold gap-1 text-warning-content">
+                            <FiCheckCircle className="w-3.5 h-3.5" />
+                            Kurang
                           </span>
                         ) : (
                           <span className="badge badge-error font-semibold gap-1 text-error-content">
