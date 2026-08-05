@@ -145,13 +145,13 @@ export function generateLaporanPDF(data: LaporanPDFData) {
 
   currentY = (doc as any).lastAutoTable.finalY + 8;
 
-  // 4. Tabel Status Setoran Iuran Keluarga (SEMUA RATA KIRI)
-  if (data.statusIuran && data.statusIuran.length > 0) {
+  // 4. Tabel Status Setoran Iuran Keluarga (Hanya untuk Bulanan)
+  const isYearly = data.rekapTahunan && data.rekapTahunan.length > 0;
+  if (data.statusIuran && data.statusIuran.length > 0 && !isYearly) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...darkTextColor);
-    const isYearly = data.rekapTahunan && data.rekapTahunan.length > 0;
-    doc.text(isYearly ? "STATUS TOTAL IURAN KELUARGA TAHUN INI" : "STATUS SETORAN IURAN KELUARGA BULAN INI", 14, currentY);
+    doc.text("STATUS SETORAN IURAN KELUARGA BULAN INI", 14, currentY);
 
     autoTable(doc, {
       startY: currentY + 3,
