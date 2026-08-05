@@ -40,13 +40,6 @@ export default function Home() {
               <FiEye className="w-5 h-5 mr-1.5" />
               Lihat Laporan Keuangan
             </Link>
-            <Link
-              href="/login"
-              className="btn btn-neutral btn-md lg:btn-lg font-semibold rounded-lg px-8 border border-base-300"
-            >
-              Masuk sebagai Bendahara
-              <FiArrowRight className="w-5 h-5 ml-1" />
-            </Link>
           </div>
         </div>
       </main>

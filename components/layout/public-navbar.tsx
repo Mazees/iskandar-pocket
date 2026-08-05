@@ -166,7 +166,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
                 <Link
                   href="/login"
                   onClick={handleCloseDrawer}
-                  className="flex items-center gap-3 py-3 px-4 font-semibold rounded-lg w-full bg-neutral text-neutral-content hover:bg-neutral/80"
+                  className="justify-start gap-3 py-3 px-4 font-semibold rounded-lg w-full transition-colors btn btn-outline btn-primary"
                 >
                   <FiLock className="w-5 h-5" />
                   <span>{isLoggedIn ? "Buka Dashboard" : "Login"}</span>
