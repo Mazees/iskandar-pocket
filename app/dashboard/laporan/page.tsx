@@ -39,7 +39,7 @@ export default async function DashboardLaporanPage({
     .select("id, nama_keluarga")
     .order("nama_keluarga", { ascending: true });
 
-  let queryIuranPeriode = supabase.from("iuran").select("keluarga_id, nominal");
+  let queryIuranPeriode = supabase.from("iuran").select("keluarga_id, nominal, periode");
   if (params.tahun) {
     queryIuranPeriode = queryIuranPeriode
       .gte("periode", `${currentTahunStr}-01`)
@@ -157,6 +157,35 @@ export default async function DashboardLaporanPage({
     .filter((t) => t.jenis === "keluar")
     .reduce((acc, t) => acc + t.nominal, 0);
 
+  let statusTahunIni: any[] | undefined = undefined;
+  if (params.tahun) {
+    const monthKeys = ["jan", "feb", "mar", "apr", "mei", "jun", "jul", "agu", "sep", "okt", "nov", "des"];
+    const matrixMap: Record<string, any> = {};
+    (listKeluarga || []).forEach((k: any) => {
+      matrixMap[k.id] = {
+        keluarga_id: k.id,
+        nama_keluarga: k.nama_keluarga,
+        jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0,
+        total_setor_tahun_ini: 0,
+      };
+    });
+    
+    (iuranPeriodeRaw || []).forEach((row: any) => {
+      if (matrixMap[row.keluarga_id] && row.periode) {
+        const mIndex = parseInt(row.periode.split("-")[1], 10) - 1;
+        if (mIndex >= 0 && mIndex < 12) {
+          const mKey = monthKeys[mIndex];
+          const val = Number(row.nominal);
+          matrixMap[row.keluarga_id][mKey] += val;
+          matrixMap[row.keluarga_id].total_setor_tahun_ini += val;
+        }
+      }
+    });
+    statusTahunIni = Object.values(matrixMap).sort((a, b) =>
+      a.nama_keluarga.localeCompare(b.nama_keluarga),
+    );
+  }
+
   return (
     <div className="max-w-6xl">
       <LaporanView
@@ -168,6 +197,7 @@ export default async function DashboardLaporanPage({
         totalIuranPeriode={totalIuranPeriode}
         totalTransaksiMasukPeriode={totalTransaksiMasuk}
         totalPengeluaranPeriode={totalPengeluaran}
+        statusTahunIni={statusTahunIni}
       />
     </div>
   );

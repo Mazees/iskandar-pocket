@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   FiUsers,
   FiTrendingDown,
@@ -68,6 +69,9 @@ interface PublicOverviewViewProps {
     total_setor_tahun_ini: number;
     [key: string]: any;
   }[];
+  periodeLabel?: string;
+  currentBulanStr?: string;
+  currentTahunStr?: string;
 }
 
 export function PublicOverviewView({
@@ -78,11 +82,36 @@ export function PublicOverviewView({
   transaksiTerakhir,
   statusBulanIni,
   statusTahunIni,
+  periodeLabel,
+  currentBulanStr = "",
+  currentTahunStr = "",
 }: PublicOverviewViewProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [detailData, setDetailData] = useState<TransaksiDetailItem | null>(
     null,
   );
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  const [selectedBulan, setSelectedBulan] = useState(currentBulanStr);
+  const [selectedTahun, setSelectedTahun] = useState(currentTahunStr);
+
+  const handleBulanChange = (val: string) => {
+    setSelectedBulan(val);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("bulan", val);
+    router.push(`?${params.toString()}`);
+  };
+
+  const handleTahunChange = (val: string) => {
+    setSelectedTahun(val);
+    if (val.length === 4) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tahun", val);
+      router.push(`?${params.toString()}`);
+    }
+  };
 
   const handleRowClick = (tx: any) => {
     setDetailData({
@@ -117,7 +146,7 @@ export function PublicOverviewView({
 
   const exportDataFormatted = useMemo(() => {
     return {
-      periodeLabel: "Keseluruhan Data Kas (All-Time)",
+      periodeLabel: periodeLabel || "Keseluruhan Data Kas (All-Time)",
       totalPemasukan: totalPemasukanBulanIni,
       totalPengeluaran: totalPengeluaran,
       saldoBersih: totalSaldo,
@@ -411,6 +440,14 @@ export function PublicOverviewView({
                 Status pembayaran iuran bulanan per Keluarga
               </p>
             </div>
+            <div>
+              <input
+                type="month"
+                value={selectedBulan}
+                onChange={(e) => handleBulanChange(e.target.value)}
+                className="input input-bordered input-sm font-semibold text-xs bg-base-100"
+              />
+            </div>
           </div>
 
           <div className="overflow-x-auto mt-4">
@@ -480,6 +517,18 @@ export function PublicOverviewView({
               <p className="text-xs text-base-content/70">
                 Matriks setoran 12 bulan per Keluarga tahun ini
               </p>
+            </div>
+            <div>
+              <input
+                type="number"
+                min="2000"
+                max="2099"
+                step="1"
+                placeholder="YYYY"
+                value={selectedTahun}
+                onChange={(e) => handleTahunChange(e.target.value)}
+                className="input input-bordered input-sm font-bold text-xs bg-base-100 w-24 text-center"
+              />
             </div>
           </div>
 
