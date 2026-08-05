@@ -14,7 +14,7 @@ export function generateLaporanExcel(data: LaporanPDFData) {
 
   // Sheet 1: Ringkasan Kas
   const ringkasanData = [
-    ["LAPORAN KAS KELUARGA — ISKANDAR POCKET"],
+    ["LAPORAN KAS KELUARGA — ISPOCKET"],
     [`Periode: ${data.periodeLabel}`],
     [],
     ["METRIK KELEPASAN / RINGKASAN", "NOMINAL (RP)"],
@@ -40,6 +40,46 @@ export function generateLaporanExcel(data: LaporanPDFData) {
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(iuranData);
     XLSX.utils.book_append_sheet(wb, ws2, "Status Iuran Keluarga");
+  }
+
+  // Sheet 2.5: Rekap Iuran Tahunan (12 Bulan)
+  if (data.rekapTahunan && data.rekapTahunan.length > 0) {
+    const tahunanData = [
+      [
+        "NAMA KELUARGA",
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MEI",
+        "JUN",
+        "JUL",
+        "AGU",
+        "SEP",
+        "OKT",
+        "NOV",
+        "DES",
+        "TOTAL (RP)",
+      ],
+      ...data.rekapTahunan.map((r) => [
+        r.nama_keluarga,
+        r.jan,
+        r.feb,
+        r.mar,
+        r.apr,
+        r.mei,
+        r.jun,
+        r.jul,
+        r.agu,
+        r.sep,
+        r.okt,
+        r.nov,
+        r.des,
+        r.total,
+      ]),
+    ];
+    const wsTahunan = XLSX.utils.aoa_to_sheet(tahunanData);
+    XLSX.utils.book_append_sheet(wb, wsTahunan, "Rekap Iuran Tahunan");
   }
 
   // Sheet 3: Riwayat Transaksi

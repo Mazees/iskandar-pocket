@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 /**
  * Custom SweetAlert2 Utility
  * --------------------------
- * Didesain khusus untuk Iskandar Pocket agar font, warna, & tombol modal
+ * Didesain khusus untuk ISPOCKET agar font, warna, & tombol modal
  * 100% seragam dengan tema aplikasi (DaisyUI & Font Poppins).
  */
 
@@ -18,7 +18,8 @@ export const showSuccessToast = (message: string) => {
     timer: 3000,
     timerProgressBar: true,
     customClass: {
-      popup: "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
+      popup:
+        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
     },
   });
 };
@@ -33,7 +34,8 @@ export const showErrorToast = (message: string) => {
     timer: 3500,
     timerProgressBar: true,
     customClass: {
-      popup: "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
+      popup:
+        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
     },
   });
 };
@@ -57,7 +59,8 @@ export const showAlert = ({
     confirmButtonText,
     buttonsStyling: false,
     customClass: {
-      popup: "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
+      popup:
+        "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
       title: "font-bold text-lg text-base-content",
       htmlContainer: "text-sm text-base-content/70 mt-2",
       confirmButton: "btn btn-primary font-semibold px-6 rounded-lg shadow-xs",
@@ -107,7 +110,8 @@ export const showConfirmModal = ({
     buttonsStyling: false,
     reverseButtons: true,
     customClass: {
-      popup: "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
+      popup:
+        "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
       title: "font-bold text-lg text-base-content",
       htmlContainer: "text-sm text-base-content/70 mt-2",
       confirmButton: isDanger

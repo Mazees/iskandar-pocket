@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Iskandar Pocket — Kas Keluarga Transparan",
+  title: "ISPOCKET — Kas Keluarga Transparan",
   description: "Aplikasi kas keluarga transparan berbasis web",
   icons: {
     icon: "/icon.svg",

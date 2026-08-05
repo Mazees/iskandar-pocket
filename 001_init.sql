@@ -1,5 +1,5 @@
 -- =========================================================
--- Iskandar Pocket — Initial Migration (001_init.sql)
+-- ISPOCKET — Initial Migration (001_init.sql)
 -- Target: Supabase (PostgreSQL)
 -- =========================================================
 

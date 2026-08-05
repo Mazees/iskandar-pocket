@@ -103,7 +103,7 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
             Daftar Kepala Keluarga
           </h1>
           <p className="text-xs text-base-content/70">
-            Kelola data keluarga peserta iuran kas Iskandar Pocket
+            Kelola data keluarga peserta iuran kas ISPOCKET
           </p>
         </div>
         <button

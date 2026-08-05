@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { PocketTable, PocketViewItem } from "@/components/tables/pocket-table";
 
 export const metadata = {
-  title: "Dompet Pocket — Iskandar Pocket",
+  title: "Dompet Pocket — ISPOCKET",
   description: "Kelola akun pocket kas tunai dan rekening bank",
 };
 
@@ -18,12 +18,14 @@ export default async function PocketPage() {
     console.error("Gagal mengambil data pocket:", error.message);
   }
 
-  const formattedPockets: PocketViewItem[] = (listPocket || []).map((item: any) => ({
-    pocket_id: item.pocket_id,
-    nama_pocket: item.nama_pocket,
-    saldo_awal: Number(item.saldo_awal || 0),
-    saldo: Number(item.saldo || 0),
-  }));
+  const formattedPockets: PocketViewItem[] = (listPocket || []).map(
+    (item: any) => ({
+      pocket_id: item.pocket_id,
+      nama_pocket: item.nama_pocket,
+      saldo_awal: Number(item.saldo_awal || 0),
+      saldo: Number(item.saldo || 0),
+    }),
+  );
 
   return (
     <div className="max-w-6xl">

@@ -1,38 +1,40 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 <!-- END:nextjs-agent-rules -->
 
 ---
 
-# Iskandar Pocket — Agent Guidelines
+# ISPOCKET — Agent Guidelines
 
 ## Tentang Proyek
 
-Iskandar Pocket adalah **aplikasi kas keluarga transparan** berbasis web. Dikelola oleh 1 Admin (bendahara), bisa diakses publik tanpa login untuk melihat laporan transparansi kas.
+ISPOCKET adalah **aplikasi kas keluarga transparan** berbasis web. Dikelola oleh 1 Admin (bendahara), bisa diakses publik tanpa login untuk melihat laporan transparansi kas.
 
 ## Dokumen Referensi
 
 Sebelum menulis kode, **wajib** baca dokumen berikut:
 
-| Dokumen | Path | Isi |
-|---|---|---|
-| **PRD** | `PRD-Iskandar-Pocket.md` | Product Requirements, user flow, fitur, ERD, routing |
-| **SRS** | `SRS-Iskandar-Pocket.md` | Spesifikasi teknis lengkap: arsitektur, API, komponen, schema, konvensi kode |
-| **SQL Migration** | `001_init.sql` | Database schema (tabel, view, RLS policies, indexes) |
+| Dokumen           | Path                     | Isi                                                                          |
+| ----------------- | ------------------------ | ---------------------------------------------------------------------------- |
+| **PRD**           | `PRD-Iskandar-Pocket.md` | Product Requirements, user flow, fitur, ERD, routing                         |
+| **SRS**           | `SRS-Iskandar-Pocket.md` | Spesifikasi teknis lengkap: arsitektur, API, komponen, schema, konvensi kode |
+| **SQL Migration** | `001_init.sql`           | Database schema (tabel, view, RLS policies, indexes)                         |
 
 ## Tech Stack
 
-| Komponen | Teknologi | Versi |
-|---|---|---|
-| Framework | **Next.js** (App Router) | 16.2.12 |
-| UI Library | **React** | 19.2.4 |
-| Language | **TypeScript** | ^5 (strict mode) |
-| Styling | **Tailwind CSS** | ^4 |
-| Backend/DB | **Supabase** (PostgreSQL, Auth, Storage) | Free tier |
-| PDF Export | `jspdf` + `jspdf-autotable` | |
-| Excel Export | `xlsx` (SheetJS) | |
+| Komponen     | Teknologi                                | Versi            |
+| ------------ | ---------------------------------------- | ---------------- |
+| Framework    | **Next.js** (App Router)                 | 16.2.12          |
+| UI Library   | **React**                                | 19.2.4           |
+| Language     | **TypeScript**                           | ^5 (strict mode) |
+| Styling      | **Tailwind CSS**                         | ^4               |
+| Backend/DB   | **Supabase** (PostgreSQL, Auth, Storage) | Free tier        |
+| PDF Export   | `jspdf` + `jspdf-autotable`              |                  |
+| Excel Export | `xlsx` (SheetJS)                         |                  |
 
 ## Aturan Arsitektur
 
@@ -64,14 +66,14 @@ middleware.ts         → Auth redirect (dashboard → login jika belum auth)
 
 ## Konvensi Kode
 
-| Aspek | Konvensi |
-|---|---|
-| Bahasa komentar | **Bahasa Indonesia** |
-| Nama file/folder | **kebab-case** (`keluarga-form.tsx`) |
-| Nama komponen | **PascalCase** (`KeluargaForm`) |
-| Nama fungsi/variabel | **camelCase** (`getKeluargaList`) |
-| Kolom database | **snake_case** (`nama_keluarga`) |
-| Konstanta | **UPPER_SNAKE_CASE** (`MAX_FILE_SIZE`) |
+| Aspek                | Konvensi                               |
+| -------------------- | -------------------------------------- |
+| Bahasa komentar      | **Bahasa Indonesia**                   |
+| Nama file/folder     | **kebab-case** (`keluarga-form.tsx`)   |
+| Nama komponen        | **PascalCase** (`KeluargaForm`)        |
+| Nama fungsi/variabel | **camelCase** (`getKeluargaList`)      |
+| Kolom database       | **snake_case** (`nama_keluarga`)       |
+| Konstanta            | **UPPER_SNAKE_CASE** (`MAX_FILE_SIZE`) |
 
 ## Aturan Penting
 
@@ -89,18 +91,18 @@ middleware.ts         → Auth redirect (dashboard → login jika belum auth)
 
 ```typescript
 // Server (RSC, Server Actions): import dari lib/supabase/server.ts
-import { createClient } from '@/lib/supabase/server'
-const supabase = await createClient()
+import { createClient } from "@/lib/supabase/server";
+const supabase = await createClient();
 
 // Browser (Client Components): import dari lib/supabase/client.ts
-import { createClient } from '@/lib/supabase/client'
-const supabase = createClient()
+import { createClient } from "@/lib/supabase/client";
+const supabase = createClient();
 ```
 
 ## Server Action Pattern
 
 ```typescript
-'use server'
+"use server";
 // 1. Cek auth (supabase.auth.getUser())
 // 2. Validasi input (Zod schema)
 // 3. Operasi database

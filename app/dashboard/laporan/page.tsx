@@ -7,8 +7,9 @@ import {
 } from "@/components/laporan/laporan-view";
 
 export const metadata = {
-  title: "Laporan Transparansi Kas — Iskandar Pocket",
-  description: "Laporan transparansi kas keluarga lengkap dengan cetak PDF & Excel",
+  title: "Laporan Transparansi Kas — ISPOCKET",
+  description:
+    "Laporan transparansi kas keluarga lengkap dengan cetak PDF & Excel",
 };
 
 interface LaporanPageProps {
@@ -71,7 +72,7 @@ export default async function DashboardLaporanPage({
         nominal_wajib: nominalWajib,
         status,
       };
-    }
+    },
   );
 
   // 3. Ambil riwayat transaksi kas pada periode terpilih
@@ -90,7 +91,7 @@ export default async function DashboardLaporanPage({
         id,
         nama_pocket
       )
-    `
+    `,
     )
     .order("tanggal", { ascending: false });
 
@@ -120,7 +121,7 @@ export default async function DashboardLaporanPage({
   const { data: iuranSumRaw } = await queryIuranSum;
   const totalIuranPeriode = (iuranSumRaw || []).reduce(
     (acc, row) => acc + Number(row.nominal || 0),
-    0
+    0,
   );
 
   // Formatting Data
@@ -130,10 +131,8 @@ export default async function DashboardLaporanPage({
       nama_pocket: p.nama_pocket,
       saldo_awal: Number(p.saldo_awal || 0),
       saldo: Number(p.saldo || 0),
-    })
+    }),
   );
-
-
 
   const formattedTransaksi: LaporanTransaksiItem[] = (
     listTransaksiRaw || []

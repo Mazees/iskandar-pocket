@@ -5,7 +5,7 @@ import {
 } from "@/components/tables/transaksi-table";
 
 export const metadata = {
-  title: "Transaksi Kas — Iskandar Pocket",
+  title: "Transaksi Kas — ISPOCKET",
   description: "Catatan transaksi pengeluaran operasional & kas masuk",
 };
 
@@ -28,7 +28,7 @@ export default async function TransaksiPage() {
         id,
         nama_pocket
       )
-    `
+    `,
     )
     .order("tanggal", { ascending: false })
     .order("created_at", { ascending: false });
@@ -57,7 +57,7 @@ export default async function TransaksiPage() {
         id: item.pocket?.id || item.pocket_id,
         nama_pocket: item.pocket?.nama_pocket || "Pocket Unmapped",
       },
-    })
+    }),
   );
 
   const formattedPocketList = (listPocket || []).map((p: any) => ({

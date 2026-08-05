@@ -19,12 +19,28 @@ export interface LaporanPDFData {
     keterangan: string;
     nominal: number;
   }[];
+  rekapTahunan?: {
+    nama_keluarga: string;
+    jan: number;
+    feb: number;
+    mar: number;
+    apr: number;
+    mei: number;
+    jun: number;
+    jul: number;
+    agu: number;
+    sep: number;
+    okt: number;
+    nov: number;
+    des: number;
+    total: number;
+  }[];
 }
 
 /**
  * PDF Exporter Utility
  * -------------------
- * Membuat file PDF Laporan Kas Keluarga Iskandar Pocket dengan
+ * Membuat file PDF Laporan Kas Keluarga ISPOCKET dengan
  * SELURUH TABEL RATA KIRI (LEFT-ALIGNED) RAPI & SERAGAM.
  */
 export function generateLaporanPDF(data: LaporanPDFData) {
@@ -45,7 +61,7 @@ export function generateLaporanPDF(data: LaporanPDFData) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(255, 255, 255);
-  doc.text("ISKANDAR POCKET — LAPORAN KAS KELUARGA", 14, 12);
+  doc.text("ISPOCKET — LAPORAN KAS KELUARGA", 14, 12);
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
@@ -71,7 +87,7 @@ export function generateLaporanPDF(data: LaporanPDFData) {
   doc.text(
     `Rp ${data.totalPemasukan.toLocaleString("id-ID")}`,
     18,
-    startY + 15
+    startY + 15,
   );
 
   // Box Total Pengeluaran
@@ -86,7 +102,7 @@ export function generateLaporanPDF(data: LaporanPDFData) {
   doc.text(
     `Rp ${data.totalPengeluaran.toLocaleString("id-ID")}`,
     80,
-    startY + 15
+    startY + 15,
   );
 
   // Box Saldo Kas Bersih
@@ -134,7 +150,7 @@ export function generateLaporanPDF(data: LaporanPDFData) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...darkTextColor);
-    doc.text("STATUS SETORAN IURAN KELUARGA", 14, currentY);
+    doc.text("STATUS SETORAN IURAN KELUARGA BULAN INI", 14, currentY);
 
     autoTable(doc, {
       startY: currentY + 3,
@@ -153,6 +169,67 @@ export function generateLaporanPDF(data: LaporanPDFData) {
         halign: "left",
       },
       styles: { fontSize: 8, halign: "left" },
+      margin: { left: 14, right: 14 },
+    });
+
+    currentY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  // 4.5. Tabel Rekap Iuran Tahunan (12 Bulan)
+  if (data.rekapTahunan && data.rekapTahunan.length > 0) {
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...darkTextColor);
+    doc.text("REKAP IURAN TAHUNAN", 14, currentY);
+
+    const fmt = (n: number) =>
+      n > 0 ? (n >= 1000 ? `${n / 1000}K` : `${n}`) : "-";
+
+    autoTable(doc, {
+      startY: currentY + 3,
+      head: [
+        [
+          "Nama Keluarga",
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "Mei",
+          "Jun",
+          "Jul",
+          "Agu",
+          "Sep",
+          "Okt",
+          "Nov",
+          "Des",
+          "Total",
+        ],
+      ],
+      body: data.rekapTahunan.map((r) => [
+        r.nama_keluarga,
+        fmt(r.jan),
+        fmt(r.feb),
+        fmt(r.mar),
+        fmt(r.apr),
+        fmt(r.mei),
+        fmt(r.jun),
+        fmt(r.jul),
+        fmt(r.agu),
+        fmt(r.sep),
+        fmt(r.okt),
+        fmt(r.nov),
+        fmt(r.des),
+        `Rp ${r.total.toLocaleString("id-ID")}`,
+      ]),
+      theme: "striped",
+      headStyles: {
+        fillColor: [71, 85, 105], // slate
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 7,
+        halign: "left",
+      },
+      styles: { fontSize: 7, halign: "left" },
       margin: { left: 14, right: 14 },
     });
 
@@ -197,10 +274,10 @@ export function generateLaporanPDF(data: LaporanPDFData) {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(148, 163, 184);
     doc.text(
-      `Dicetak otomatis oleh Iskandar Pocket — Halaman ${i} dari ${pageCount}`,
+      `Dicetak otomatis oleh ISPOCKET — Halaman ${i} dari ${pageCount}`,
       105,
       290,
-      { align: "center" }
+      { align: "center" },
     );
   }
 
