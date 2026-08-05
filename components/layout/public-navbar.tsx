@@ -34,7 +34,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
       {/* Area Konten Utama */}
       <div className="drawer-content flex flex-col min-h-screen">
         {/* Top Navbar */}
-        <header className="navbar bg-base-100 border-t-4 border-t-primary border-b border-base-300 px-4 lg:px-8 py-3.5 sticky top-0 z-40">
+        <header className="navbar bg-base-100 border-t-4 border-t-primary border-b border-base-300 px-4 lg:px-8 py-3.5 sticky top-0 z-40 h-18">
           <div className="flex-1 min-w-0">
             <Link
               href="/"
