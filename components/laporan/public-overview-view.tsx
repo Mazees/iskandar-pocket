@@ -68,6 +68,7 @@ interface PublicOverviewViewProps {
     total_setor_tahun_ini: number;
     [key: string]: any;
   }[];
+  periodeLabel?: string;
 }
 
 export function PublicOverviewView({
@@ -78,6 +79,7 @@ export function PublicOverviewView({
   transaksiTerakhir,
   statusBulanIni,
   statusTahunIni,
+  periodeLabel,
 }: PublicOverviewViewProps) {
   const [detailData, setDetailData] = useState<TransaksiDetailItem | null>(
     null,
@@ -117,7 +119,7 @@ export function PublicOverviewView({
 
   const exportDataFormatted = useMemo(() => {
     return {
-      periodeLabel: "Keseluruhan Data Kas (All-Time)",
+      periodeLabel: periodeLabel || "Keseluruhan Data Kas (All-Time)",
       totalPemasukan: totalPemasukanBulanIni,
       totalPengeluaran: totalPengeluaran,
       saldoBersih: totalSaldo,

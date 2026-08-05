@@ -7,12 +7,17 @@ export const metadata = {
   description: "Laporan transparansi kas publik kas keluarga ISPOCKET",
 };
 
-export default async function PublicLaporanPage() {
+interface PublicLaporanPageProps {
+  searchParams: Promise<{ bulan?: string; tahun?: string }>;
+}
+
+export default async function PublicLaporanPage({ searchParams }: PublicLaporanPageProps) {
   const supabase = await createClient();
+  const params = await searchParams;
 
   const currentDate = new Date();
-  const selectedBulan = currentDate.toISOString().slice(0, 7); // e.g. "2026-08"
-  const selectedTahun = currentDate.getFullYear().toString(); // e.g. "2026"
+  const selectedBulan = params.bulan || currentDate.toISOString().slice(0, 7); // e.g. "2026-08"
+  const selectedTahun = params.tahun || currentDate.getFullYear().toString(); // e.g. "2026"
 
   // 1. Ambil data Pocket, Rekap, dan Transaksi Terakhir (Persis seperti Dashboard)
   const { data: listPocketRaw } = await supabase
@@ -179,6 +184,13 @@ export default async function PublicLaporanPage() {
     }),
   );
 
+  const [yStr, mStr] = selectedBulan.split("-");
+  const selectedDateObj = new Date(parseInt(yStr, 10), parseInt(mStr, 10) - 1, 1);
+  const currentMonthName = selectedDateObj.toLocaleString("id-ID", {
+    month: "long",
+  });
+  const periodeLabelFormatted = `${currentMonthName} ${selectedTahun}`;
+
   return (
     <PublicNavbar>
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8">
@@ -190,6 +202,9 @@ export default async function PublicLaporanPage() {
           transaksiTerakhir={formattedTransaksiTerakhir}
           statusBulanIni={statusBulanIni}
           statusTahunIni={statusTahunIni}
+          periodeLabel={periodeLabelFormatted}
+          currentBulanStr={selectedBulan}
+          currentTahunStr={selectedTahun}
         />
       </main>
     </PublicNavbar>
