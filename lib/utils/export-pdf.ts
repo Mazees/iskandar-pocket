@@ -150,7 +150,8 @@ export function generateLaporanPDF(data: LaporanPDFData) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...darkTextColor);
-    doc.text("STATUS SETORAN IURAN KELUARGA BULAN INI", 14, currentY);
+    const isYearly = data.rekapTahunan && data.rekapTahunan.length > 0;
+    doc.text(isYearly ? "STATUS TOTAL IURAN KELUARGA TAHUN INI" : "STATUS SETORAN IURAN KELUARGA BULAN INI", 14, currentY);
 
     autoTable(doc, {
       startY: currentY + 3,
