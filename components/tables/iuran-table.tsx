@@ -22,7 +22,6 @@ export interface IuranItem {
   periode: string;
   tanggal_setor: string;
   nominal: number;
-  metode: "cash" | "transfer";
   keterangan?: string;
   keluarga: {
     id: string;
@@ -179,7 +178,6 @@ export function IuranTable({
                 <th>Nama Keluarga</th>
                 <th className="text-center">Periode</th>
                 <th className="text-center">Tanggal Setor</th>
-                <th className="text-center">Metode</th>
                 <th className="text-center">Pocket</th>
                 <th className="text-right">Nominal</th>
                 <th className="text-center w-20">Aksi</th>
@@ -206,17 +204,6 @@ export function IuranTable({
                           year: "numeric",
                         }
                       )}
-                    </td>
-                    <td className="text-center">
-                      <span
-                        className={`badge badge-xs sm:badge-sm font-semibold capitalize ${
-                          item.metode === "transfer"
-                            ? "badge-outline"
-                            : "badge-ghost"
-                        }`}
-                      >
-                        {item.metode === "transfer" ? "Transfer Bank" : "Tunai"}
-                      </span>
                     </td>
                     <td className="text-center font-medium">
                       {item.pocket?.nama_pocket || "-"}
