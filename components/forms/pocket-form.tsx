@@ -81,8 +81,7 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
-            <FiFolder className="w-5 h-5 text-primary" />
-            {editData ? "Edit Akun Pocket" : "Tambah Pocket Baru"}
+            {editData ? "Edit Data Pocket" : "Tambah Pocket Baru"}
           </h3>
           <button
             type="button"
@@ -119,25 +118,27 @@ export function PocketForm({ isOpen, onClose, editData }: PocketFormProps) {
             />
           </div>
 
-          {/* Saldo Awal */}
-          <div className="form-control w-full">
-            <label className="label py-1">
-              <span className="label-text font-semibold">Saldo Awal (Rp)</span>
-            </label>
-            <label className="input input-bordered input-sm flex items-center gap-1 font-bold text-primary">
-              <span>Rp</span>
-              <input
-                type="number"
-                required
-                min={0}
-                placeholder="0"
-                value={saldoAwal}
-                onChange={(e) => setSaldoAwal(e.target.value)}
-                className="grow text-sm"
-                disabled={loading}
-              />
-            </label>
-          </div>
+          {/* Saldo Awal (Hanya untuk tambah baru) */}
+          {!editData && (
+            <div className="form-control w-full">
+              <label className="label py-1">
+                <span className="label-text font-semibold">Saldo Awal (Rp)</span>
+              </label>
+              <label className="input input-bordered input-sm flex items-center gap-1 font-bold text-primary">
+                <span>Rp</span>
+                <input
+                  type="number"
+                  required
+                  min={0}
+                  placeholder="0"
+                  value={saldoAwal}
+                  onChange={(e) => setSaldoAwal(e.target.value)}
+                  className="grow text-sm"
+                  disabled={loading}
+                />
+              </label>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="modal-action pt-2">

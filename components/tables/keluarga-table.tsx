@@ -99,7 +99,6 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-            <FiUsers className="w-5 h-5 text-primary shrink-0" />
             Daftar Kepala Keluarga
           </h1>
           <p className="text-xs text-base-content/70">
@@ -133,7 +132,6 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
       <div className="card bg-base-200 border border-base-300 shadow-sm">
         <div className="card-body p-4 flex-row flex-wrap items-center justify-between gap-4">
           <label className="flex w-72 input input-bordered input-sm items-center gap-2">
-            <FiSearch className="w-4 h-4 text-base-content/50" />
             <input
               type="text"
               placeholder="Cari nama Keluarga..."

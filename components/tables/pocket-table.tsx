@@ -104,8 +104,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-            <FiFolder className="w-5 h-5 text-primary shrink-0" />
-            Dompet &amp; Akun Pocket Kas
+            Dompet Kas
           </h1>
           <p className="text-xs text-base-content/70">
             Kelola akun tempat penyimpanan dana kas tunai maupun rekening bank
@@ -211,8 +210,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
       <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-2">
-            <label className="flex w-full sm:w-72 input input-bordered input-sm items-center gap-2">
-              <FiSearch className="w-4 h-4 text-base-content/50" />
+            <label className="flex w-72 input input-bordered input-sm items-center gap-2">
               <input
                 type="text"
                 placeholder="Cari nama Pocket..."

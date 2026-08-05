@@ -73,8 +73,7 @@ export function ConfigModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
-            <FiSettings className="w-5 h-5 text-primary" />
-            Ubah Nominal Iuran
+            Pengaturan Sistem
           </h3>
           <button
             type="button"

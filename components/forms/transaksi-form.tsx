@@ -225,8 +225,7 @@ export function TransaksiForm({
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-base-300">
           <h3 className="font-bold text-lg text-base-content flex items-center gap-2">
-            <FiCreditCard className="w-5 h-5 text-primary" />
-            {editData ? "Edit Transaksi" : "Catat Transaksi Kas"}
+            {editData ? "Edit Transaksi Kas" : "Catat Transaksi Baru"}
           </h3>
           <button
             type="button"

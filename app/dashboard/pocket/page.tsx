@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { PocketTable, PocketViewItem } from "@/components/tables/pocket-table";
 
 export const metadata = {
-  title: "Dompet Pocket — ISPOCKET",
+  title: "Dompet — ISPOCKET",
   description: "Kelola akun pocket kas tunai dan rekening bank",
 };
 

@@ -18,7 +18,7 @@ const NAV_LINKS = [
   { href: "/dashboard/keluarga", label: "Keluarga", icon: FiUsers },
   { href: "/dashboard/iuran", label: "Setoran Iuran", icon: FiDollarSign },
   { href: "/dashboard/transaksi", label: "Transaksi Kas", icon: FiCreditCard },
-  { href: "/dashboard/pocket", label: "Dompet Pocket", icon: FiFolder },
+  { href: "/dashboard/pocket", label: "Dompet", icon: FiFolder },
   { href: "/dashboard/laporan", label: "Export Laporan", icon: FiFileText },
   { href: "/dashboard/settings", label: "Pengaturan", icon: FiSettings },
 ];
@@ -29,7 +29,7 @@ export function ListDrawer() {
   // Fungsi tutup drawer instan 0ms saat menu diklik (tanpa nunggu fetch Next.js selesai)
   const handleLinkClick = () => {
     const drawer = document.getElementById(
-      "dashboard-drawer"
+      "dashboard-drawer",
     ) as HTMLInputElement | null;
 
     if (drawer && drawer.checked) {
@@ -71,4 +71,3 @@ export function ListDrawer() {
     </ul>
   );
 }
-

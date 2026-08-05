@@ -8,6 +8,7 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
+  --font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   /* Background */
   --color-base-100: oklch(99% 0.002 95);
@@ -57,10 +58,8 @@
   --noise: 0;
 }
 
-body {
-  background-color: var(--color-base-100);
-  color: var(--color-base-content);
-  font-family: calibri;
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Aturan global: Semua isi tabel wajib text-nowrap tanpa terkecuali */
