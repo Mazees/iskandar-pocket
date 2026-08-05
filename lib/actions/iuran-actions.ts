@@ -10,7 +10,6 @@ const IuranSchema = z.object({
   nominal: z.coerce.number().min(1000, "Nominal setoran minimal Rp 1.000"),
   pocket_id: z.string().min(1, "Pilih dompet/pocket pembayaran"),
   tanggal_setor: z.string().min(1, "Tanggal setor wajib diisi"),
-  metode: z.enum(["cash", "transfer"]).default("transfer"),
   keterangan: z.string().optional(),
 });
 
@@ -56,7 +55,6 @@ export async function createIuran(formData: FormData) {
     tanggal_setor:
       formData.get("tanggal_setor")?.toString() ||
       new Date().toISOString().split("T")[0],
-    metode: formData.get("metode")?.toString() || "transfer",
     keterangan: formData.get("keterangan")?.toString(),
   };
 
@@ -71,7 +69,6 @@ export async function createIuran(formData: FormData) {
     nominal: totalNominalInput,
     pocket_id,
     tanggal_setor,
-    metode,
     keterangan,
   } = validated.data;
 
@@ -158,7 +155,6 @@ export async function createIuran(formData: FormData) {
         periode: periodeStr,
         tanggal_setor,
         nominal: nominalAlokasi,
-        metode,
         pocket_id,
         keterangan: keterangan || `Alokasi iuran periode ${periodeStr}`,
       });

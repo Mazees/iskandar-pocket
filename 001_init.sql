@@ -58,12 +58,11 @@ on conflict do nothing;
 -- 4. IURAN (setoran per keluarga per bulan)
 -- ---------------------------------------------------------
 create table if not exists iuran (
-    id            uuid primary key default gen_random_uuid(),
+    id            id primary key default gen_random_uuid(),
     keluarga_id   uuid not null references keluarga(id) on delete cascade,
     periode       char(7) not null, -- format 'YYYY-MM', misal '2026-08'
     tanggal_setor date not null default current_date,
     nominal       numeric(14,2) not null check (nominal > 0),
-    metode        text not null check (metode in ('cash', 'transfer')),
     keterangan    text,
     bukti_url     text,
     pocket_id     uuid not null references pocket(id),

@@ -74,10 +74,6 @@ export function IuranForm({
       formData.append("keterangan", keterangan.trim());
     }
 
-    const selectedPocket = listPocket.find((p) => p.id === pocketId);
-    const isBank = selectedPocket?.nama_pocket.toLowerCase().includes("bank");
-    formData.append("metode", isBank ? "transfer" : "cash");
-
     try {
       const res = await createIuran(formData);
 

@@ -19,7 +19,6 @@ export default async function IuranPage() {
       periode,
       tanggal_setor,
       nominal,
-      metode,
       keterangan,
       keluarga:keluarga_id (id, nama_keluarga),
       pocket:pocket_id (id, nama_pocket)
