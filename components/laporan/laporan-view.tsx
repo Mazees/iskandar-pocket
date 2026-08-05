@@ -211,8 +211,7 @@ export function LaporanView({
       {/* Header */}
       <div>
         <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-          <FiFileText className="w-5 h-5 text-primary shrink-0" />
-          Export Laporan &amp; Transparansi
+          Laporan &amp; Export Data
         </h1>
         <p className="text-xs text-base-content/70">
           Unduh rekap kas resmi keluarga dalam format PDF atau Excel (.xlsx)

@@ -143,7 +143,6 @@ export function TransaksiTable({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-            <FiCreditCard className="w-5 h-5 text-primary shrink-0" />
             Catatan Transaksi Kas
           </h1>
           <p className="text-xs text-base-content/70">
@@ -179,7 +178,6 @@ export function TransaksiTable({
         <div className="card-body">
           <div className="flex items-center justify-between border-b border-base-300/80 pb-2">
             <span className="text-sm font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-1.5">
-              <FiFilter className="w-3.5 h-3.5 text-primary" />
               Filter Transaksi
             </span>
             <div className="flex items-center gap-3">
@@ -207,7 +205,6 @@ export function TransaksiTable({
                 </span>
               </label>
               <label className="flex input input-bordered input-sm items-center gap-2">
-                <FiSearch className="w-3.5 h-3.5 text-base-content/50" />
                 <input
                   type="text"
                   placeholder="Ketik kata kunci..."

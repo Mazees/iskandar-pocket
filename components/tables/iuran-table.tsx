@@ -107,7 +107,6 @@ export function IuranTable({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
-            <FiDollarSign className="w-5 h-5 text-primary shrink-0" />
             Catatan Setoran Iuran
           </h1>
           <p className="text-xs text-base-content/70">
@@ -143,7 +142,6 @@ export function IuranTable({
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Input */}
             <label className="flex w-64 input input-bordered input-sm items-center gap-2">
-              <FiSearch className="w-4 h-4 text-base-content/50" />
               <input
                 type="text"
                 placeholder="Cari nama Keluarga..."
@@ -155,7 +153,6 @@ export function IuranTable({
 
             {/* Dropdown Filter Periode */}
             <div className="flex items-center gap-1.5">
-              <FiFilter className="w-4 h-4 text-base-content/60" />
               <select
                 value={selectedPeriode}
                 onChange={(e) => setSelectedPeriode(e.target.value)}

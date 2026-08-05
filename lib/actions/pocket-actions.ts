@@ -87,7 +87,6 @@ export async function updatePocket(id: string, formData: FormData) {
     .from("pocket")
     .update({
       nama_pocket,
-      saldo_awal,
     })
     .eq("id", id);
 

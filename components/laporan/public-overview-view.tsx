@@ -433,7 +433,6 @@ export function PublicOverviewView({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="card-title text-lg font-bold flex items-center gap-2">
-                <FiCalendar className="w-4 h-4 text-primary" />
                 Rekap Iuran Bulanan
               </h2>
               <p className="text-xs text-base-content/70">
@@ -511,7 +510,6 @@ export function PublicOverviewView({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="card-title text-lg font-bold flex items-center gap-2">
-                <FiUsers className="w-4 h-4 text-primary" />
                 Rekap Iuran Tahunan
               </h2>
               <p className="text-xs text-base-content/70">
