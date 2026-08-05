@@ -10,8 +10,10 @@ import {
   FiCreditCard,
   FiDollarSign,
   FiAlertTriangle,
+  FiRepeat,
 } from "react-icons/fi";
 import { PocketForm } from "@/components/forms/pocket-form";
+import { TransferSaldoForm } from "@/components/forms/transfer-saldo-form";
 import { deletePocket } from "@/lib/actions/pocket-actions";
 import {
   showConfirmModal,
@@ -39,6 +41,7 @@ interface PocketTableProps {
 export function PocketTable({ listPocket }: PocketTableProps) {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [editData, setEditData] = useState<{
     id: string;
     nama_pocket: string;
@@ -50,7 +53,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
   const filteredList = useMemo(() => {
     if (!search.trim()) return listPocket;
     return listPocket.filter((item) =>
-      item.nama_pocket.toLowerCase().includes(search.toLowerCase())
+      item.nama_pocket.toLowerCase().includes(search.toLowerCase()),
     );
   }, [listPocket, search]);
 
@@ -108,13 +111,22 @@ export function PocketTable({ listPocket }: PocketTableProps) {
             Kelola akun tempat penyimpanan dana kas tunai maupun rekening bank
           </p>
         </div>
-        <button
-          onClick={handleOpenCreate}
-          className="btn btn-primary font-semibold shadow-sm"
-        >
-          <FiPlus className="w-4 h-4 mr-1" />
-          Tambah Pocket Baru
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsTransferModalOpen(true)}
+            className="btn btn-primary btn-outline font-semibold shadow-sm"
+          >
+            <FiRepeat className="w-4 h-4 mr-1" />
+            Pindah Saldo
+          </button>
+          <button
+            onClick={handleOpenCreate}
+            className="btn btn-primary font-semibold shadow-sm"
+          >
+            <FiPlus className="w-4 h-4 mr-1" />
+            Tambah Pocket Baru
+          </button>
+        </div>
       </div>
 
       {/* Pesan error jika ada */}
@@ -151,7 +163,9 @@ export function PocketTable({ listPocket }: PocketTableProps) {
                       )}
                     </div>
                     <div>
-                      <h3 className="font-bold text-base">{pocket.nama_pocket}</h3>
+                      <h3 className="font-bold text-base">
+                        {pocket.nama_pocket}
+                      </h3>
                       <p className="text-xs text-base-content/60 font-medium">
                         Saldo Awal: Rp{" "}
                         {Number(pocket.saldo_awal || 0).toLocaleString("id-ID")}
@@ -231,7 +245,8 @@ export function PocketTable({ listPocket }: PocketTableProps) {
                     <tr key={item.pocket_id}>
                       <td className="font-bold">{item.nama_pocket}</td>
                       <td className="text-right text-base-content/70 font-medium">
-                        Rp {Number(item.saldo_awal || 0).toLocaleString("id-ID")}
+                        Rp{" "}
+                        {Number(item.saldo_awal || 0).toLocaleString("id-ID")}
                       </td>
                       <td className="text-right font-extrabold text-primary">
                         Rp {Number(item.saldo || 0).toLocaleString("id-ID")}
@@ -281,6 +296,13 @@ export function PocketTable({ listPocket }: PocketTableProps) {
         onClose={() => setIsModalOpen(false)}
         editData={editData}
       />
+      {/* Modal Form Pindah Saldo */}
+      {isTransferModalOpen && (
+        <TransferSaldoForm
+          listPocket={listPocket}
+          onClose={() => setIsTransferModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

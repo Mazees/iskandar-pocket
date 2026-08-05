@@ -194,3 +194,64 @@ export async function deleteTransaksi(id: string) {
 
   return { error: null, success: true };
 }
+
+/**
+ * Server Action: Pindah Saldo (Transfer Antar Pocket)
+ */
+export async function transferSaldo(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Sesi Anda telah berakhir. Silakan login kembali." };
+  }
+
+  const fromPocketId = formData.get("from_pocket_id")?.toString();
+  const toPocketId = formData.get("to_pocket_id")?.toString();
+  const nominal = Number(formData.get("nominal"));
+  const tanggal = formData.get("tanggal")?.toString() || new Date().toISOString().split("T")[0];
+  const keterangan = formData.get("keterangan")?.toString().trim();
+
+  if (!fromPocketId || !toPocketId) return { error: "Pocket asal dan tujuan harus dipilih!" };
+  if (fromPocketId === toPocketId) return { error: "Pocket asal dan tujuan tidak boleh sama!" };
+  if (!nominal || nominal < 100) return { error: "Nominal transfer minimal Rp 100!" };
+  if (!keterangan) return { error: "Keterangan transfer wajib diisi!" };
+
+  // 1. Buat record PENGELUARAN dari Pocket Asal
+  const outRecord = {
+    jenis: "keluar",
+    kategori: "Transfer Keluar",
+    nominal: nominal,
+    pocket_id: fromPocketId,
+    tanggal: tanggal,
+    keterangan: keterangan,
+    bukti_url: null,
+  };
+
+  // 2. Buat record PEMASUKAN ke Pocket Tujuan
+  const inRecord = {
+    jenis: "masuk",
+    kategori: "Transfer Masuk",
+    nominal: nominal,
+    pocket_id: toPocketId,
+    tanggal: tanggal,
+    keterangan: keterangan,
+    bukti_url: null,
+  };
+
+  // Insert kedua record sekaligus
+  const { error } = await supabase.from("transaksi").insert([outRecord, inRecord]);
+
+  if (error) {
+    return { error: `Gagal memproses pindah saldo: ${error.message}` };
+  }
+
+  revalidatePath("/dashboard/transaksi");
+  revalidatePath("/dashboard/pocket");
+  revalidatePath("/dashboard");
+
+  return { error: null, success: true };
+}
