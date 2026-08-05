@@ -28,8 +28,9 @@ export function generateLaporanExcel(data: LaporanPDFData) {
   const ws1 = XLSX.utils.aoa_to_sheet(ringkasanData);
   XLSX.utils.book_append_sheet(wb, ws1, "Ringkasan Kas");
 
-  // Sheet 2: Status Setoran Iuran
-  if (data.statusIuran && data.statusIuran.length > 0) {
+  // Sheet 2: Status Setoran Iuran (Hanya untuk Laporan Bulanan)
+  const isYearly = data.rekapTahunan && data.rekapTahunan.length > 0;
+  if (data.statusIuran && data.statusIuran.length > 0 && !isYearly) {
     const iuranData = [
       ["NAMA KELUARGA", "NOMINAL SETOR (RP)", "STATUS SETORAN"],
       ...data.statusIuran.map((s) => [
