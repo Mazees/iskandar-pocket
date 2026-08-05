@@ -226,7 +226,13 @@ export function LaporanView({
         >
           <button
             role="tab"
-            onClick={() => setModeFilter("bulan")}
+            onClick={() => {
+              setModeFilter("bulan");
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("bulan", selectedBulan);
+              params.delete("tahun");
+              router.push(`?${params.toString()}`);
+            }}
             className={`tab text-nowrap text-sm ${
               modeFilter === "bulan" ? "tab-active" : ""
             }`}
@@ -235,7 +241,13 @@ export function LaporanView({
           </button>
           <button
             role="tab"
-            onClick={() => setModeFilter("tahun")}
+            onClick={() => {
+              setModeFilter("tahun");
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("tahun", selectedTahun);
+              params.delete("bulan");
+              router.push(`?${params.toString()}`);
+            }}
             className={`tab text-nowrap text-sm ${
               modeFilter === "tahun" ? "tab-active" : ""
             }`}
