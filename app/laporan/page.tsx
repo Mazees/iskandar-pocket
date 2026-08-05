@@ -3,8 +3,8 @@ import { PublicOverviewView } from "@/components/laporan/public-overview-view";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 
 export const metadata = {
-  title: "Laporan Transparansi Kas — Iskandar Pocket",
-  description: "Laporan transparansi kas publik kas keluarga Iskandar Pocket",
+  title: "Laporan Transparansi Kas — ISPOCKET",
+  description: "Laporan transparansi kas publik kas keluarga ISPOCKET",
 };
 
 export default async function PublicLaporanPage() {
@@ -39,7 +39,7 @@ export default async function PublicLaporanPage() {
         id,
         nama_pocket
       )
-    `
+    `,
     )
     .order("tanggal", { ascending: false })
     .limit(5);
@@ -68,7 +68,7 @@ export default async function PublicLaporanPage() {
     .single();
 
   const targetNominalBulanan = Number(
-    configSelectedBulan?.nominal_iuran_bulanan || 100000
+    configSelectedBulan?.nominal_iuran_bulanan || 100000,
   );
 
   const totalSetorMap: Record<string, number> = {};
@@ -149,13 +149,13 @@ export default async function PublicLaporanPage() {
   const totalSaldo =
     (listPocketRaw as any[])?.reduce(
       (acc, item) => acc + Number(item.saldo || 0),
-      0
+      0,
     ) ?? 0;
   const totalPemasukanBulanIni = Number(
-    (rekapBulanIni as any)?.total_pemasukan ?? 0
+    (rekapBulanIni as any)?.total_pemasukan ?? 0,
   );
   const totalPengeluaran = Number(
-    (rekapBulanIni as any)?.total_pengeluaran ?? 0
+    (rekapBulanIni as any)?.total_pengeluaran ?? 0,
   );
 
   const formattedPocket = (listPocketRaw || []).map((p: any) => ({
@@ -176,7 +176,7 @@ export default async function PublicLaporanPage() {
       pocket: {
         nama_pocket: tx.pocket?.nama_pocket || "-",
       },
-    })
+    }),
   );
 
   return (

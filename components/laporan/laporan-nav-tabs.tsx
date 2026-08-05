@@ -27,7 +27,7 @@ export function LaporanNavTabs() {
         </h1>
         <p className="text-xs text-base-content/70">
           {isOverview
-            ? "Transparansi uang kas keluarga Iskandar Pocket, mudah dibaca oleh seluruh anggota keluarga."
+            ? "Transparansi uang kas keluarga ISPOCKET, mudah dibaca oleh seluruh anggota keluarga."
             : "Daftar lengkap riwayat pemasukan dan pengeluaran kas beserta bukti foto struk."}
         </p>
       </div>

@@ -29,9 +29,7 @@ export default function DashboardLayout({
           </div>
           <div className="flex-1 ml-3">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base lg:text-lg">
-                Dashboard
-              </span>
+              <span className="font-bold text-base lg:text-lg">Dashboard</span>
             </div>
           </div>
         </div>
@@ -56,12 +54,12 @@ export default function DashboardLayout({
             <div className="p-2 mb-4 flex items-center gap-3">
               <img
                 src="/icon.svg"
-                alt="Iskandar Pocket Logo"
+                alt="ISPOCKET Logo"
                 className="w-9 h-9 object-contain shrink-0"
               />
               <div>
                 <h2 className="font-bold text-base tracking-tight leading-none text-base-content">
-                  Iskandar Pocket
+                  ISPOCKET
                 </h2>
                 <p className="text-xs text-base-content/60 mt-1 font-medium">
                   Admin Bendahara

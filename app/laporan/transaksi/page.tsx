@@ -7,8 +7,8 @@ import {
 import { PublicTransaksiList } from "@/components/laporan/public-transaksi-list";
 
 export const metadata = {
-  title: "Daftar Transaksi Kas Publik — Iskandar Pocket",
-  description: "Daftar riwayat transaksi dan bukti kas keluarga Iskandar Pocket",
+  title: "Daftar Transaksi Kas Publik — ISPOCKET",
+  description: "Daftar riwayat transaksi dan bukti kas keluarga ISPOCKET",
 };
 
 export default async function PublicTransaksiPage() {
@@ -25,7 +25,7 @@ export default async function PublicTransaksiPage() {
       nama_pocket: p.nama_pocket,
       saldo_awal: Number(p.saldo_awal || 0),
       saldo: Number(p.saldo || 0),
-    })
+    }),
   );
 
   // 2. Ambil seluruh riwayat transaksi kas (tanpa filter bulan/tahun)
@@ -44,7 +44,7 @@ export default async function PublicTransaksiPage() {
         id,
         nama_pocket
       )
-    `
+    `,
     )
     .order("tanggal", { ascending: false });
 

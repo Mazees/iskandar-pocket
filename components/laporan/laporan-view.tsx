@@ -169,7 +169,9 @@ export function LaporanView({
       generateLaporanPDF(exportDataFormatted);
     } catch (err: any) {
       console.error("Gagal export PDF:", err);
-      alert("Gagal mengunduh file PDF: " + (err?.message || "Terjadi kesalahan"));
+      alert(
+        "Gagal mengunduh file PDF: " + (err?.message || "Terjadi kesalahan"),
+      );
     }
   };
 
@@ -178,7 +180,9 @@ export function LaporanView({
       generateLaporanExcel(exportDataFormatted);
     } catch (err: any) {
       console.error("Gagal export Excel:", err);
-      alert("Gagal mengunduh file Excel: " + (err?.message || "Terjadi kesalahan"));
+      alert(
+        "Gagal mengunduh file Excel: " + (err?.message || "Terjadi kesalahan"),
+      );
     }
   };
 
@@ -296,8 +300,8 @@ export function LaporanView({
               </div>
             </div>
             <p className="text-xs text-base-content/70 leading-relaxed">
-              Format laporan PDF resmi berlogo Iskandar Pocket. Berisi ringkasan
-              kas, rekap pocket, status setoran iuran keluarga, dan riwayat
+              Format laporan PDF resmi berlogo ISPOCKET. Berisi ringkasan kas,
+              rekap pocket, status setoran iuran keluarga, dan riwayat
               transaksi.
             </p>
             <button

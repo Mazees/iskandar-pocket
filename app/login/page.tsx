@@ -12,12 +12,12 @@ export default function LoginPage() {
         <div className="text-center mb-4">
           <img
             src="/icon.svg"
-            alt="Iskandar Pocket Logo"
+            alt="ISPOCKET Logo"
             className="w-16 h-16 object-contain mx-auto mb-3"
           />
           <h1 className="text-base sm:text-lg font-bold">Login Bendahara</h1>
           <p className="text-xs text-base-content/70 mt-1">
-            Akses Admin Iskandar Pocket
+            Akses Admin ISPOCKET
           </p>
         </div>
 

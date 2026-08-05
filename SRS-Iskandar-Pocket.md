@@ -1,4 +1,4 @@
-# SRS: Iskandar Pocket
+# SRS: ISPOCKET
 
 **Software Requirements Specification — Aplikasi Kas Keluarga Transparan**
 
@@ -33,26 +33,27 @@ Referensi: [PRD-Iskandar-Pocket.md](file:///D:/My%20Project/IskandarPocket/iskan
 
 ### 1.1 Tujuan Dokumen
 
-Dokumen ini menerjemahkan PRD Iskandar Pocket menjadi spesifikasi teknis yang siap diimplementasikan. Semua keputusan arsitektur, struktur file, API contract, dan detail komponen didokumentasikan di sini sebagai **satu-satunya sumber kebenaran teknis** bagi developer.
+Dokumen ini menerjemahkan PRD ISPOCKET menjadi spesifikasi teknis yang siap diimplementasikan. Semua keputusan arsitektur, struktur file, API contract, dan detail komponen didokumentasikan di sini sebagai **satu-satunya sumber kebenaran teknis** bagi developer.
 
 ### 1.2 Lingkup Sistem
 
-Iskandar Pocket adalah aplikasi web kas keluarga yang:
+ISPOCKET adalah aplikasi web kas keluarga yang:
+
 - Dioperasikan oleh **1 Admin** (bendahara) untuk mencatat iuran & transaksi kas.
 - Menyediakan **halaman publik transparan** (tanpa login) agar semua anggota keluarga bisa melihat status kas.
 - Berjalan **gratis (Rp0/bulan)** menggunakan free tier Vercel + Supabase.
 
 ### 1.3 Definisi & Akronim
 
-| Istilah | Definisi |
-|---|---|
-| **KK** | Kepala Keluarga — unit data member, bukan akun pengguna |
-| **Pocket** | Dompet/wadah penyimpanan uang (Cash, Bank, E-wallet) |
-| **Iuran** | Setoran bulanan per KK ke kas keluarga |
-| **Transaksi** | Catatan kas masuk/keluar umum (di luar iuran) |
-| **RLS** | Row Level Security — fitur PostgreSQL untuk kontrol akses per baris |
-| **SSR** | Server-Side Rendering |
-| **RSC** | React Server Components |
+| Istilah       | Definisi                                                            |
+| ------------- | ------------------------------------------------------------------- |
+| **KK**        | Kepala Keluarga — unit data member, bukan akun pengguna             |
+| **Pocket**    | Dompet/wadah penyimpanan uang (Cash, Bank, E-wallet)                |
+| **Iuran**     | Setoran bulanan per KK ke kas keluarga                              |
+| **Transaksi** | Catatan kas masuk/keluar umum (di luar iuran)                       |
+| **RLS**       | Row Level Security — fitur PostgreSQL untuk kontrol akses per baris |
+| **SSR**       | Server-Side Rendering                                               |
+| **RSC**       | React Server Components                                             |
 
 ---
 
@@ -103,18 +104,18 @@ graph TB
 
 ## 3. Tech Stack & Versi
 
-| Komponen | Teknologi | Versi | Catatan |
-|---|---|---|---|
-| Framework | Next.js | 16.2.12 | App Router, RSC |
-| UI Library | React | 19.2.4 | |
-| Language | TypeScript | ^5 | Strict mode enabled |
-| Styling | Tailwind CSS | ^4 | Dengan `@tailwindcss/postcss` |
-| Database | PostgreSQL (Supabase) | 15+ | Free tier, 500MB |
-| Auth | Supabase Auth | Latest | Email/password, 1 admin account |
-| Storage | Supabase Storage | Latest | Free tier, 1GB |
-| PDF Export | `@react-pdf/renderer` atau `jspdf` | Latest | Client-side generation |
-| Excel Export | `sheetjs` (`xlsx`) | Latest | Client-side generation |
-| Hosting | Vercel | Free tier | Auto-deploy dari GitHub |
+| Komponen     | Teknologi                          | Versi     | Catatan                         |
+| ------------ | ---------------------------------- | --------- | ------------------------------- |
+| Framework    | Next.js                            | 16.2.12   | App Router, RSC                 |
+| UI Library   | React                              | 19.2.4    |                                 |
+| Language     | TypeScript                         | ^5        | Strict mode enabled             |
+| Styling      | Tailwind CSS                       | ^4        | Dengan `@tailwindcss/postcss`   |
+| Database     | PostgreSQL (Supabase)              | 15+       | Free tier, 500MB                |
+| Auth         | Supabase Auth                      | Latest    | Email/password, 1 admin account |
+| Storage      | Supabase Storage                   | Latest    | Free tier, 1GB                  |
+| PDF Export   | `@react-pdf/renderer` atau `jspdf` | Latest    | Client-side generation          |
+| Excel Export | `sheetjs` (`xlsx`)                 | Latest    | Client-side generation          |
+| Hosting      | Vercel                             | Free tier | Auto-deploy dari GitHub         |
 
 ### 3.1 Dependencies yang Perlu Diinstall
 
@@ -368,17 +369,17 @@ GROUP BY keluarga.id, keluarga.nama_keluarga;
 
 ### 5.3 Indexes
 
-| Index | Tabel | Kolom | Tujuan |
-|---|---|---|---|
-| `idx_iuran_keluarga_periode` | iuran | (keluarga_id, periode) | Lookup cepat iuran per KK per bulan |
-| `idx_transaksi_tanggal` | transaksi | (tanggal) | Filter transaksi per rentang tanggal |
-| `idx_transaksi_pocket` | transaksi | (pocket_id) | Filter transaksi per pocket |
+| Index                        | Tabel     | Kolom                  | Tujuan                               |
+| ---------------------------- | --------- | ---------------------- | ------------------------------------ |
+| `idx_iuran_keluarga_periode` | iuran     | (keluarga_id, periode) | Lookup cepat iuran per KK per bulan  |
+| `idx_transaksi_tanggal`      | transaksi | (tanggal)              | Filter transaksi per rentang tanggal |
+| `idx_transaksi_pocket`       | transaksi | (pocket_id)            | Filter transaksi per pocket          |
 
 ### 5.4 Row Level Security (RLS)
 
-| Tabel | Policy | Akses | Kondisi |
-|---|---|---|---|
-| Semua tabel | `public read *` | SELECT | `USING (true)` — siapa saja boleh baca (transparansi) |
+| Tabel       | Policy          | Akses                | Kondisi                                                  |
+| ----------- | --------------- | -------------------- | -------------------------------------------------------- |
+| Semua tabel | `public read *` | SELECT               | `USING (true)` — siapa saja boleh baca (transparansi)    |
 | Semua tabel | `admin write *` | INSERT/UPDATE/DELETE | `auth.role() = 'authenticated'` — hanya admin yang login |
 
 ### 5.5 TypeScript Types (Generated)
@@ -394,159 +395,159 @@ export type Database = {
     Tables: {
       keluarga: {
         Row: {
-          id: string
-          nama_keluarga: string
-          created_at: string
-        }
+          id: string;
+          nama_keluarga: string;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          nama_keluarga: string
-          created_at?: string
-        }
+          id?: string;
+          nama_keluarga: string;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          nama_keluarga?: string
-          created_at?: string
-        }
-      }
+          id?: string;
+          nama_keluarga?: string;
+          created_at?: string;
+        };
+      };
       configuration: {
         Row: {
-          id: string
-          nominal_iuran_bulanan: number
-          berlaku_mulai: string
-          created_at: string
-        }
+          id: string;
+          nominal_iuran_bulanan: number;
+          berlaku_mulai: string;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          nominal_iuran_bulanan: number
-          berlaku_mulai: string
-          created_at?: string
-        }
+          id?: string;
+          nominal_iuran_bulanan: number;
+          berlaku_mulai: string;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          nominal_iuran_bulanan?: number
-          berlaku_mulai?: string
-          created_at?: string
-        }
-      }
+          id?: string;
+          nominal_iuran_bulanan?: number;
+          berlaku_mulai?: string;
+          created_at?: string;
+        };
+      };
       pocket: {
         Row: {
-          id: string
-          nama_pocket: string
-          jenis: 'cash' | 'bank'
-          saldo_awal: number
-          created_at: string
-        }
+          id: string;
+          nama_pocket: string;
+          jenis: "cash" | "bank";
+          saldo_awal: number;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          nama_pocket: string
-          jenis: 'cash' | 'bank'
-          saldo_awal?: number
-          created_at?: string
-        }
+          id?: string;
+          nama_pocket: string;
+          jenis: "cash" | "bank";
+          saldo_awal?: number;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          nama_pocket?: string
-          jenis?: 'cash' | 'bank'
-          saldo_awal?: number
-          created_at?: string
-        }
-      }
+          id?: string;
+          nama_pocket?: string;
+          jenis?: "cash" | "bank";
+          saldo_awal?: number;
+          created_at?: string;
+        };
+      };
       iuran: {
         Row: {
-          id: string
-          keluarga_id: string
-          periode: string
-          tanggal_setor: string
-          nominal: number
-          metode: 'cash' | 'transfer'
-          keterangan: string | null
-          bukti_url: string | null
-          pocket_id: string
-          created_at: string
-        }
+          id: string;
+          keluarga_id: string;
+          periode: string;
+          tanggal_setor: string;
+          nominal: number;
+          metode: "cash" | "transfer";
+          keterangan: string | null;
+          bukti_url: string | null;
+          pocket_id: string;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          keluarga_id: string
-          periode: string
-          tanggal_setor?: string
-          nominal: number
-          metode: 'cash' | 'transfer'
-          keterangan?: string | null
-          bukti_url?: string | null
-          pocket_id: string
-          created_at?: string
-        }
+          id?: string;
+          keluarga_id: string;
+          periode: string;
+          tanggal_setor?: string;
+          nominal: number;
+          metode: "cash" | "transfer";
+          keterangan?: string | null;
+          bukti_url?: string | null;
+          pocket_id: string;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          keluarga_id?: string
-          periode?: string
-          tanggal_setor?: string
-          nominal?: number
-          metode?: 'cash' | 'transfer'
-          keterangan?: string | null
-          bukti_url?: string | null
-          pocket_id?: string
-          created_at?: string
-        }
-      }
+          id?: string;
+          keluarga_id?: string;
+          periode?: string;
+          tanggal_setor?: string;
+          nominal?: number;
+          metode?: "cash" | "transfer";
+          keterangan?: string | null;
+          bukti_url?: string | null;
+          pocket_id?: string;
+          created_at?: string;
+        };
+      };
       transaksi: {
         Row: {
-          id: string
-          tanggal: string
-          jenis: 'masuk' | 'keluar'
-          kategori: string
-          nominal: number
-          keterangan: string | null
-          bukti_url: string[] | null
-          pocket_id: string
-          created_at: string
-        }
+          id: string;
+          tanggal: string;
+          jenis: "masuk" | "keluar";
+          kategori: string;
+          nominal: number;
+          keterangan: string | null;
+          bukti_url: string[] | null;
+          pocket_id: string;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          tanggal?: string
-          jenis: 'masuk' | 'keluar'
-          kategori: string
-          nominal: number
-          keterangan?: string | null
-          bukti_url?: string[] | null
-          pocket_id: string
-          created_at?: string
-        }
+          id?: string;
+          tanggal?: string;
+          jenis: "masuk" | "keluar";
+          kategori: string;
+          nominal: number;
+          keterangan?: string | null;
+          bukti_url?: string[] | null;
+          pocket_id: string;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          tanggal?: string
-          jenis?: 'masuk' | 'keluar'
-          kategori?: string
-          nominal?: number
-          keterangan?: string | null
-          bukti_url?: string[] | null
-          pocket_id?: string
-          created_at?: string
-        }
-      }
-    }
+          id?: string;
+          tanggal?: string;
+          jenis?: "masuk" | "keluar";
+          kategori?: string;
+          nominal?: number;
+          keterangan?: string | null;
+          bukti_url?: string[] | null;
+          pocket_id?: string;
+          created_at?: string;
+        };
+      };
+    };
     Views: {
       v_saldo_pocket: {
         Row: {
-          pocket_id: string
-          nama_pocket: string
-          jenis: string
-          saldo: number
-        }
-      }
+          pocket_id: string;
+          nama_pocket: string;
+          jenis: string;
+          saldo: number;
+        };
+      };
       v_status_iuran_bulan_ini: {
         Row: {
-          keluarga_id: string
-          nama_keluarga: string
-          periode: string
-          total_setor_bulan_ini: number
-          sudah_setor: boolean
-        }
-      }
-    }
-  }
-}
+          keluarga_id: string;
+          nama_keluarga: string;
+          periode: string;
+          total_setor_bulan_ini: number;
+          sudah_setor: boolean;
+        };
+      };
+    };
+  };
+};
 ```
 
 ---
@@ -568,14 +569,14 @@ CRON_SECRET=<random-secret-untuk-cron-job>
 File: `lib/supabase/client.ts`
 
 ```typescript
-import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from './types'
+import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "./types";
 
 export function createClient() {
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
 }
 ```
 
@@ -584,12 +585,12 @@ export function createClient() {
 File: `lib/supabase/server.ts`
 
 ```typescript
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import type { Database } from './types'
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { Database } from "./types";
 
 export async function createClient() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -597,21 +598,21 @@ export async function createClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll()
+          return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
+              cookieStore.set(name, value, options),
+            );
           } catch {
             // Ignore — ini terjadi saat dipanggil dari RSC
             // (cookies hanya bisa di-set dari Server Action atau Route Handler)
           }
         },
       },
-    }
-  )
+    },
+  );
 }
 ```
 
@@ -620,11 +621,11 @@ export async function createClient() {
 File: `middleware.ts`
 
 ```typescript
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -632,46 +633,46 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
-          supabaseResponse = NextResponse.next({ request })
+            request.cookies.set(name, value),
+          );
+          supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+            supabaseResponse.cookies.set(name, value, options),
+          );
         },
       },
-    }
-  )
+    },
+  );
 
   // Refresh session (PENTING: jangan hapus baris ini)
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   // Redirect ke login jika akses dashboard tanpa auth
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 
   // Redirect ke dashboard jika sudah login dan akses /login
-  if (user && request.nextUrl.pathname === '/login') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  if (user && request.nextUrl.pathname === "/login") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
-  return supabaseResponse
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
-}
+  matcher: ["/dashboard/:path*", "/login"],
+};
 ```
 
 ---
@@ -690,30 +691,30 @@ export const config = {
 File: `lib/actions/auth.ts`
 
 ```typescript
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export async function login(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  });
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message };
   }
 
-  redirect('/dashboard')
+  redirect("/dashboard");
 }
 
 export async function logout() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-  redirect('/login')
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
 }
 ```
 
@@ -742,54 +743,54 @@ flowchart TD
 
 #### Keluarga (`lib/actions/keluarga.ts`)
 
-| Action | Input | Output | Deskripsi |
-|---|---|---|---|
-| `getKeluargaList()` | - | `Keluarga[]` | Ambil semua data keluarga |
-| `getKeluargaById(id)` | `string` | `Keluarga \| null` | Ambil detail 1 keluarga |
-| `createKeluarga(formData)` | `FormData {nama_keluarga}` | `{error?}` | Tambah keluarga baru |
-| `updateKeluarga(id, formData)` | `string, FormData` | `{error?}` | Edit nama keluarga |
-| `deleteKeluarga(id)` | `string` | `{error?}` | Hapus keluarga (CASCADE ke iuran) |
+| Action                         | Input                      | Output             | Deskripsi                         |
+| ------------------------------ | -------------------------- | ------------------ | --------------------------------- |
+| `getKeluargaList()`            | -                          | `Keluarga[]`       | Ambil semua data keluarga         |
+| `getKeluargaById(id)`          | `string`                   | `Keluarga \| null` | Ambil detail 1 keluarga           |
+| `createKeluarga(formData)`     | `FormData {nama_keluarga}` | `{error?}`         | Tambah keluarga baru              |
+| `updateKeluarga(id, formData)` | `string, FormData`         | `{error?}`         | Edit nama keluarga                |
+| `deleteKeluarga(id)`           | `string`                   | `{error?}`         | Hapus keluarga (CASCADE ke iuran) |
 
 #### Iuran (`lib/actions/iuran.ts`)
 
-| Action | Input | Output | Deskripsi |
-|---|---|---|---|
-| `getIuranList(filters?)` | `{keluarga_id?, periode?, page?}` | `{data: Iuran[], count}` | List iuran dengan filter & paginasi |
-| `getIuranById(id)` | `string` | `Iuran \| null` | Detail 1 iuran |
-| `createIuran(formData)` | `FormData` | `{error?}` | Catat iuran baru |
-| `updateIuran(id, formData)` | `string, FormData` | `{error?}` | Edit catatan iuran |
-| `deleteIuran(id)` | `string` | `{error?}` | Hapus catatan iuran |
-| `getStatusIuranBulanan(periode?)` | `string?` | `StatusIuran[]` | Status setoran semua KK untuk periode tertentu |
+| Action                            | Input                             | Output                   | Deskripsi                                      |
+| --------------------------------- | --------------------------------- | ------------------------ | ---------------------------------------------- |
+| `getIuranList(filters?)`          | `{keluarga_id?, periode?, page?}` | `{data: Iuran[], count}` | List iuran dengan filter & paginasi            |
+| `getIuranById(id)`                | `string`                          | `Iuran \| null`          | Detail 1 iuran                                 |
+| `createIuran(formData)`           | `FormData`                        | `{error?}`               | Catat iuran baru                               |
+| `updateIuran(id, formData)`       | `string, FormData`                | `{error?}`               | Edit catatan iuran                             |
+| `deleteIuran(id)`                 | `string`                          | `{error?}`               | Hapus catatan iuran                            |
+| `getStatusIuranBulanan(periode?)` | `string?`                         | `StatusIuran[]`          | Status setoran semua KK untuk periode tertentu |
 
 #### Transaksi (`lib/actions/transaksi.ts`)
 
-| Action | Input | Output | Deskripsi |
-|---|---|---|---|
-| `getTransaksiList(filters?)` | `{jenis?, kategori?, pocket_id?, tanggal_dari?, tanggal_sampai?, page?}` | `{data: Transaksi[], count}` | List transaksi dengan filter & paginasi |
-| `getTransaksiById(id)` | `string` | `Transaksi \| null` | Detail 1 transaksi |
-| `createTransaksi(formData)` | `FormData` | `{error?}` | Catat transaksi baru |
-| `updateTransaksi(id, formData)` | `string, FormData` | `{error?}` | Edit transaksi |
-| `deleteTransaksi(id)` | `string` | `{error?}` | Hapus transaksi |
+| Action                          | Input                                                                    | Output                       | Deskripsi                               |
+| ------------------------------- | ------------------------------------------------------------------------ | ---------------------------- | --------------------------------------- |
+| `getTransaksiList(filters?)`    | `{jenis?, kategori?, pocket_id?, tanggal_dari?, tanggal_sampai?, page?}` | `{data: Transaksi[], count}` | List transaksi dengan filter & paginasi |
+| `getTransaksiById(id)`          | `string`                                                                 | `Transaksi \| null`          | Detail 1 transaksi                      |
+| `createTransaksi(formData)`     | `FormData`                                                               | `{error?}`                   | Catat transaksi baru                    |
+| `updateTransaksi(id, formData)` | `string, FormData`                                                       | `{error?}`                   | Edit transaksi                          |
+| `deleteTransaksi(id)`           | `string`                                                                 | `{error?}`                   | Hapus transaksi                         |
 
 #### Pocket (`lib/actions/pocket.ts`)
 
-| Action | Input | Output | Deskripsi |
-|---|---|---|---|
-| `getPocketList()` | - | `Pocket[]` | List semua pocket |
-| `getPocketById(id)` | `string` | `Pocket \| null` | Detail pocket |
-| `getSaldoPocket()` | - | `SaldoPocket[]` | Saldo semua pocket (dari view) |
-| `createPocket(formData)` | `FormData` | `{error?}` | Tambah pocket baru |
-| `updatePocket(id, formData)` | `string, FormData` | `{error?}` | Edit pocket |
-| `deletePocket(id)` | `string` | `{error?}` | Hapus pocket (jika tidak ada transaksi terkait) |
-| `transferAntarPocket(formData)` | `FormData {dari_pocket_id, ke_pocket_id, nominal, keterangan}` | `{error?}` | Transfer antar pocket (buat 2 transaksi: keluar dari sumber, masuk ke tujuan) |
+| Action                          | Input                                                          | Output           | Deskripsi                                                                     |
+| ------------------------------- | -------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| `getPocketList()`               | -                                                              | `Pocket[]`       | List semua pocket                                                             |
+| `getPocketById(id)`             | `string`                                                       | `Pocket \| null` | Detail pocket                                                                 |
+| `getSaldoPocket()`              | -                                                              | `SaldoPocket[]`  | Saldo semua pocket (dari view)                                                |
+| `createPocket(formData)`        | `FormData`                                                     | `{error?}`       | Tambah pocket baru                                                            |
+| `updatePocket(id, formData)`    | `string, FormData`                                             | `{error?}`       | Edit pocket                                                                   |
+| `deletePocket(id)`              | `string`                                                       | `{error?}`       | Hapus pocket (jika tidak ada transaksi terkait)                               |
+| `transferAntarPocket(formData)` | `FormData {dari_pocket_id, ke_pocket_id, nominal, keterangan}` | `{error?}`       | Transfer antar pocket (buat 2 transaksi: keluar dari sumber, masuk ke tujuan) |
 
 #### Configuration (`lib/actions/configuration.ts`)
 
-| Action | Input | Output | Deskripsi |
-|---|---|---|---|
-| `getActiveNominalIuran()` | - | `{nominal, berlaku_mulai}` | Nominal iuran yang berlaku saat ini |
-| `getConfigurationHistory()` | - | `Configuration[]` | Riwayat perubahan nominal |
-| `updateNominalIuran(formData)` | `FormData {nominal, berlaku_mulai}` | `{error?}` | INSERT baris baru (bukan update) — histori tetap utuh |
+| Action                         | Input                               | Output                     | Deskripsi                                             |
+| ------------------------------ | ----------------------------------- | -------------------------- | ----------------------------------------------------- |
+| `getActiveNominalIuran()`      | -                                   | `{nominal, berlaku_mulai}` | Nominal iuran yang berlaku saat ini                   |
+| `getConfigurationHistory()`    | -                                   | `Configuration[]`          | Riwayat perubahan nominal                             |
+| `updateNominalIuran(formData)` | `FormData {nominal, berlaku_mulai}` | `{error?}`                 | INSERT baris baru (bukan update) — histori tetap utuh |
 
 ### 8.2 Route Handlers
 
@@ -799,28 +800,28 @@ Mencegah Supabase free tier di-pause setelah 7 hari inaktivitas.
 
 ```typescript
 // app/api/cron/keep-alive/route.ts
-import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {
   // Verifikasi cron secret
-  const authHeader = request.headers.get('authorization')
+  const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
 
-  const { error } = await supabase.from('pocket').select('id').limit(1)
+  const { error } = await supabase.from("pocket").select("id").limit(1);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, timestamp: new Date().toISOString() })
+  return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
 }
 ```
 
@@ -867,24 +868,24 @@ Generate laporan Excel/CSV. Detail di [Bagian 12](#12-export-laporan-pdf--excel)
 
 #### 9.2.1 Landing Page (`/`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Server Component |
-| **Akses** | Publik |
-| **Konten** | Hero section, penjelasan singkat Iskandar Pocket, CTA ke `/laporan` dan `/login` |
-| **Mobile** | Fully responsive, mobile-first |
+| Aspek      | Detail                                                                    |
+| ---------- | ------------------------------------------------------------------------- |
+| **Tipe**   | Server Component                                                          |
+| **Akses**  | Publik                                                                    |
+| **Konten** | Hero section, penjelasan singkat ISPOCKET, CTA ke `/laporan` dan `/login` |
+| **Mobile** | Fully responsive, mobile-first                                            |
 
 #### 9.2.2 Halaman Transparansi Publik (`/laporan`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Server Component (data di-fetch server-side) |
-| **Akses** | Publik (tanpa login) |
-| **Data yang ditampilkan** | 1. Total saldo kas (total + per pocket) |
-| | 2. Ringkasan: "X dari Y KK sudah setor bulan ini" |
-| | 3. Tabel status setoran per KK per bulan (scrollable horizontal) |
-| | 4. Riwayat transaksi terbaru (10-20 terakhir) |
-| **Interaksi** | Filter bulan (untuk tabel status), scroll horizontal tabel |
+| Aspek                     | Detail                                                           |
+| ------------------------- | ---------------------------------------------------------------- |
+| **Tipe**                  | Server Component (data di-fetch server-side)                     |
+| **Akses**                 | Publik (tanpa login)                                             |
+| **Data yang ditampilkan** | 1. Total saldo kas (total + per pocket)                          |
+|                           | 2. Ringkasan: "X dari Y KK sudah setor bulan ini"                |
+|                           | 3. Tabel status setoran per KK per bulan (scrollable horizontal) |
+|                           | 4. Riwayat transaksi terbaru (10-20 terakhir)                    |
+| **Interaksi**             | Filter bulan (untuk tabel status), scroll horizontal tabel       |
 
 **Tabel Status Setoran** (komponen `status-iuran-grid.tsx`):
 
@@ -899,54 +900,54 @@ Query: Ambil semua keluarga, lalu LEFT JOIN ke iuran untuk N bulan terakhir. Gun
 
 #### 9.2.3 Login (`/login`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Client Component (form interaktif) |
-| **Akses** | Publik (redirect ke dashboard jika sudah login) |
-| **Field** | Email, Password |
-| **Action** | Server Action `login()` |
+| Aspek              | Detail                                                         |
+| ------------------ | -------------------------------------------------------------- |
+| **Tipe**           | Client Component (form interaktif)                             |
+| **Akses**          | Publik (redirect ke dashboard jika sudah login)                |
+| **Field**          | Email, Password                                                |
+| **Action**         | Server Action `login()`                                        |
 | **Error handling** | Tampilkan pesan error dari Supabase (invalid credentials, dsb) |
 
 #### 9.2.4 Dashboard Overview (`/dashboard`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Server Component |
-| **Akses** | Admin only |
-| **Konten** | 1. Card saldo total + saldo per pocket |
-| | 2. Ringkasan setoran bulan ini (X/Y KK sudah setor) |
-| | 3. 5 transaksi terakhir |
-| | 4. Quick actions: Tambah Iuran, Tambah Transaksi |
+| Aspek      | Detail                                              |
+| ---------- | --------------------------------------------------- |
+| **Tipe**   | Server Component                                    |
+| **Akses**  | Admin only                                          |
+| **Konten** | 1. Card saldo total + saldo per pocket              |
+|            | 2. Ringkasan setoran bulan ini (X/Y KK sudah setor) |
+|            | 3. 5 transaksi terakhir                             |
+|            | 4. Quick actions: Tambah Iuran, Tambah Transaksi    |
 
 #### 9.2.5 CRUD Pages (Keluarga, Iuran, Transaksi, Pocket)
 
 Semua CRUD pages mengikuti pola yang sama:
 
-| Halaman | Tipe | Komponen Utama |
-|---|---|---|
-| **List** (`/dashboard/xxx`) | Server Component | Table + filter + pagination + tombol Tambah |
-| **Tambah** (`/dashboard/xxx/tambah`) | Client Component | Form + Server Action |
-| **Detail** (`/dashboard/xxx/[id]`) | Server Component | Card detail + data terkait + tombol Edit/Hapus |
-| **Edit** (`/dashboard/xxx/[id]/edit`) | Client Component | Form pre-filled + Server Action |
+| Halaman                               | Tipe             | Komponen Utama                                 |
+| ------------------------------------- | ---------------- | ---------------------------------------------- |
+| **List** (`/dashboard/xxx`)           | Server Component | Table + filter + pagination + tombol Tambah    |
+| **Tambah** (`/dashboard/xxx/tambah`)  | Client Component | Form + Server Action                           |
+| **Detail** (`/dashboard/xxx/[id]`)    | Server Component | Card detail + data terkait + tombol Edit/Hapus |
+| **Edit** (`/dashboard/xxx/[id]/edit`) | Client Component | Form pre-filled + Server Action                |
 
 #### 9.2.6 Settings (`/dashboard/settings`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Client Component |
+| Aspek      | Detail                                                       |
+| ---------- | ------------------------------------------------------------ |
+| **Tipe**   | Client Component                                             |
 | **Konten** | 1. Form ubah nominal iuran bulanan (+ tanggal berlaku mulai) |
-| | 2. Tabel riwayat perubahan nominal |
-| | 3. Info akun admin (email, tombol logout) |
+|            | 2. Tabel riwayat perubahan nominal                           |
+|            | 3. Info akun admin (email, tombol logout)                    |
 
 #### 9.2.7 Export Laporan (`/dashboard/laporan`)
 
-| Aspek | Detail |
-|---|---|
-| **Tipe** | Client Component |
-| **Konten** | 1. Pilih format: PDF atau Excel |
-| | 2. Filter: rentang tanggal, pocket, jenis laporan |
-| | 3. Preview ringkasan sebelum export |
-| | 4. Tombol Download |
+| Aspek      | Detail                                            |
+| ---------- | ------------------------------------------------- |
+| **Tipe**   | Client Component                                  |
+| **Konten** | 1. Pilih format: PDF atau Excel                   |
+|            | 2. Filter: rentang tanggal, pocket, jenis laporan |
+|            | 3. Preview ringkasan sebelum export               |
+|            | 4. Tombol Download                                |
 
 ### 9.3 Layout Components
 
@@ -1014,54 +1015,63 @@ Mobile: Sidebar → Bottom nav atau hamburger menu
 File: `lib/utils/validators.ts` (gunakan Zod)
 
 ```typescript
-import { z } from 'zod'
+import { z } from "zod";
 
 export const keluargaSchema = z.object({
-  nama_keluarga: z.string().min(1, 'Nama keluarga wajib diisi').max(100),
-})
+  nama_keluarga: z.string().min(1, "Nama keluarga wajib diisi").max(100),
+});
 
 export const iuranSchema = z.object({
-  keluarga_id: z.string().uuid('Pilih keluarga'),
-  periode: z.string().regex(/^\d{4}-\d{2}$/, 'Format periode: YYYY-MM'),
-  tanggal_setor: z.string().min(1, 'Tanggal setor wajib diisi'),
-  nominal: z.number().positive('Nominal harus lebih dari 0'),
-  metode: z.enum(['cash', 'transfer']),
+  keluarga_id: z.string().uuid("Pilih keluarga"),
+  periode: z.string().regex(/^\d{4}-\d{2}$/, "Format periode: YYYY-MM"),
+  tanggal_setor: z.string().min(1, "Tanggal setor wajib diisi"),
+  nominal: z.number().positive("Nominal harus lebih dari 0"),
+  metode: z.enum(["cash", "transfer"]),
   keterangan: z.string().optional(),
-  pocket_id: z.string().uuid('Pilih pocket'),
-})
+  pocket_id: z.string().uuid("Pilih pocket"),
+});
 
-export const transaksiSchema = z.object({
-  tanggal: z.string().min(1, 'Tanggal wajib diisi'),
-  jenis: z.enum(['masuk', 'keluar']),
-  kategori: z.string().min(1, 'Kategori wajib diisi'),
-  nominal: z.number().positive('Nominal harus lebih dari 0'),
-  keterangan: z.string().optional(),
-  pocket_id: z.string().uuid('Pilih pocket'),
-}).refine(
-  (data) => data.jenis !== 'keluar' || (data.keterangan && data.keterangan.length > 0),
-  { message: 'Keterangan wajib diisi untuk transaksi keluar', path: ['keterangan'] }
-)
+export const transaksiSchema = z
+  .object({
+    tanggal: z.string().min(1, "Tanggal wajib diisi"),
+    jenis: z.enum(["masuk", "keluar"]),
+    kategori: z.string().min(1, "Kategori wajib diisi"),
+    nominal: z.number().positive("Nominal harus lebih dari 0"),
+    keterangan: z.string().optional(),
+    pocket_id: z.string().uuid("Pilih pocket"),
+  })
+  .refine(
+    (data) =>
+      data.jenis !== "keluar" ||
+      (data.keterangan && data.keterangan.length > 0),
+    {
+      message: "Keterangan wajib diisi untuk transaksi keluar",
+      path: ["keterangan"],
+    },
+  );
 
 export const pocketSchema = z.object({
-  nama_pocket: z.string().min(1, 'Nama pocket wajib diisi').max(50),
-  jenis: z.enum(['cash', 'bank']),
-  saldo_awal: z.number().min(0, 'Saldo awal tidak boleh negatif').default(0),
-})
+  nama_pocket: z.string().min(1, "Nama pocket wajib diisi").max(50),
+  jenis: z.enum(["cash", "bank"]),
+  saldo_awal: z.number().min(0, "Saldo awal tidak boleh negatif").default(0),
+});
 
 export const configurationSchema = z.object({
-  nominal_iuran_bulanan: z.number().positive('Nominal harus lebih dari 0'),
-  berlaku_mulai: z.string().min(1, 'Tanggal berlaku wajib diisi'),
-})
+  nominal_iuran_bulanan: z.number().positive("Nominal harus lebih dari 0"),
+  berlaku_mulai: z.string().min(1, "Tanggal berlaku wajib diisi"),
+});
 
-export const transferSchema = z.object({
-  dari_pocket_id: z.string().uuid(),
-  ke_pocket_id: z.string().uuid(),
-  nominal: z.number().positive('Nominal harus lebih dari 0'),
-  keterangan: z.string().optional(),
-}).refine(
-  (data) => data.dari_pocket_id !== data.ke_pocket_id,
-  { message: 'Pocket sumber dan tujuan tidak boleh sama', path: ['ke_pocket_id'] }
-)
+export const transferSchema = z
+  .object({
+    dari_pocket_id: z.string().uuid(),
+    ke_pocket_id: z.string().uuid(),
+    nominal: z.number().positive("Nominal harus lebih dari 0"),
+    keterangan: z.string().optional(),
+  })
+  .refine((data) => data.dari_pocket_id !== data.ke_pocket_id, {
+    message: "Pocket sumber dan tujuan tidak boleh sama",
+    path: ["ke_pocket_id"],
+  });
 ```
 
 ---
@@ -1112,17 +1122,18 @@ sequenceDiagram
 Format: `{tabel}/{id}/{timestamp}.{ext}`
 
 Contoh:
+
 - `iuran/550e8400-e29b-41d4-a716-446655440000/1722585600.jpg`
 - `transaksi/550e8400-e29b-41d4-a716-446655440001/1722585601.png`
 
 ### 11.4 Batasan Upload
 
-| Parameter | Nilai |
-|---|---|
-| Max file size | 5MB per file |
-| Format yang diterima | `image/jpeg`, `image/png`, `image/webp` |
-| Max file per transaksi | 5 gambar |
-| Max file per iuran | 1 gambar |
+| Parameter              | Nilai                                   |
+| ---------------------- | --------------------------------------- |
+| Max file size          | 5MB per file                            |
+| Format yang diterima   | `image/jpeg`, `image/png`, `image/webp` |
+| Max file per transaksi | 5 gambar                                |
+| Max file per iuran     | 1 gambar                                |
 
 ---
 
@@ -1130,12 +1141,12 @@ Contoh:
 
 ### 12.1 Jenis Laporan
 
-| Jenis | Isi | Format |
-|---|---|---|
-| **Rekap Bulanan** | Saldo awal bulan, total masuk, total keluar, saldo akhir, detail transaksi | PDF, Excel |
-| **Status Iuran** | Tabel status setoran semua KK untuk rentang bulan tertentu | PDF, Excel |
-| **Riwayat Transaksi** | Daftar transaksi dengan filter (tanggal, kategori, pocket) | Excel |
-| **Ringkasan Pocket** | Saldo per pocket, riwayat masuk-keluar per pocket | PDF |
+| Jenis                 | Isi                                                                        | Format     |
+| --------------------- | -------------------------------------------------------------------------- | ---------- |
+| **Rekap Bulanan**     | Saldo awal bulan, total masuk, total keluar, saldo akhir, detail transaksi | PDF, Excel |
+| **Status Iuran**      | Tabel status setoran semua KK untuk rentang bulan tertentu                 | PDF, Excel |
+| **Riwayat Transaksi** | Daftar transaksi dengan filter (tanggal, kategori, pocket)                 | Excel      |
+| **Ringkasan Pocket**  | Saldo per pocket, riwayat masuk-keluar per pocket                          | PDF        |
 
 ### 12.2 Implementasi PDF
 
@@ -1143,34 +1154,34 @@ Menggunakan `jsPDF` + `jspdf-autotable` (client-side generation):
 
 ```typescript
 // Contoh skeleton — detail implementasi per jenis laporan
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export function generateRekapBulanan(data: RekapData) {
-  const doc = new jsPDF()
+  const doc = new jsPDF();
 
   // Header
-  doc.setFontSize(16)
-  doc.text('Laporan Kas Keluarga Iskandar', 14, 20)
-  doc.setFontSize(12)
-  doc.text(`Periode: ${data.periode}`, 14, 30)
+  doc.setFontSize(16);
+  doc.text("Laporan Kas Keluarga Iskandar", 14, 20);
+  doc.setFontSize(12);
+  doc.text(`Periode: ${data.periode}`, 14, 30);
 
   // Tabel ringkasan
   autoTable(doc, {
     startY: 40,
-    head: [['Keterangan', 'Nominal']],
+    head: [["Keterangan", "Nominal"]],
     body: [
-      ['Saldo Awal', formatRupiah(data.saldoAwal)],
-      ['Total Pemasukan', formatRupiah(data.totalMasuk)],
-      ['Total Pengeluaran', formatRupiah(data.totalKeluar)],
-      ['Saldo Akhir', formatRupiah(data.saldoAkhir)],
+      ["Saldo Awal", formatRupiah(data.saldoAwal)],
+      ["Total Pemasukan", formatRupiah(data.totalMasuk)],
+      ["Total Pengeluaran", formatRupiah(data.totalKeluar)],
+      ["Saldo Akhir", formatRupiah(data.saldoAkhir)],
     ],
-  })
+  });
 
   // Tabel detail transaksi
   // ...
 
-  doc.save(`Laporan-Kas-${data.periode}.pdf`)
+  doc.save(`Laporan-Kas-${data.periode}.pdf`);
 }
 ```
 
@@ -1179,7 +1190,7 @@ export function generateRekapBulanan(data: RekapData) {
 Menggunakan `xlsx` (SheetJS):
 
 ```typescript
-import * as XLSX from 'xlsx'
+import * as XLSX from "xlsx";
 
 export function generateExcelTransaksi(data: Transaksi[], filename: string) {
   const ws = XLSX.utils.json_to_sheet(
@@ -1188,14 +1199,14 @@ export function generateExcelTransaksi(data: Transaksi[], filename: string) {
       Jenis: t.jenis,
       Kategori: t.kategori,
       Nominal: t.nominal,
-      Keterangan: t.keterangan || '-',
+      Keterangan: t.keterangan || "-",
       Pocket: t.pocket_nama,
-    }))
-  )
+    })),
+  );
 
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Transaksi')
-  XLSX.writeFile(wb, `${filename}.xlsx`)
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Transaksi");
+  XLSX.writeFile(wb, `${filename}.xlsx`);
 }
 ```
 
@@ -1232,37 +1243,38 @@ File: `vercel.json`
 
 ### 14.1 Performa
 
-| Metrik | Target |
-|---|---|
-| First Contentful Paint (FCP) | < 1.5 detik |
+| Metrik                         | Target      |
+| ------------------------------ | ----------- |
+| First Contentful Paint (FCP)   | < 1.5 detik |
 | Largest Contentful Paint (LCP) | < 2.5 detik |
-| Time to Interactive (TTI) | < 3.5 detik |
-| Database query response | < 500ms |
+| Time to Interactive (TTI)      | < 3.5 detik |
+| Database query response        | < 500ms     |
 
 **Strategi**:
+
 - Server Components sebagai default → less client JS.
 - Lazy load komponen berat (charts, form kompleks).
 - Optimasi gambar bukti (resize sebelum upload, serve via Supabase CDN).
 
 ### 14.2 Responsivitas (Mobile-First)
 
-| Breakpoint | Layout |
-|---|---|
-| **< 640px** (mobile) | Single column, bottom nav, collapsible table |
+| Breakpoint                  | Layout                                         |
+| --------------------------- | ---------------------------------------------- |
+| **< 640px** (mobile)        | Single column, bottom nav, collapsible table   |
 | **640px - 1024px** (tablet) | Two column optional, sidebar hidden by default |
-| **> 1024px** (desktop) | Sidebar + main content |
+| **> 1024px** (desktop)      | Sidebar + main content                         |
 
 ### 14.3 Keamanan
 
-| Aspek | Implementasi |
-|---|---|
-| Autentikasi | Supabase Auth (bcrypt password hashing, JWT session) |
-| Otorisasi | RLS policies di database level |
-| Input validation | Zod schema (server-side, di Server Actions) |
-| File upload | Validasi MIME type + size limit + sanitasi filename |
-| CSRF | Otomatis ditangani oleh Server Actions Next.js |
-| XSS | React otomatis escape HTML. Tidak render `dangerouslySetInnerHTML`. |
-| Env vars | `.env.local` tidak di-commit. Secrets di Vercel Environment Variables. |
+| Aspek            | Implementasi                                                           |
+| ---------------- | ---------------------------------------------------------------------- |
+| Autentikasi      | Supabase Auth (bcrypt password hashing, JWT session)                   |
+| Otorisasi        | RLS policies di database level                                         |
+| Input validation | Zod schema (server-side, di Server Actions)                            |
+| File upload      | Validasi MIME type + size limit + sanitasi filename                    |
+| CSRF             | Otomatis ditangani oleh Server Actions Next.js                         |
+| XSS              | React otomatis escape HTML. Tidak render `dangerouslySetInnerHTML`.    |
+| Env vars         | `.env.local` tidak di-commit. Secrets di Vercel Environment Variables. |
 
 ### 14.4 Aksesibilitas
 
@@ -1273,12 +1285,12 @@ File: `vercel.json`
 
 ### 14.5 SEO
 
-| Halaman | Meta |
-|---|---|
-| `/` | `<title>Iskandar Pocket — Kas Keluarga Transparan</title>` |
-| `/laporan` | `<title>Laporan Kas — Iskandar Pocket</title>` |
-| `/login` | `<title>Login Admin — Iskandar Pocket</title>` |
-| `/dashboard/*` | `<title>{Page} — Dashboard Iskandar Pocket</title>`, `noindex` (admin area) |
+| Halaman        | Meta                                                                 |
+| -------------- | -------------------------------------------------------------------- |
+| `/`            | `<title>ISPOCKET — Kas Keluarga Transparan</title>`                  |
+| `/laporan`     | `<title>Laporan Kas — ISPOCKET</title>`                              |
+| `/login`       | `<title>Login Admin — ISPOCKET</title>`                              |
+| `/dashboard/*` | `<title>{Page} — Dashboard ISPOCKET</title>`, `noindex` (admin area) |
 
 ---
 
@@ -1286,45 +1298,45 @@ File: `vercel.json`
 
 ### Fase 1 — Foundation & Core CRUD (Minggu 1-2)
 
-| # | Task | Detail |
-|---|---|---|
-| 1.1 | Setup Supabase | Buat project, jalankan `001_init.sql`, buat admin user, setup Storage bucket |
-| 1.2 | Setup environment | `.env.local`, install dependencies, Supabase client (`lib/supabase/`) |
-| 1.3 | Auth & Middleware | Login page, Server Action auth, middleware redirect |
-| 1.4 | Dashboard Layout | Sidebar, header, mobile nav, page structure |
-| 1.5 | CRUD Keluarga | List, tambah, detail, edit, hapus |
-| 1.6 | CRUD Pocket | List, tambah, detail, edit, hapus, saldo otomatis |
-| 1.7 | CRUD Iuran | List, tambah, detail, edit, hapus, file upload bukti |
-| 1.8 | CRUD Transaksi | List, tambah, detail, edit, hapus, multi-file upload |
+| #   | Task              | Detail                                                                       |
+| --- | ----------------- | ---------------------------------------------------------------------------- |
+| 1.1 | Setup Supabase    | Buat project, jalankan `001_init.sql`, buat admin user, setup Storage bucket |
+| 1.2 | Setup environment | `.env.local`, install dependencies, Supabase client (`lib/supabase/`)        |
+| 1.3 | Auth & Middleware | Login page, Server Action auth, middleware redirect                          |
+| 1.4 | Dashboard Layout  | Sidebar, header, mobile nav, page structure                                  |
+| 1.5 | CRUD Keluarga     | List, tambah, detail, edit, hapus                                            |
+| 1.6 | CRUD Pocket       | List, tambah, detail, edit, hapus, saldo otomatis                            |
+| 1.7 | CRUD Iuran        | List, tambah, detail, edit, hapus, file upload bukti                         |
+| 1.8 | CRUD Transaksi    | List, tambah, detail, edit, hapus, multi-file upload                         |
 
 ### Fase 2 — Transparansi & Dashboard (Minggu 3)
 
-| # | Task | Detail |
-|---|---|---|
-| 2.1 | Dashboard Overview | Card saldo, ringkasan setoran, transaksi terakhir |
+| #   | Task                      | Detail                                                    |
+| --- | ------------------------- | --------------------------------------------------------- |
+| 2.1 | Dashboard Overview        | Card saldo, ringkasan setoran, transaksi terakhir         |
 | 2.2 | Halaman Publik `/laporan` | Tabel status setoran, saldo per pocket, riwayat transaksi |
-| 2.3 | Landing Page `/` | Hero, penjelasan, CTA |
-| 2.4 | Settings | Form nominal iuran, riwayat perubahan |
-| 2.5 | Transfer antar pocket | Form transfer, buat 2 transaksi atomik |
+| 2.3 | Landing Page `/`          | Hero, penjelasan, CTA                                     |
+| 2.4 | Settings                  | Form nominal iuran, riwayat perubahan                     |
+| 2.5 | Transfer antar pocket     | Form transfer, buat 2 transaksi atomik                    |
 
 ### Fase 3 — Export & Polish (Minggu 4)
 
-| # | Task | Detail |
-|---|---|---|
-| 3.1 | Export PDF | Rekap bulanan, status iuran |
-| 3.2 | Export Excel | Transaksi, iuran |
-| 3.3 | Cron Job | Keep-alive Supabase, `vercel.json` |
-| 3.4 | Polish UI | Animasi, loading states, error boundaries, toast notifications |
-| 3.5 | Testing & QA | Test semua flow, responsive check, edge cases |
-| 3.6 | Deploy | Vercel production deploy, custom domain (opsional) |
+| #   | Task         | Detail                                                         |
+| --- | ------------ | -------------------------------------------------------------- |
+| 3.1 | Export PDF   | Rekap bulanan, status iuran                                    |
+| 3.2 | Export Excel | Transaksi, iuran                                               |
+| 3.3 | Cron Job     | Keep-alive Supabase, `vercel.json`                             |
+| 3.4 | Polish UI    | Animasi, loading states, error boundaries, toast notifications |
+| 3.5 | Testing & QA | Test semua flow, responsive check, edge cases                  |
+| 3.6 | Deploy       | Vercel production deploy, custom domain (opsional)             |
 
 ### Fase 4 — Enhancement (Opsional)
 
-| # | Task | Detail |
-|---|---|---|
-| 4.1 | Charts | Grafik progress setoran, tren pengeluaran per kategori |
-| 4.2 | Notifikasi WA | Integrasi API WA untuk reminder KK belum setor |
-| 4.3 | Multi-event | Pisahkan kas per event/tujuan |
+| #   | Task          | Detail                                                 |
+| --- | ------------- | ------------------------------------------------------ |
+| 4.1 | Charts        | Grafik progress setoran, tren pengeluaran per kategori |
+| 4.2 | Notifikasi WA | Integrasi API WA untuk reminder KK belum setor         |
+| 4.3 | Multi-event   | Pisahkan kas per event/tujuan                          |
 
 ---
 
@@ -1332,50 +1344,52 @@ File: `vercel.json`
 
 ### 16.1 Penamaan
 
-| Aspek | Konvensi | Contoh |
-|---|---|---|
-| File/folder | kebab-case | `keluarga-form.tsx`, `iuran-table.tsx` |
-| Component | PascalCase | `KeluargaForm`, `IuranTable` |
-| Function/variable | camelCase | `getKeluargaList`, `saldoTotal` |
-| Database column | snake_case | `nama_keluarga`, `tanggal_setor` |
-| CSS class | Tailwind utility classes | `className="flex items-center gap-2"` |
-| Constant | UPPER_SNAKE_CASE | `KATEGORI_TRANSAKSI`, `MAX_FILE_SIZE` |
+| Aspek             | Konvensi                 | Contoh                                 |
+| ----------------- | ------------------------ | -------------------------------------- |
+| File/folder       | kebab-case               | `keluarga-form.tsx`, `iuran-table.tsx` |
+| Component         | PascalCase               | `KeluargaForm`, `IuranTable`           |
+| Function/variable | camelCase                | `getKeluargaList`, `saldoTotal`        |
+| Database column   | snake_case               | `nama_keluarga`, `tanggal_setor`       |
+| CSS class         | Tailwind utility classes | `className="flex items-center gap-2"`  |
+| Constant          | UPPER_SNAKE_CASE         | `KATEGORI_TRANSAKSI`, `MAX_FILE_SIZE`  |
 
 ### 16.2 Pattern Server Action
 
 ```typescript
-'use server'
+"use server";
 
-import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { keluargaSchema } from '@/lib/utils/validators'
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { keluargaSchema } from "@/lib/utils/validators";
 
 export async function createKeluarga(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // 1. Cek auth
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Unauthorized' }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
 
   // 2. Validasi input
   const validated = keluargaSchema.safeParse({
-    nama_keluarga: formData.get('nama_keluarga'),
-  })
+    nama_keluarga: formData.get("nama_keluarga"),
+  });
   if (!validated.success) {
-    return { error: validated.error.flatten().fieldErrors }
+    return { error: validated.error.flatten().fieldErrors };
   }
 
   // 3. Insert data
   const { error } = await supabase
-    .from('keluarga')
-    .insert({ nama_keluarga: validated.data.nama_keluarga })
+    .from("keluarga")
+    .insert({ nama_keluarga: validated.data.nama_keluarga });
 
-  if (error) return { error: error.message }
+  if (error) return { error: error.message };
 
   // 4. Revalidate & redirect
-  revalidatePath('/dashboard/keluarga')
-  redirect('/dashboard/keluarga')
+  revalidatePath("/dashboard/keluarga");
+  redirect("/dashboard/keluarga");
 }
 ```
 
@@ -1422,4 +1436,4 @@ export default async function KeluargaPage() {
 
 ---
 
-*Dokumen ini adalah referensi teknis utama untuk pengembangan Iskandar Pocket. Update dokumen ini jika ada perubahan arsitektur atau keputusan teknis baru.*
+_Dokumen ini adalah referensi teknis utama untuk pengembangan ISPOCKET. Update dokumen ini jika ada perubahan arsitektur atau keputusan teknis baru._

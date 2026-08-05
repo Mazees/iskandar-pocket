@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   FiUsers,
@@ -10,8 +10,12 @@ import {
   FiArrowUpRight,
   FiArrowDownRight,
   FiCalendar,
+  FiDownload,
+  FiFileText,
 } from "react-icons/fi";
 import { MdAccountBalanceWallet } from "react-icons/md";
+import { generateLaporanPDF } from "@/lib/utils/export-pdf";
+import { generateLaporanExcel } from "@/lib/utils/export-excel";
 import {
   TransaksiDetailModal,
   TransaksiDetailItem,
@@ -111,10 +115,119 @@ export function PublicOverviewView({
     "des",
   ];
 
+  const exportDataFormatted = useMemo(() => {
+    return {
+      periodeLabel: "Keseluruhan Data Kas (All-Time)",
+      totalPemasukan: totalPemasukanBulanIni,
+      totalPengeluaran: totalPengeluaran,
+      saldoBersih: totalSaldo,
+      listPocket: (listPocket || []).map((p) => ({
+        nama_pocket: p.nama_pocket,
+        saldo: p.saldo,
+      })),
+      statusIuran: (statusBulanIni || []).map((s) => ({
+        nama_keluarga: s.nama_keluarga,
+        nominal_setor: s.total_setor_bulan_ini,
+        status: s.lunas_bulan_ini
+          ? "Lunas"
+          : s.sudah_setor
+            ? "Kurang"
+            : "Belum Bayar",
+      })),
+      listTransaksi: (transaksiTerakhir || []).map((t) => ({
+        tanggal: t.tanggal,
+        jenis: t.jenis as "masuk" | "keluar",
+        pocket: t.pocket?.nama_pocket || "-",
+        keterangan: t.keterangan || "",
+        nominal: t.nominal,
+      })),
+      rekapTahunan: (statusTahunIni || []).map((t) => ({
+        nama_keluarga: t.nama_keluarga,
+        jan: Number(t.jan || 0),
+        feb: Number(t.feb || 0),
+        mar: Number(t.mar || 0),
+        apr: Number(t.apr || 0),
+        mei: Number(t.mei || 0),
+        jun: Number(t.jun || 0),
+        jul: Number(t.jul || 0),
+        agu: Number(t.agu || 0),
+        sep: Number(t.sep || 0),
+        okt: Number(t.okt || 0),
+        nov: Number(t.nov || 0),
+        des: Number(t.des || 0),
+        total: Number(t.total_setor_tahun_ini || 0),
+      })),
+    };
+  }, [
+    totalPemasukanBulanIni,
+    totalPengeluaran,
+    totalSaldo,
+    listPocket,
+    statusBulanIni,
+    transaksiTerakhir,
+    statusTahunIni,
+  ]);
+
+  const handleExportPDF = () => {
+    try {
+      generateLaporanPDF(exportDataFormatted);
+    } catch (err: any) {
+      console.error("Gagal export PDF:", err);
+      alert(
+        "Gagal mengunduh file PDF: " + (err?.message || "Terjadi kesalahan"),
+      );
+    }
+  };
+
+  const handleExportExcel = () => {
+    try {
+      generateLaporanExcel(exportDataFormatted);
+    } catch (err: any) {
+      console.error("Gagal export Excel:", err);
+      alert(
+        "Gagal mengunduh file Excel: " + (err?.message || "Terjadi kesalahan"),
+      );
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-6xl">
       {/* 1. Navigation / Header Tabs */}
       <LaporanNavTabs />
+
+      {/* 1.5. Export File Laporan Publik */}
+      <div className="card bg-base-200 border border-base-300 shadow-sm">
+        <div className="card-body p-4 flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold flex items-center gap-2">
+              <FiDownload className="w-4 h-4 text-primary" />
+              Unduh Laporan &amp; Transparansi
+            </h3>
+            <p className="text-xs text-base-content/70">
+              Unduh salinan berkas resmi laporan kas publik dalam format PDF
+              atau Excel
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExportPDF}
+              className="btn btn-sm btn-error text-error-content font-bold gap-1.5 shadow-sm"
+            >
+              <FiFileText className="w-4 h-4" />
+              <span>Export PDF</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExportExcel}
+              className="btn btn-sm btn-success text-success-content font-bold gap-1.5 shadow-sm"
+            >
+              <FiDownload className="w-4 h-4" />
+              <span>Export Excel</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* 2. DaisyUI Stats Component (Persis Dashboard) */}
       <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-200 border border-base-300">
@@ -207,7 +320,7 @@ export function PublicOverviewView({
               </Link>
             </div>
             <div className="overflow-x-auto mt-2">
-              <table className="table table-sm w-full">
+              <table className="table table-sm w-full text-nowrap">
                 <thead className="bg-base-300 text-base-content font-bold">
                   <tr>
                     <th>Tanggal</th>
@@ -301,7 +414,7 @@ export function PublicOverviewView({
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-xs">
+            <table className="table table-zebra w-full text-xs text-nowrap">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="text-left">Nama Keluarga</th>
@@ -371,7 +484,7 @@ export function PublicOverviewView({
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-xs">
+            <table className="table table-zebra w-full text-xs text-nowrap">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="min-w-44">Nama Keluarga</th>

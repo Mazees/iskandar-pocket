@@ -5,7 +5,7 @@ import {
   FiCheckCircle,
   FiHeart,
   FiCompass,
-  FiShield,
+  FiSmile,
   FiGrid,
 } from "react-icons/fi";
 import { PublicNavbar } from "@/components/layout/public-navbar";
@@ -16,13 +16,12 @@ export default function Home() {
       {/* 1. Clean Centered Family Welcoming Hero */}
       <main className="flex-1 flex flex-col justify-center max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center">
         <div>
-          <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md bg-secondary text-secondary-content text-xs font-semibold mb-8 border border-primary/20">
-            <FiCheckCircle className="w-4 h-4 text-primary" />
-            Portal Resmi Keluarga Besar Iskandar
+          <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md bg-secondary text-white text-xs font-semibold mb-8 border border-primary/20">
+            Portal Resmi Keluarga Besar Bapak Iskandar
           </div>
 
           <h1 className="text-4xl lg:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-base-content">
-            Transparansi Kas Keluarga Besar Iskandar
+            Transparansi Kas Keluarga Besar Bapak Iskandar
           </h1>
 
           <p className="text-base lg:text-lg text-base-content/75 max-w-2xl mx-auto leading-relaxed mb-10">
@@ -39,13 +38,6 @@ export default function Home() {
             >
               <FiEye className="w-5 h-5 mr-1.5" />
               Lihat Laporan Keuangan
-            </Link>
-            <Link
-              href="/login"
-              className="btn btn-neutral btn-md lg:btn-lg font-semibold rounded-lg px-8 border border-base-300"
-            >
-              Masuk sebagai Bendahara
-              <FiArrowRight className="w-5 h-5 ml-1" />
             </Link>
           </div>
         </div>
@@ -71,12 +63,9 @@ export default function Home() {
                 <div className="w-11 h-11 rounded-md bg-secondary flex items-center justify-center mb-3">
                   <FiHeart className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="card-title text-lg font-bold">
-                  Silaturahmi &amp; Halal Bihalal
-                </h3>
+                <h3 className="card-title text-lg font-bold">Silaturahmi</h3>
                 <p className="text-sm text-base-content/75 leading-relaxed mt-1">
-                  Mendukung penyelenggaraan pertemuan rutin tahunan, halal
-                  bihalal hari raya, dan arisan keluarga besar agar tali
+                  Mendukung penyelenggaraan pertemuan rutin agar tali
                   persaudaraan selalu erat terjaga.
                 </p>
               </div>
@@ -99,19 +88,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Card 3: Solidaritas */}
+            {/* Card 3: Acara & Makan Bersama */}
             <div className="card bg-base-100 border border-base-300 shadow-xs rounded-lg hover:shadow-md transition-shadow">
               <div className="card-body p-6">
                 <div className="w-11 h-11 rounded-md bg-secondary flex items-center justify-center mb-3">
-                  <FiShield className="w-5 h-5 text-primary" />
+                  <FiSmile className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="card-title text-lg font-bold">
-                  Solidaritas &amp; Duka Cita
+                  Acara &amp; Makan-Makan Bersama
                 </h3>
                 <p className="text-sm text-base-content/75 leading-relaxed mt-1">
-                  Dana kebersamaan yang siap disalurkan untuk menjenguk anggota
-                  keluarga yang sedang sakit atau musibah sebagai wujud saling
-                  peduli.
+                  Dana kas yang siap digunakan untuk berbagai acara santai
+                  keluarga, makan bersama, serta perayaan momen bahagia agar
+                  kumpul keluarga semakin guyub dan menyenangkan.
                 </p>
               </div>
             </div>
@@ -127,7 +116,7 @@ export default function Home() {
           </div>
           <p className="text-sm font-bold">Keluarga Besar Iskandar</p>
           <p className="text-xs font-semibold text-base-content/60">
-            &copy; 2026 — Guyub Rukun, Transparan &amp; Selamanya Bersatu
+            Guyub Rukun, Transparan &amp; Selamanya Bersatu
           </p>
         </aside>
       </footer>

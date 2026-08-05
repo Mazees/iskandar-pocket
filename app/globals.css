@@ -62,3 +62,12 @@ body {
   color: var(--color-base-content);
   font-family: calibri;
 }
+
+/* Aturan global: Semua isi tabel wajib text-nowrap tanpa terkecuali */
+table,
+table th,
+table td,
+.table th,
+.table td {
+  white-space: nowrap !important;
+}

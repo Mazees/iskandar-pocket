@@ -1,4 +1,4 @@
-# PRD: Iskandar Pocket
+# PRD: ISPOCKET
 
 **Product Requirements Document — Aplikasi Kas Keluarga Transparan**
 
@@ -16,7 +16,7 @@ Keluarga besar Iskandar mengumpulkan uang kas untuk keperluan rekreasi/acara kel
 - "Dipakai untuk apa saja pengeluarannya?"
 - "Ada bukti transaksinya nggak?"
 
-**Iskandar Pocket** dibuat untuk menjawab masalah ini dengan sistem pencatatan kas digital yang transparan, bisa diakses semua anggota keluarga (bahkan publik/tanpa login untuk laporan), lengkap dengan bukti transaksi (struk/foto) dan fitur cetak laporan.
+**ISPOCKET** dibuat untuk menjawab masalah ini dengan sistem pencatatan kas digital yang transparan, bisa diakses semua anggota keluarga (bahkan publik/tanpa login untuk laporan), lengkap dengan bukti transaksi (struk/foto) dan fitur cetak laporan.
 
 ## 2. Tujuan Produk
 

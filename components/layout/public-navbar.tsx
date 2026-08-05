@@ -43,15 +43,15 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
             >
               <img
                 src="/icon.svg"
-                alt="Iskandar Pocket Logo"
+                alt="ISPOCKET Logo"
                 className="w-10 h-10 object-contain shrink-0"
               />
               <div className="truncate">
                 <span className="font-bold text-base lg:text-lg block leading-tight truncate tracking-tight">
-                  ISKANDAR POCKET
+                  ISPOCKET
                 </span>
                 <span className="text-xs text-base-content/60 hidden lg:block mt-0.5 font-medium">
-                  Portal Kas &amp; Transparansi Keuangan Keluarga
+                  Portal Kas &amp; Transparansi Keuangan Keluarga Bapak Iskandar
                 </span>
               </div>
             </Link>
@@ -119,12 +119,12 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-base-300">
               <img
                 src="/icon.svg"
-                alt="Iskandar Pocket Logo"
+                alt="ISPOCKET Logo"
                 className="w-10 h-10 object-contain shrink-0"
               />
               <div>
                 <h2 className="font-bold text-base tracking-tight leading-none">
-                  ISKANDAR POCKET
+                  ISPOCKET
                 </h2>
                 <p className="text-xs text-base-content/60 mt-1 font-medium">
                   Kas &amp; Transparansi
@@ -166,7 +166,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
                 <Link
                   href="/login"
                   onClick={handleCloseDrawer}
-                  className="flex items-center gap-3 py-3 px-4 font-semibold rounded-lg w-full bg-neutral text-neutral-content hover:bg-neutral/80"
+                  className="justify-start gap-3 py-3 px-4 font-semibold rounded-lg w-full transition-colors btn btn-outline btn-primary"
                 >
                   <FiLock className="w-5 h-5" />
                   <span>{isLoggedIn ? "Buka Dashboard" : "Login"}</span>
