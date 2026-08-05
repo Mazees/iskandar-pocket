@@ -24,18 +24,15 @@ export default function Home() {
           priority
         />
         <div className="bg-black/70 h-full w-full absolute left-0 top-0 flex flex-col items-center justify-center text-center">
-          <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md bg-secondary text-white text-xs font-semibold mb-8 border border-primary/20">
-            Portal Resmi Keluarga Bapak Iskandar
-          </div>
 
           <h1 className="text-3xl lg:text-5xl max-w-3xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-white">
             Transparansi Kas Keluarga <br /> Bapak Iskandar
           </h1>
 
-          <p className="text-sm text-green-400 lg:text-lg max-w-xl not-lg:w-[80%] mx-auto mb-10 tracking-widest">
-            Portal informasi untuk memantau setoran iuran bulanan, alokasi
-            pengeluaran acara, serta saldo kas keluarga kita secara jujur dan
-            terbuka.
+          <p className="text-xs text-green-400 lg:text-sm max-w-xl not-lg:w-[80%] mx-auto mb-10 tracking-widest">
+            Portal Informasi Untuk Memantau Setoran Iuran Bulanan, Alokasi
+            Pengeluaran Acara, Serta Saldo Kas Keluarga Kita Secara Jujur Dan
+            Terbuka.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
