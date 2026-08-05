@@ -47,7 +47,7 @@ export function PublicNavbar({ children }: PublicNavbarProps) {
                 className="w-10 h-10 object-contain shrink-0"
               />
               <div className="truncate">
-                <span className="font-bold text-base lg:text-lg block leading-tight truncate tracking-tight">
+                <span className="font-bold text-primary lg:text-lg block leading-tight truncate tracking-tight">
                   ISPOCKET
                 </span>
                 <span className="text-xs text-base-content/60 hidden lg:block mt-0.5 font-medium">
