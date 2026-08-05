@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FiEye,
   FiArrowRight,
@@ -14,21 +15,27 @@ export default function Home() {
   return (
     <PublicNavbar>
       {/* 1. Clean Centered Family Welcoming Hero */}
-      <main className="flex-1 flex flex-col justify-center max-w-4xl mx-auto px-6 py-20 lg:py-28 text-center">
-        <div>
+      <main className="relative w-full h-[calc(100vh-72px)]">
+        <Image
+          src="/bg-hero.jpeg"
+          alt="Latar belakang hero"
+          fill
+          className="object-cover object-top"
+          priority
+        />
+        <div className="bg-black/70 h-full w-full absolute left-0 top-0 flex flex-col items-center justify-center text-center">
           <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md bg-secondary text-white text-xs font-semibold mb-8 border border-primary/20">
             Portal Resmi Keluarga Besar Bapak Iskandar
           </div>
 
-          <h1 className="text-4xl lg:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-base-content">
+          <h1 className="text-3xl lg:text-5xl max-w-3xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-white">
             Transparansi Kas Keluarga Besar Bapak Iskandar
           </h1>
 
-          <p className="text-base lg:text-lg text-base-content/75 max-w-2xl mx-auto leading-relaxed mb-10">
-            Dari kita, oleh kita, dan untuk kita. Portal informasi keuangan
-            keluarga untuk memantau iuran bulanan per Keluarga, pengeluaran
-            acara silaturahmi, rekreasi, serta saldo kas bersama secara jujur
-            dan terbuka.
+          <p className="text-sm text-green-400 lg:text-lg max-w-xl not-lg:w-[80%] mx-auto mb-10">
+            Portal informasi untuk memantau setoran iuran bulanan, alokasi
+            pengeluaran acara, serta saldo kas keluarga kita secara jujur dan
+            terbuka.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
