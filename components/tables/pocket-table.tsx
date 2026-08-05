@@ -111,7 +111,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
             Kelola akun tempat penyimpanan dana kas tunai maupun rekening bank
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex not-lg:flex-col gap-2">
           <button
             onClick={() => setIsTransferModalOpen(true)}
             className="btn btn-primary btn-outline font-semibold shadow-sm"
