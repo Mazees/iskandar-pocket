@@ -57,7 +57,7 @@ export function TransaksiForm({
   const [nominal, setNominal] = useState("");
   const [pocketId, setPocketId] = useState("");
   const [tanggal, setTanggal] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [keterangan, setKeterangan] = useState("");
   const [previewItems, setPreviewItems] = useState<PreviewItem[]>([]);
@@ -81,7 +81,7 @@ export function TransaksiForm({
             id: `existing_${idx}_${Date.now()}`,
             url,
             isExisting: true,
-          })
+          }),
         );
         setPreviewItems(existingPreviews);
       } else {
@@ -206,7 +206,7 @@ export function TransaksiForm({
         showSuccessToast(
           editData
             ? "Transaksi berhasil diperbarui!"
-            : "Transaksi kas berhasil dicatat!"
+            : "Transaksi kas berhasil dicatat!",
         );
       }
     } catch {
@@ -354,11 +354,10 @@ export function TransaksiForm({
           </div>
 
           {/* Upload Bukti Transaksi */}
-          <div className="form-control w-full">
+          <div className="form-control w-full text-xs">
             <label className="label py-1">
-              <span className="label-text font-semibold">Bukti Transaksi</span>
-              <span className="label-text-alt text-base-content/60">
-                Struk, invoice, nota, atau transfer
+              <span className="label-text font-semibold text-wrap">
+                Bukti Transaksi (Struk, invoice, nota, atau transfer)
               </span>
             </label>
 
@@ -381,7 +380,8 @@ export function TransaksiForm({
                   Pilih Foto Bukti Transaksi
                 </span>
                 <span className="text-[10px] text-base-content/50">
-                  Foto di-upload &amp; dioptimasi otomatis saat transaksi dicatat
+                  Foto di-upload &amp; dioptimasi otomatis saat transaksi
+                  dicatat
                 </span>
               </label>
             </div>
@@ -454,6 +454,6 @@ export function TransaksiForm({
         onClick={onClose}
       />
     </div>,
-    document.body
+    document.body,
   );
 }
