@@ -105,7 +105,7 @@ export function PocketTable({ listPocket }: PocketTableProps) {
         <div>
           <h1 className="text-base sm:text-lg font-bold flex items-center gap-2">
             <FiFolder className="w-5 h-5 text-primary shrink-0" />
-            Dompet &amp; Akun Pocket Kas
+            Dompet Kas
           </h1>
           <p className="text-xs text-base-content/70">
             Kelola akun tempat penyimpanan dana kas tunai maupun rekening bank
