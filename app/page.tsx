@@ -25,14 +25,14 @@ export default function Home() {
         />
         <div className="bg-black/70 h-full w-full absolute left-0 top-0 flex flex-col items-center justify-center text-center">
           <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md bg-secondary text-white text-xs font-semibold mb-8 border border-primary/20">
-            Portal Resmi Keluarga Besar Bapak Iskandar
+            Portal Resmi Keluarga Bapak Iskandar
           </div>
 
           <h1 className="text-3xl lg:text-5xl max-w-3xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-white">
-            Transparansi Kas Keluarga Besar Bapak Iskandar
+            Transparansi Kas Keluarga Besar <br /> Bapak Iskandar
           </h1>
 
-          <p className="text-sm text-green-400 lg:text-lg max-w-xl not-lg:w-[80%] mx-auto mb-10">
+          <p className="text-sm text-green-400 lg:text-lg max-w-xl not-lg:w-[80%] mx-auto mb-10 tracking-widest">
             Portal informasi untuk memantau setoran iuran bulanan, alokasi
             pengeluaran acara, serta saldo kas keluarga kita secara jujur dan
             terbuka.
