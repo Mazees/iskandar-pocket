@@ -19,7 +19,7 @@ export const showSuccessToast = (message: string) => {
     timerProgressBar: true,
     customClass: {
       popup:
-        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
+        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl !text-sm font-semibold",
     },
   });
 };
@@ -35,7 +35,7 @@ export const showErrorToast = (message: string) => {
     timerProgressBar: true,
     customClass: {
       popup:
-        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl text-sm font-semibold",
+        "font-sans rounded-xl border border-base-300 bg-base-100 text-base-content shadow-xl !text-sm font-semibold",
     },
   });
 };
@@ -61,9 +61,9 @@ export const showAlert = ({
     customClass: {
       popup:
         "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
-      title: "font-bold text-lg text-base-content",
-      htmlContainer: "text-sm text-base-content/70 mt-2",
-      confirmButton: "btn btn-primary font-semibold px-6 rounded-lg shadow-xs",
+      title: "font-bold !text-sm text-base-content",
+      htmlContainer: "!text-sm text-base-content/70 mt-2",
+      confirmButton: "btn btn-primary font-semibold px-6 rounded-lg shadow-xs !text-sm",
     },
   });
 };
@@ -112,12 +112,12 @@ export const showConfirmModal = ({
     customClass: {
       popup:
         "font-sans bg-base-100 text-base-content border border-base-300 rounded-2xl shadow-2xl p-6",
-      title: "font-bold text-lg text-base-content",
-      htmlContainer: "text-sm text-base-content/70 mt-2",
+      title: "font-bold !text-xl text-base-content",
+      htmlContainer: "!text-sm text-base-content/70 mt-2",
       confirmButton: isDanger
-        ? "btn btn-error font-semibold px-6 rounded-lg shadow-xs"
-        : "btn btn-primary font-semibold px-6 rounded-lg shadow-xs",
-      cancelButton: "btn btn-ghost font-semibold px-6 rounded-lg mr-2",
+        ? "btn btn-error font-semibold px-6 rounded-lg shadow-xs !text-sm"
+        : "btn btn-primary font-semibold px-6 rounded-lg shadow-xs !text-sm",
+      cancelButton: "btn btn-ghost font-semibold px-6 rounded-lg mr-2 !text-sm",
     },
   });
 };
