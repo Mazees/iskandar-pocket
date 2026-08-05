@@ -154,7 +154,7 @@ export function KeluargaTable({ listKeluarga }: KeluargaTableProps) {
       {/* Table Data Keluarga */}
       <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-0 overflow-x-auto">
-          <table className="table table-zebra w-full text-sm">
+          <table className="table table-zebra w-full text-sm text-nowrap">
             <thead className="bg-base-300 text-base-content font-bold">
               <tr>
                 <th>Nama Keluarga</th>

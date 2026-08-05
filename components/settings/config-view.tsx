@@ -100,7 +100,7 @@ export function ConfigView({
               Riwayat Perubahan Tarif Nominal
             </h3>
             <div className="overflow-x-auto">
-              <table className="table table-zebra w-full text-sm">
+              <table className="table table-zebra w-full text-sm text-nowrap">
                 <thead className="bg-base-300 text-base-content font-bold">
                   <tr>
                     <th>Berlaku Mulai Bulan</th>

@@ -131,7 +131,7 @@ export function PublicTransaksiList({
       {/* 3. Table Transaksi */}
       <div className="card bg-base-200 shadow-sm border border-base-300">
         <div className="card-body p-0 overflow-x-auto">
-          <table className="table table-zebra w-full text-sm text-left">
+          <table className="table table-zebra w-full text-sm text-left text-nowrap">
             <thead className="bg-base-300 text-base-content font-bold">
               <tr>
                 <th>No</th>

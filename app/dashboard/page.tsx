@@ -297,7 +297,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
               </Link>
             </div>
             <div className="overflow-x-auto mt-2">
-              <table className="table table-sm w-full">
+              <table className="table table-sm w-full text-nowrap">
                 <thead>
                   <tr>
                     <th>Tanggal</th>
@@ -384,7 +384,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-xs">
+            <table className="table table-zebra w-full text-xs text-nowrap">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="text-left">Nama Keluarga</th>
@@ -455,7 +455,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
           </div>
 
           <div className="overflow-x-auto mt-4">
-            <table className="table table-zebra w-full text-xs">
+            <table className="table table-zebra w-full text-xs text-nowrap">
               <thead className="bg-base-300 text-base-content font-bold">
                 <tr>
                   <th className="min-w-44">Nama Keluarga</th>
