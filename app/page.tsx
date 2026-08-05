@@ -29,7 +29,7 @@ export default function Home() {
           </div>
 
           <h1 className="text-3xl lg:text-5xl max-w-3xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-white">
-            Transparansi Kas Keluarga Besar <br /> Bapak Iskandar
+            Transparansi Kas Keluarga <br /> Bapak Iskandar
           </h1>
 
           <p className="text-sm text-green-400 lg:text-lg max-w-xl not-lg:w-[80%] mx-auto mb-10 tracking-widest">
