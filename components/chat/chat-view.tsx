@@ -37,23 +37,23 @@ export function ChatView() {
   const agentRef = useRef<ReActAgent | null>(null);
 
   useEffect(() => {
-    // Inisiasi AI Core
-    agentRef.current = new ReActAgent(
-      llmProviderAction,
-      agentTools,
-      SYSTEM_PROMPT
-    );
-
     // Load data awal dari Dexie
     db.messages.orderBy('timestamp').toArray().then(data => {
       setMessages(data);
       setIsDbLoaded(true);
+      
       // Injeksi history ke memori agent (agar AI ingat percakapan sebelumnya)
-      if (agentRef.current) {
-        agentRef.current.chatHistory = data
-          .filter(d => d.content) // Hanya ambil yang punya jawaban teks final
-          .map(d => ({ role: d.role === "user" ? "user" : "assistant", content: d.content }));
-      }
+      const initialHistory = data
+        .filter(d => d.content) // Hanya ambil yang punya jawaban teks final
+        .map(d => ({ role: d.role === "user" ? "user" : "assistant", content: d.content }));
+
+      // Inisiasi AI Core dengan memori percakapan yang sudah disedot
+      agentRef.current = new ReActAgent(
+        llmProviderAction,
+        agentTools,
+        SYSTEM_PROMPT,
+        initialHistory
+      );
     });
   }, []);
 
