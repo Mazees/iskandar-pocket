@@ -11,10 +11,12 @@ import {
   FiFileText,
   FiSettings,
   FiFolder,
+  FiCpu,
 } from "react-icons/fi";
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Overview", icon: FiHome },
+  { href: "/dashboard/chat", label: "Tanya Pocky (AI) ", icon: FiCpu },
   { href: "/dashboard/keluarga", label: "Keluarga", icon: FiUsers },
   { href: "/dashboard/iuran", label: "Setoran Iuran", icon: FiDollarSign },
   { href: "/dashboard/transaksi", label: "Transaksi Kas", icon: FiCreditCard },

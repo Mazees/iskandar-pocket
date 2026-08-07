@@ -24,6 +24,12 @@
 *   **Pencatatan Transaksi:** Mencatat pemasukan (Iuran/Lainnya), pengeluaran operasional/acara, serta fitur Transfer Antar Pocket/Rekening dengan dukungan unggah bukti foto (*receipt*).
 *   **Manajemen Multi-Pocket:** Sistem pembagian kas (Kas Tunai, Rekening Bank BCA, dll) agar arus dana selalu tercatat akurat.
 
+### 3. 🤖 Asisten AI Cerdas "Pocky" (ReAct Agent)
+*   **Analisis Otomatis:** Fitur asisten obrolan yang dapat menjawab pertanyaan seputar keuangan menggunakan bahasa natural (Misal: "Berapa total kas saat ini?", "Siapa yang belum bayar iuran bulan ini?").
+*   **Agentic Tools:** Didukung oleh *library* `react-agent-js` (ReAct Loop) yang memiliki 9+ *tools* database (Cek Saldo, Laporan Transaksi Bulanan, Rekap Kategori Pengeluaran, dll).
+*   **Persistent Single-Session:** Riwayat obrolan AI akan disimpan langsung di *browser* (IndexedDB) menggunakan `dexie` sehingga percakapan tidak hilang saat halaman di-*refresh*.
+*   **Rich Formatting:** Menggunakan `react-markdown` dan `@tailwindcss/typography` untuk memberikan jawaban kaya teks seperti tebal, daftar poin, hingga tabel rapi.
+
 ---
 
 ## 🛠️ Teknologi yang Digunakan
@@ -32,6 +38,8 @@
 *   **Bahasa Pemrograman:** TypeScript (Strict Mode)
 *   **Styling & UI:** [Tailwind CSS v4](https://tailwindcss.com/) + [DaisyUI v5](https://daisyui.com/), [React Icons](https://react-icons.github.io/react-icons/), [SweetAlert2](https://sweetalert2.github.io/)
 *   **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL Database, Auth, Storage, Views)
+*   **Client Database (AI History):** [Dexie.js](https://dexie.org/) (IndexedDB Wrapper)
+*   **AI Integration:** [react-agent-js](https://www.npmjs.com/package/react-agent-js) (ReAct Framework), Google Gemini API
 *   **Export Data:** `jspdf`, `jspdf-autotable`, `xlsx` (SheetJS)
 
 ---
