@@ -376,13 +376,13 @@ export function ChatView() {
                     )}
                   </div>
                 ) : (
-                  // Jika ini pesan AI tapi belum ada thought, tools, atau content (masih loading awal)
-                  msg.role === "ai" &&
-                  !msg.thought &&
-                  (!msg.tools || msg.tools.length === 0) && (
+                  // Jika belum ada teks sama sekali (masih mikir awal atau lagi nunggu hasil tool)
+                  msg.role === "ai" && (
                     <div className="flex items-center gap-2 text-[13px] sm:text-sm text-base-content/50 italic font-medium py-1 w-full">
                       <span className="loading loading-dots loading-xs sm:loading-sm"></span>
-                      Sedang berpikir...
+                      {msg.tools && msg.tools.length > 0
+                        ? "Sedang memproses data..."
+                        : "Sedang berpikir..."}
                     </div>
                   )
                 )}

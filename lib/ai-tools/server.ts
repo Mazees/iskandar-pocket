@@ -85,7 +85,6 @@ export async function tool_get_transaksi_terakhir(limit = 10) {
       .select(`
         tanggal, 
         jenis, 
-        kategori, 
         nominal, 
         keterangan,
         pocket:pocket_id (nama_pocket)
@@ -159,11 +158,26 @@ export async function tool_get_info_nominal_wajib() {
 export async function tool_get_laporan_transaksi_periode(periode: string) {
   try {
     const supabase = await createClient();
-    // format periode: "YYYY-MM" atau "YYYY"
+    let startDate = "";
+    let endDate = "";
+
+    if (periode.length === 4) {
+      startDate = `${periode}-01-01`;
+      endDate = `${periode}-12-31`;
+    } else if (periode.length === 7) {
+      const [year, month] = periode.split("-");
+      startDate = `${periode}-01`;
+      const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+      endDate = `${periode}-${lastDay}`;
+    } else {
+      return JSON.stringify({ status: "error", message: "Format periode harus YYYY atau YYYY-MM" });
+    }
+
     const { data, error } = await supabase
       .from("transaksi")
-      .select("tanggal, jenis, kategori, nominal, keterangan")
-      .like("tanggal", `${periode}%`);
+      .select("tanggal, jenis, nominal, keterangan")
+      .gte("tanggal", startDate)
+      .lte("tanggal", endDate);
 
     if (error) throw error;
 
@@ -218,32 +232,3 @@ export async function tool_get_riwayat_iuran_per_keluarga(nama_keluarga: string)
   }
 }
 
-// 9. Tool: Rekap Kategori Pengeluaran per Periode
-export async function tool_get_rekap_kategori_pengeluaran(periode: string) {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("transaksi")
-      .select("kategori, nominal")
-      .eq("jenis", "keluar")
-      .like("tanggal", `${periode}%`);
-
-    if (error) throw error;
-
-    // Kelompokkan dan jumlahkan berdasarkan kategori
-    const rekap: Record<string, number> = {};
-    data.forEach(item => {
-      const kat = item.kategori || "Lainnya";
-      if (!rekap[kat]) rekap[kat] = 0;
-      rekap[kat] += item.nominal;
-    });
-
-    return JSON.stringify({
-      status: "success",
-      periode: periode,
-      total_per_kategori: rekap,
-    });
-  } catch (err: any) {
-    return JSON.stringify({ status: "error", message: err.message });
-  }
-}

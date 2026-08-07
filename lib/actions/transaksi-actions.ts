@@ -10,7 +10,6 @@ const TransaksiSchema = z
     jenis: z.enum(["masuk", "keluar"], {
       message: "Jenis transaksi wajib dipilih",
     }),
-    kategori: z.string().optional(),
     nominal: z.coerce.number().min(100, "Nominal transaksi minimal Rp 100"),
     pocket_id: z.string().min(1, "Pocket kas/bank wajib dipilih"),
     tanggal: z.string().min(1, "Tanggal transaksi wajib diisi"),
@@ -60,7 +59,6 @@ export async function createTransaksi(formData: FormData) {
   // 2. Validasi input Zod
   const rawData = {
     jenis: formData.get("jenis")?.toString(),
-    kategori: formData.get("kategori")?.toString().trim() || "Umum",
     nominal: formData.get("nominal"),
     pocket_id: formData.get("pocket_id")?.toString(),
     tanggal:
@@ -223,7 +221,6 @@ export async function transferSaldo(formData: FormData) {
   // 1. Buat record PENGELUARAN dari Pocket Asal
   const outRecord = {
     jenis: "keluar",
-    kategori: "Transfer Keluar",
     nominal: nominal,
     pocket_id: fromPocketId,
     tanggal: tanggal,
@@ -234,7 +231,6 @@ export async function transferSaldo(formData: FormData) {
   // 2. Buat record PEMASUKAN ke Pocket Tujuan
   const inRecord = {
     jenis: "masuk",
-    kategori: "Transfer Masuk",
     nominal: nominal,
     pocket_id: toPocketId,
     tanggal: tanggal,
