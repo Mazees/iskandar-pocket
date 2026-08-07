@@ -24,7 +24,8 @@ import { db } from "@/lib/db/chat-db";
 const SYSTEM_PROMPT = `Kamu adalah Pocky, Asisten AI ISPOCKET yang bertugas mengelola kas keluarga.
 Tugas utamamu adalah membantu pengguna menganalisis dan menjawab pertanyaan seputar keuangan (saldo, iuran, transaksi) menggunakan tools yang tersedia.
 Selalu jawab menggunakan bahasa Indonesia yang ramah, ringkas, dan jelas. Biasakan memanggil dirimu 'Pocky'.
-Jika pengguna menanyakan sesuatu yang bisa dicek dengan tool (seperti siapa yang menunggak, berapa saldo, dll), panggil tool yang sesuai terlebih dahulu sebelum menjawab.`;
+Jika pengguna menanyakan sesuatu yang bisa dicek dengan tool (seperti siapa yang menunggak, berapa saldo, dll), panggil tool yang sesuai terlebih dahulu sebelum menjawab.
+Jika tool mengembalikan data kosong atau error, jangan pernah beralasan ada kendala teknis atau masalah sistem. Sampaikan saja bahwa datanya memang belum ada atau kosong.`;
 
 export function ChatView() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -38,23 +39,32 @@ export function ChatView() {
 
   useEffect(() => {
     // Load data awal dari Dexie
-    db.messages.orderBy('timestamp').toArray().then(data => {
-      setMessages(data);
-      setIsDbLoaded(true);
-      
-      // Injeksi history ke memori agent (agar AI ingat percakapan sebelumnya)
-      const initialHistory = data
-        .filter(d => d.content) // Hanya ambil yang punya jawaban teks final
-        .map(d => ({ role: d.role === "user" ? "user" : "assistant", content: d.content }));
+    db.messages
+      .orderBy("timestamp")
+      .toArray()
+      .then((data) => {
+        setMessages(data);
+        setIsDbLoaded(true);
 
-      // Inisiasi AI Core dengan memori percakapan yang sudah disedot
-      agentRef.current = new ReActAgent(
-        llmProviderAction,
-        agentTools,
-        SYSTEM_PROMPT,
-        initialHistory
-      );
-    });
+        // Injeksi history ke memori agent (agar AI ingat percakapan sebelumnya)
+        const initialHistory = data
+          .filter((d) => d.content) // Hanya ambil yang punya jawaban teks final
+          .map((d) => ({
+            role: d.role === "user" ? "user" : "assistant",
+            content: d.content,
+          }));
+
+        // Konteks waktu dinamis agar AI tahu hari, bulan, dan tahun saat ini
+        const timeContext = `\n\nInformasi Penting:\nWaktu saat ini adalah ${new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}. Gunakan informasi ini jika pengguna bertanya tentang "bulan ini", "tahun ini", atau waktu relatif lainnya.`;
+
+        // Inisiasi AI Core dengan memori percakapan yang sudah disedot
+        agentRef.current = new ReActAgent(
+          llmProviderAction,
+          agentTools,
+          SYSTEM_PROMPT + timeContext,
+          initialHistory,
+        );
+      });
   }, []);
 
   // Simpan ke Dexie setiap ada perubahan pesan (jika data awal sudah di-load)
@@ -109,12 +119,22 @@ export function ChatView() {
     const aiMsgId = (Date.now() + 1).toString();
 
     // 1. Tambahkan pesan user ke UI
-    setMessages((prev) => [...prev, { id: userMsgId, role: "user", content: userText, timestamp: Date.now() }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: userMsgId, role: "user", content: userText, timestamp: Date.now() },
+    ]);
 
     // 2. Tambahkan placeholder untuk pesan AI (kosong)
     setMessages((prev) => [
       ...prev,
-      { id: aiMsgId, role: "ai", thought: "", tools: [], content: "", timestamp: Date.now() + 1 },
+      {
+        id: aiMsgId,
+        role: "ai",
+        thought: "",
+        tools: [],
+        content: "",
+        timestamp: Date.now() + 1,
+      },
     ]);
 
     try {
@@ -158,6 +178,9 @@ export function ChatView() {
                   }
                   return t;
                 });
+              } else if (stepData.status === "intermediate_answer" && stepData.answer) {
+                // AI memberikan pesan selingan saat sedang menjalankan tool
+                newContent = stepData.answer;
               } else if (stepData.status === "done" && stepData.finalAnswer) {
                 // AI selesai memformulasikan jawaban akhir
                 newContent = stepData.finalAnswer;
@@ -201,8 +224,10 @@ export function ChatView() {
             <FiCpu className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="font-bold text-base leading-tight">Pocky</h2>
-            <p className="text-[11px] text-base-content/60 font-medium">
+            <h2 className="font-bold text-[15px] sm:text-base leading-tight">
+              Pocky
+            </h2>
+            <p className="text-[10px] sm:text-[11px] text-base-content/60 font-medium">
               Asisten AI ISPOCKET
             </p>
           </div>
@@ -223,8 +248,8 @@ export function ChatView() {
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-base-100/50">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-base-content/40 space-y-3">
-            <FiCpu className="w-12 h-12 opacity-50" />
-            <p className="font-medium text-sm">
+            <FiCpu className="w-10 h-10 sm:w-12 sm:h-12 opacity-50" />
+            <p className="font-medium text-[13px] sm:text-sm">
               Halo! Saya Pocky. Ada yang bisa saya bantu terkait kas keluarga?
             </p>
           </div>
@@ -259,9 +284,9 @@ export function ChatView() {
                 {msg.role === "ai" &&
                   (msg.thought || (msg.tools && msg.tools.length > 0)) && (
                     <details className="group [&_summary::-webkit-details-marker]:hidden w-full max-w-xl border border-base-300 rounded-lg bg-base-200/50">
-                      <summary className="flex cursor-pointer items-center justify-between gap-2 p-2.5 text-sm font-semibold text-base-content/70 hover:text-base-content transition-colors select-none">
+                      <summary className="flex cursor-pointer items-center justify-between gap-2 p-2 sm:p-2.5 text-[13px] sm:text-sm font-semibold text-base-content/70 hover:text-base-content transition-colors select-none">
                         <div className="flex items-center gap-2">
-                          <FiCpu className="w-4 h-4 text-base-content/50" />
+                          <FiCpu className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/50" />
                           <span>
                             Proses pemikiran & tools{" "}
                             {msg.tools && msg.tools.length > 0
@@ -275,7 +300,7 @@ export function ChatView() {
                       <div className="p-3 pt-0 text-sm border-t border-base-300/50 mt-1">
                         {/* Thought */}
                         {msg.thought && (
-                          <div className="mb-3 text-base-content/70 italic text-[13px] leading-relaxed">
+                          <div className="mb-3 text-base-content/70 italic text-[12px] sm:text-[13px] leading-relaxed">
                             "{msg.thought}"
                           </div>
                         )}
@@ -305,7 +330,7 @@ export function ChatView() {
                                   )}
                                 </div>
                                 {tool.result && (
-                                  <div className="text-base-content/60 border-l-2 border-base-300 pl-2 mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap">
+                                  <div className="text-base-content/60 border-l-2 border-base-300 pl-2 mt-1 max-h-32 overflow-y-auto overflow-x-auto whitespace-pre-wrap break-all">
                                     {tool.result}
                                   </div>
                                 )}
@@ -320,16 +345,33 @@ export function ChatView() {
                 {/* Final Text */}
                 {msg.content ? (
                   <div
-                    className={`text-[15px] leading-relaxed w-full ${
+                    className={`leading-relaxed w-full min-w-0 ${
                       msg.role === "user"
-                        ? "bg-primary text-primary-content px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] break-words"
-                        : "py-1 text-base-content prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-1 prose-li:my-0"
+                        ? "bg-primary text-primary-content px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] break-words text-[13px] sm:text-[15px]"
+                        : "py-1 text-base-content prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-1 prose-li:my-0 prose-p:text-[13px] sm:prose-p:text-[15px] prose-li:text-[13px] sm:prose-li:text-[15px] prose-table:text-[12px] sm:prose-table:text-[14px] text-[13px] sm:text-[15px]"
                     }`}
                   >
                     {msg.role === "user" ? (
                       msg.content
                     ) : (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: ({ node, ...props }) => (
+                            <div className="overflow-x-auto w-full my-4 rounded-lg border border-base-300">
+                              <table
+                                className="table table-zebra table-sm w-full m-0"
+                                {...props}
+                              />
+                            </div>
+                          ),
+                          pre: ({ node, ...props }) => (
+                            <div className="overflow-x-auto w-full rounded-lg">
+                              <pre {...props} />
+                            </div>
+                          ),
+                        }}
+                      >
                         {msg.content}
                       </ReactMarkdown>
                     )}
@@ -339,8 +381,8 @@ export function ChatView() {
                   msg.role === "ai" &&
                   !msg.thought &&
                   (!msg.tools || msg.tools.length === 0) && (
-                    <div className="flex items-center gap-2 text-sm text-base-content/50 italic font-medium py-1.5 w-full">
-                      <span className="loading loading-dots loading-sm"></span>
+                    <div className="flex items-center gap-2 text-[13px] sm:text-sm text-base-content/50 italic font-medium py-1 w-full">
+                      <span className="loading loading-dots loading-xs sm:loading-sm"></span>
                       Sedang berpikir...
                     </div>
                   )
@@ -360,8 +402,8 @@ export function ChatView() {
           className="relative flex items-end shadow-sm bg-base-100 border border-base-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all"
         >
           <textarea
-            className="w-full bg-transparent border-0 py-3.5 pl-4 pr-14 focus:outline-none focus:ring-0 resize-none h-14 min-h-[56px] text-[15px] leading-relaxed"
-            placeholder="Tanya asisten tentang keuangan..."
+            className="w-full bg-transparent border-0 py-3.5 pl-4 pr-14 focus:outline-none focus:ring-0 resize-none h-14 min-h-[56px] text-[13px] sm:text-[15px] leading-relaxed"
+            placeholder="Tanya Pocky..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -375,10 +417,10 @@ export function ChatView() {
           />
           <button
             type="submit"
-            className="absolute right-2 bottom-2 top-2 btn btn-sm btn-circle btn-primary shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-primary shadow-sm"
             disabled={!input.trim() || isLoading}
           >
-            <FiSend className="w-4 h-4 ml-0.5" />
+            <FiSend className="w-4 h-4 mx-auto my-auto" />
           </button>
         </form>
         <div className="text-center mt-2">
