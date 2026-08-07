@@ -16,13 +16,13 @@ import {
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Overview", icon: FiHome },
-  { href: "/dashboard/chat", label: "Tanya Pocky (AI) ", icon: FiCpu },
   { href: "/dashboard/keluarga", label: "Keluarga", icon: FiUsers },
   { href: "/dashboard/iuran", label: "Setoran Iuran", icon: FiDollarSign },
   { href: "/dashboard/transaksi", label: "Transaksi Kas", icon: FiCreditCard },
   { href: "/dashboard/pocket", label: "Dompet", icon: FiFolder },
   { href: "/dashboard/laporan", label: "Export Laporan", icon: FiFileText },
   { href: "/dashboard/settings", label: "Pengaturan", icon: FiSettings },
+  { href: "/dashboard/chat", label: "Tanya Pocky (AI) ", icon: FiCpu },
 ];
 
 export function ListDrawer() {
