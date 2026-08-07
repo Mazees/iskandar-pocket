@@ -52,6 +52,7 @@ ISPOCKET adalah aplikasi web kas keluarga yang:
 - Dioperasikan oleh **1 Admin** (bendahara) untuk mencatat iuran & transaksi kas.
 - Menyediakan **halaman publik transparan** (tanpa login) agar semua anggota keluarga bisa melihat status kas.
 - Berjalan **gratis (Rp0/bulan)** menggunakan free tier Vercel + Supabase.
+- Memiliki **Asisten AI (Pocky)** yang bisa menganalisis database secara natural via obrolan, didukung oleh `react-agent-js` dan `dexie`.
 
 ### 1.3 Definisi & Akronim
 
@@ -126,6 +127,8 @@ graph TB
 | PDF Export   | `@react-pdf/renderer` atau `jspdf` | Latest    | Client-side generation          |
 | Excel Export | `sheetjs` (`xlsx`)                 | Latest    | Client-side generation          |
 | Hosting      | Vercel                             | Free tier | Auto-deploy dari GitHub         |
+| AI Framework | `react-agent-js`                   | ^1.0.5    | ReAct Loop + Tools AI           |
+| Local DB     | `dexie`                            | Latest    | Menyimpan history chat AI       |
 
 ### 3.1 Dependencies yang Perlu Diinstall
 
@@ -305,7 +308,6 @@ erDiagram
     POCKET {
         uuid id PK
         text nama_pocket
-        text jenis "CHECK: cash | bank"
         numeric_14_2 saldo_awal "DEFAULT: 0"
         timestamptz created_at
     }
@@ -315,7 +317,6 @@ erDiagram
         char_7 periode "FORMAT: YYYY-MM"
         date tanggal_setor
         numeric_14_2 nominal "CHECK: > 0"
-        text metode "CHECK: cash | transfer"
         text keterangan "NULLABLE"
         text bukti_url "NULLABLE"
         uuid pocket_id FK
@@ -347,7 +348,6 @@ CREATE OR REPLACE VIEW v_saldo_pocket AS
 SELECT
     p.id AS pocket_id,
     p.nama_pocket,
-    p.jenis,
     p.saldo_awal
         + COALESCE((SELECT SUM(i.nominal) FROM iuran i WHERE i.pocket_id = p.id), 0)
         + COALESCE((SELECT SUM(t.nominal) FROM transaksi t WHERE t.pocket_id = p.id AND t.jenis = 'masuk'), 0)
@@ -444,21 +444,18 @@ export type Database = {
         Row: {
           id: string;
           nama_pocket: string;
-          jenis: "cash" | "bank";
           saldo_awal: number;
           created_at: string;
         };
         Insert: {
           id?: string;
           nama_pocket: string;
-          jenis: "cash" | "bank";
           saldo_awal?: number;
           created_at?: string;
         };
         Update: {
           id?: string;
           nama_pocket?: string;
-          jenis?: "cash" | "bank";
           saldo_awal?: number;
           created_at?: string;
         };
@@ -470,7 +467,6 @@ export type Database = {
           periode: string;
           tanggal_setor: string;
           nominal: number;
-          metode: "cash" | "transfer";
           keterangan: string | null;
           bukti_url: string | null;
           pocket_id: string;
@@ -482,7 +478,6 @@ export type Database = {
           periode: string;
           tanggal_setor?: string;
           nominal: number;
-          metode: "cash" | "transfer";
           keterangan?: string | null;
           bukti_url?: string | null;
           pocket_id: string;
@@ -494,7 +489,6 @@ export type Database = {
           periode?: string;
           tanggal_setor?: string;
           nominal?: number;
-          metode?: "cash" | "transfer";
           keterangan?: string | null;
           bukti_url?: string | null;
           pocket_id?: string;
@@ -1036,7 +1030,6 @@ export const iuranSchema = z.object({
   periode: z.string().regex(/^\d{4}-\d{2}$/, "Format periode: YYYY-MM"),
   tanggal_setor: z.string().min(1, "Tanggal setor wajib diisi"),
   nominal: z.number().positive("Nominal harus lebih dari 0"),
-  metode: z.enum(["cash", "transfer"]),
   keterangan: z.string().optional(),
   pocket_id: z.string().uuid("Pilih pocket"),
 });
@@ -1062,7 +1055,6 @@ export const transaksiSchema = z
 
 export const pocketSchema = z.object({
   nama_pocket: z.string().min(1, "Nama pocket wajib diisi").max(50),
-  jenis: z.enum(["cash", "bank"]),
   saldo_awal: z.number().min(0, "Saldo awal tidak boleh negatif").default(0),
 });
 
