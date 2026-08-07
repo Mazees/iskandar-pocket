@@ -1,0 +1,249 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+
+/**
+ * TOOLS UNTUK ASISTEN AI
+ * ----------------------
+ * Kumpulan fungsi yang bisa dipanggil oleh AI (react-agent-js) untuk
+ * mendapatkan konteks keuangan keluarga dari database Supabase.
+ */
+
+// 1. Tool: Cek Saldo Kas (Dompet/Rekening)
+export async function tool_get_saldo_kas() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("v_saldo_pocket")
+      .select("nama_pocket, saldo");
+
+    if (error) throw error;
+    
+    const totalSemua = data.reduce((acc, curr) => acc + Number(curr.saldo), 0);
+    
+    return JSON.stringify({
+      status: "success",
+      total_kas_keseluruhan: totalSemua,
+      rincian_dompet: data,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 2. Tool: Cek Keluarga yang Belum Bayar Bulan Ini
+export async function tool_get_tunggakan_bulan_ini() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("v_status_iuran_bulan_ini")
+      .select("nama_keluarga, sudah_setor")
+      .eq("sudah_setor", false); // Hanya ambil yang belum bayar
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      jumlah_keluarga_belum_bayar: data.length,
+      daftar_keluarga: data.map((d) => d.nama_keluarga),
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 3. Tool: Cek Keluarga yang Sudah Lunas Bulan Ini
+export async function tool_get_lunas_bulan_ini() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("v_status_iuran_bulan_ini")
+      .select("nama_keluarga, total_setor_bulan_ini")
+      .eq("sudah_setor", true); 
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      jumlah_keluarga_lunas: data.length,
+      daftar_keluarga: data.map((d) => ({
+        nama: d.nama_keluarga,
+        nominal_dibayar: d.total_setor_bulan_ini
+      })),
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 4. Tool: Cek Riwayat Transaksi Terakhir (Limit 10)
+export async function tool_get_transaksi_terakhir(limit = 10) {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("transaksi")
+      .select(`
+        tanggal, 
+        jenis, 
+        kategori, 
+        nominal, 
+        keterangan,
+        pocket:pocket_id (nama_pocket)
+      `)
+      .order("tanggal", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      riwayat_transaksi: data,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 5. Tool: Cek Riwayat Setoran Iuran Terakhir (Limit 10)
+export async function tool_get_iuran_terakhir(limit = 10) {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("iuran")
+      .select(`
+        periode,
+        tanggal_setor,
+        nominal,
+        keluarga:keluarga_id (nama_keluarga),
+        pocket:pocket_id (nama_pocket)
+      `)
+      .order("tanggal_setor", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      riwayat_iuran: data,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 6. Tool: Cek Aturan Nominal Wajib Bulanan Saat Ini
+export async function tool_get_info_nominal_wajib() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("configuration")
+      .select("nominal_iuran_bulanan")
+      .order("berlaku_mulai", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      nominal_iuran_wajib_per_bulan: data.nominal_iuran_bulanan,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 7. Tool: Laporan Transaksi per Periode (Bulan/Tahun)
+export async function tool_get_laporan_transaksi_periode(periode: string) {
+  try {
+    const supabase = await createClient();
+    // format periode: "YYYY-MM" atau "YYYY"
+    const { data, error } = await supabase
+      .from("transaksi")
+      .select("tanggal, jenis, kategori, nominal, keterangan")
+      .like("tanggal", `${periode}%`);
+
+    if (error) throw error;
+
+    const totalMasuk = data.filter(d => d.jenis === "masuk").reduce((acc, curr) => acc + curr.nominal, 0);
+    const totalKeluar = data.filter(d => d.jenis === "keluar").reduce((acc, curr) => acc + curr.nominal, 0);
+
+    return JSON.stringify({
+      status: "success",
+      periode: periode,
+      total_transaksi_masuk: totalMasuk,
+      total_transaksi_keluar: totalKeluar,
+      detail_transaksi: data,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 8. Tool: Riwayat Iuran Spesifik per Keluarga
+export async function tool_get_riwayat_iuran_per_keluarga(nama_keluarga: string) {
+  try {
+    const supabase = await createClient();
+    
+    // Cari ID keluarga berdasarkan nama (case-insensitive search / LIKE)
+    const { data: keluargaData, error: kelError } = await supabase
+      .from("keluarga")
+      .select("id, nama_keluarga")
+      .ilike("nama_keluarga", `%${nama_keluarga}%`);
+      
+    if (kelError) throw kelError;
+    if (!keluargaData || keluargaData.length === 0) {
+      return JSON.stringify({ status: "not_found", message: `Keluarga dengan nama mirip '${nama_keluarga}' tidak ditemukan.` });
+    }
+
+    // Ambil riwayat iuran untuk keluarga-keluarga yang cocok
+    const keluargaIds = keluargaData.map(k => k.id);
+    const { data: iuranData, error: iuranError } = await supabase
+      .from("iuran")
+      .select("periode, tanggal_setor, nominal, keluarga:keluarga_id (nama_keluarga)")
+      .in("keluarga_id", keluargaIds)
+      .order("periode", { ascending: false });
+
+    if (iuranError) throw iuranError;
+
+    return JSON.stringify({
+      status: "success",
+      keluarga_ditemukan: keluargaData.map(k => k.nama_keluarga),
+      riwayat_pembayaran: iuranData,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
+
+// 9. Tool: Rekap Kategori Pengeluaran per Periode
+export async function tool_get_rekap_kategori_pengeluaran(periode: string) {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("transaksi")
+      .select("kategori, nominal")
+      .eq("jenis", "keluar")
+      .like("tanggal", `${periode}%`);
+
+    if (error) throw error;
+
+    // Kelompokkan dan jumlahkan berdasarkan kategori
+    const rekap: Record<string, number> = {};
+    data.forEach(item => {
+      const kat = item.kategori || "Lainnya";
+      if (!rekap[kat]) rekap[kat] = 0;
+      rekap[kat] += item.nominal;
+    });
+
+    return JSON.stringify({
+      status: "success",
+      periode: periode,
+      total_per_kategori: rekap,
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
