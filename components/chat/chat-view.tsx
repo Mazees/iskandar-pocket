@@ -12,7 +12,7 @@ import {
 import { ReActAgent } from "react-agent-js";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Swal from "sweetalert2";
+import { showConfirmModal, showSuccessToast } from "@/lib/utils/swal";
 
 // Import LLM Action
 import { llmProviderAction } from "@/lib/actions/chat-actions";
@@ -86,30 +86,20 @@ export function ChatView() {
   }, [messages]);
 
   const handleClearChat = async () => {
-    const result = await Swal.fire({
+    const isConfirmed = await showConfirmModal({
       title: "Hapus Obrolan?",
       text: "Riwayat percakapan dengan Pocky akan dihapus secara permanen dari layar ini.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
       confirmButtonText: "Ya, Hapus!",
-      cancelButtonText: "Batal",
+      isDanger: true,
     });
 
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       await db.messages.clear();
       setMessages([]);
       if (agentRef.current) {
         agentRef.current.clearHistory();
       }
-      Swal.fire({
-        title: "Dihapus!",
-        text: "Riwayat obrolan telah dibersihkan.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showSuccessToast("Riwayat obrolan telah dibersihkan.");
     }
   };
 
