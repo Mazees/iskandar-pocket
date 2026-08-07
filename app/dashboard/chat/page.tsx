@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ChatPage() {
   return (
-    <div className="w-full h-[calc(100vh-8rem)] lg:h-[calc(100vh-9.5rem)]">
+    <div className="-mx-6 -my-6 lg:-mx-8 lg:-my-8 h-[calc(100vh-4rem)]">
       <ChatView />
     </div>
   );
