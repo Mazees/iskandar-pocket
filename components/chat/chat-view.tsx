@@ -55,7 +55,7 @@ export function ChatView() {
           }));
 
         // Konteks waktu dinamis agar AI tahu hari, bulan, dan tahun saat ini
-        const timeContext = `\n\nInformasi Penting:\nWaktu saat ini adalah ${new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}. Gunakan informasi ini jika pengguna bertanya tentang "bulan ini", "tahun ini", atau waktu relatif lainnya.`;
+        const timeContext = `\n\nInformasi Penting:\nWaktu saat ini adalah ${new Date().toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" })}. Gunakan informasi ini jika pengguna bertanya tentang "bulan ini", "tahun ini", atau waktu relatif lainnya.`;
 
         // Inisiasi AI Core dengan memori percakapan yang sudah disedot
         agentRef.current = new ReActAgent(
@@ -178,7 +178,10 @@ export function ChatView() {
                   }
                   return t;
                 });
-              } else if (stepData.status === "intermediate_answer" && stepData.answer) {
+              } else if (
+                stepData.status === "intermediate_answer" &&
+                stepData.answer
+              ) {
                 // AI memberikan pesan selingan saat sedang menjalankan tool
                 newContent = stepData.answer;
               } else if (stepData.status === "done" && stepData.finalAnswer) {
@@ -216,7 +219,7 @@ export function ChatView() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-sm relative">
+    <div className="flex flex-col h-full w-full bg-base-100 overflow-hidden relative">
       {/* Header */}
       <div className="flex items-center justify-between p-3 px-5 border-b border-base-300 bg-base-100">
         <div className="flex items-center gap-3">
