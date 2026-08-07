@@ -10,7 +10,6 @@ import {
   tool_get_info_nominal_wajib,
   tool_get_laporan_transaksi_periode,
   tool_get_riwayat_iuran_per_keluarga,
-  tool_get_rekap_kategori_pengeluaran,
 } from "./server";
 
 export const agentTools = [
@@ -53,10 +52,5 @@ export const agentTools = [
     "get_riwayat_iuran_per_keluarga",
     "Mencari tahu apakah keluarga tertentu sudah bayar iuran atau menunggak dengan melihat riwayat pembayaran mereka. Parameter: nama keluarga.",
     async (nama: string) => await tool_get_riwayat_iuran_per_keluarga(nama)
-  ),
-  createTool(
-    "get_rekap_kategori_pengeluaran",
-    "Mendapatkan total pengeluaran per kategori (seperti Konsumsi, Perbaikan, dll) untuk suatu periode (format YYYY-MM atau YYYY).",
-    async (periode: string) => await tool_get_rekap_kategori_pengeluaran(periode)
   ),
 ];

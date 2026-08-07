@@ -39,6 +39,7 @@ export function ChatView() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDbLoaded, setIsDbLoaded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Inisialisasi ReActAgent dengan useRef agar tidak dire-render terus menerus
   const agentRef = useRef<ReActAgent | null>(null);
@@ -63,9 +64,36 @@ export function ChatView() {
         // Konteks waktu dinamis agar AI tahu hari, bulan, dan tahun saat ini
         const timeContext = `\n\nInformasi Penting:\nWaktu saat ini adalah ${new Date().toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" })}. Gunakan informasi ini jika pengguna bertanya tentang "bulan ini", "tahun ini", atau waktu relatif lainnya.`;
 
+        // Wrapper LLM Provider untuk mendukung abort instan di UI
+        const wrappedLlmProvider = async (prompt: string) => {
+          if (abortControllerRef.current?.signal.aborted) {
+            throw new Error("ABORTED_BY_USER");
+          }
+
+          const abortPromise = new Promise<any>((_, reject) => {
+            const signal = abortControllerRef.current?.signal;
+            if (signal?.aborted) return reject(new Error("ABORTED_BY_USER"));
+            
+            signal?.addEventListener("abort", () => {
+              reject(new Error("ABORTED_BY_USER"));
+            });
+          });
+
+          // Race agar tidak perlu menunggu request server selesai jika user menekan Stop
+          const result = await Promise.race([
+            llmProviderAction(prompt),
+            abortPromise,
+          ]);
+
+          if (abortControllerRef.current?.signal.aborted) {
+            throw new Error("ABORTED_BY_USER");
+          }
+          return result;
+        };
+
         // Inisiasi AI Core dengan memori percakapan yang sudah disedot
         agentRef.current = new ReActAgent(
-          llmProviderAction,
+          wrappedLlmProvider,
           agentTools,
           SYSTEM_PROMPT + timeContext,
           initialHistory,
@@ -111,6 +139,8 @@ export function ChatView() {
     setInput("");
     setIsLoading(true);
 
+    abortControllerRef.current = new AbortController();
+
     const userMsgId = Date.now().toString();
     const aiMsgId = (Date.now() + 1).toString();
 
@@ -134,8 +164,19 @@ export function ChatView() {
     ]);
 
     try {
-      // 3. Jalankan ReAct Loop dan dengarkan step demi step
-      await agentRef.current.run(userText, (stepData) => {
+      const abortPromise = new Promise<any>((_, reject) => {
+        const signal = abortControllerRef.current?.signal;
+        if (signal?.aborted) return reject(new Error("ABORTED_BY_USER"));
+        signal?.addEventListener("abort", () => {
+          reject(new Error("ABORTED_BY_USER"));
+        });
+      });
+
+      // 3. Jalankan ReAct Loop dan dengarkan step demi step, race dengan abortPromise
+      const runPromise = agentRef.current.run(userText, (stepData: any) => {
+        if (abortControllerRef.current?.signal.aborted) {
+          return; // Abaikan update UI jika sudah di-abort
+        }
         setMessages((prev) =>
           prev.map((msg) => {
             if (msg.id === aiMsgId) {
@@ -196,21 +237,41 @@ export function ChatView() {
           }),
         );
       });
+      await Promise.race([runPromise, abortPromise]);
     } catch (error: any) {
-      console.error("Agent Error:", error);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiMsgId
-            ? {
-                ...msg,
-                content:
-                  "Mohon maaf, terjadi kesalahan pada koneksi asisten AI. Silakan coba lagi.",
-              }
-            : msg,
-        ),
-      );
+      if (error.message === "ABORTED_BY_USER") {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMsgId
+              ? {
+                  ...msg,
+                  content: msg.content || "Berhenti memproses pesanan.",
+                }
+              : msg,
+          ),
+        );
+      } else {
+        console.error("Agent Error:", error);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMsgId
+              ? {
+                  ...msg,
+                  content:
+                    "Mohon maaf, terjadi kesalahan pada koneksi asisten AI. Silakan coba lagi.",
+                }
+              : msg,
+          ),
+        );
+      }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAbort = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
   };
 
@@ -376,13 +437,13 @@ export function ChatView() {
                     )}
                   </div>
                 ) : (
-                  // Jika ini pesan AI tapi belum ada thought, tools, atau content (masih loading awal)
-                  msg.role === "ai" &&
-                  !msg.thought &&
-                  (!msg.tools || msg.tools.length === 0) && (
+                  // Jika belum ada teks sama sekali (masih mikir awal atau lagi nunggu hasil tool)
+                  msg.role === "ai" && (
                     <div className="flex items-center gap-2 text-[13px] sm:text-sm text-base-content/50 italic font-medium py-1 w-full">
                       <span className="loading loading-dots loading-xs sm:loading-sm"></span>
-                      Sedang berpikir...
+                      {msg.tools && msg.tools.length > 0
+                        ? "Sedang memproses data..."
+                        : "Sedang berpikir..."}
                     </div>
                   )
                 )}
@@ -414,13 +475,23 @@ export function ChatView() {
             rows={1}
             disabled={isLoading}
           />
-          <button
-            type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-primary shadow-sm"
-            disabled={!input.trim() || isLoading}
-          >
-            <FiSend className="w-4 h-4 mx-auto my-auto" />
-          </button>
+          {isLoading ? (
+            <button
+              type="button"
+              onClick={handleAbort}
+              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-error shadow-sm"
+            >
+              <div className="w-3 h-3 rounded-sm bg-current"></div>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-primary shadow-sm"
+              disabled={!input.trim()}
+            >
+              <FiSend className="w-4 h-4 mx-auto my-auto" />
+            </button>
+          )}
         </form>
         <div className="text-center mt-2">
           <span className="text-[11px] text-base-content/40 font-medium">
