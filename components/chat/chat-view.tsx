@@ -65,7 +65,7 @@ export function ChatView() {
         const timeContext = `\n\nInformasi Penting:\nWaktu saat ini adalah ${new Date().toLocaleString("id-ID", { dateStyle: "full", timeStyle: "short" })}. Gunakan informasi ini jika pengguna bertanya tentang "bulan ini", "tahun ini", atau waktu relatif lainnya.`;
 
         // Wrapper LLM Provider untuk mendukung abort instan di UI
-        const wrappedLlmProvider = async (prompt: string) => {
+        const wrappedLlmProvider = async (msgs: any[]) => {
           if (abortControllerRef.current?.signal.aborted) {
             throw new Error("ABORTED_BY_USER");
           }
@@ -81,7 +81,7 @@ export function ChatView() {
 
           // Race agar tidak perlu menunggu request server selesai jika user menekan Stop
           const result = await Promise.race([
-            llmProviderAction(prompt),
+            llmProviderAction(msgs),
             abortPromise,
           ]);
 
