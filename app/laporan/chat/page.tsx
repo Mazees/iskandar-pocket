@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function PublicChatPage() {
   return (
     <PublicNavbar>
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col h-[calc(100vh-4.5rem)]">
+      <main className="max-w-6xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col h-[calc(100dvh-4.5rem)] max-h-[calc(100dvh-4.5rem)] overflow-hidden">
         <LaporanNavTabs />
         
         <div className="flex-1 overflow-hidden mt-4 lg:mt-6 min-h-0 -mx-4 md:mx-0">

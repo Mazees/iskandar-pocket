@@ -340,145 +340,145 @@ export function ChatView({ isAdmin = false }: { isAdmin?: boolean }) {
                   msg.role === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
-              {/* Avatar */}
-              <div className="shrink-0 mt-0.5">
-                {msg.role === "user" ? (
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-content shadow-sm">
-                    <FiUser className="w-4 h-4" />
-                  </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-md bg-neutral flex items-center justify-center text-neutral-content shadow-sm">
-                    <FiCpu className="w-4 h-4" />
-                  </div>
-                )}
-              </div>
+                {/* Avatar */}
+                <div className="shrink-0 mt-0.5">
+                  {msg.role === "user" ? (
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-content shadow-sm">
+                      <FiUser className="w-4 h-4" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-md bg-neutral flex items-center justify-center text-neutral-content shadow-sm">
+                      <FiCpu className="w-4 h-4" />
+                    </div>
+                  )}
+                </div>
 
-              {/* Content */}
-              <div
-                className={`flex flex-col gap-3 min-w-0 flex-1 ${
-                  msg.role === "user" ? "items-end" : "items-start"
-                }`}
-              >
-                {/* Proses Pemikiran & Tools */}
-                {msg.role === "ai" &&
-                  (msg.thought || (msg.tools && msg.tools.length > 0)) && (
-                    <details className="group [&_summary::-webkit-details-marker]:hidden w-full max-w-xl border border-base-300 rounded-lg bg-base-200/50">
-                      <summary className="flex cursor-pointer items-center justify-between gap-2 p-2 sm:p-2.5 text-[13px] sm:text-sm font-semibold text-base-content/70 hover:text-base-content transition-colors select-none">
-                        <div className="flex items-center gap-2">
-                          <FiCpu className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/50" />
-                          <span>
-                            Proses pemikiran & tools{" "}
-                            {msg.tools && msg.tools.length > 0
-                              ? `(${msg.tools.length})`
-                              : ""}
-                          </span>
-                        </div>
-                        <FiChevronDown className="w-4 h-4 transition-transform group-open:rotate-180 opacity-50" />
-                      </summary>
-
-                      <div className="p-3 pt-0 text-sm border-t border-base-300/50 mt-1">
-                        {/* Thought */}
-                        {msg.thought && (
-                          <div className="mb-3 text-base-content/70 italic text-[12px] sm:text-[13px] leading-relaxed">
-                            "{msg.thought}"
+                {/* Content */}
+                <div
+                  className={`flex flex-col gap-3 min-w-0 flex-1 ${
+                    msg.role === "user" ? "items-end" : "items-start"
+                  }`}
+                >
+                  {/* Proses Pemikiran & Tools */}
+                  {msg.role === "ai" &&
+                    (msg.thought || (msg.tools && msg.tools.length > 0)) && (
+                      <details className="group [&_summary::-webkit-details-marker]:hidden w-full max-w-xl border border-base-300 rounded-lg bg-base-200/50">
+                        <summary className="flex cursor-pointer items-center justify-between gap-2 p-2 sm:p-2.5 text-[13px] sm:text-sm font-semibold text-base-content/70 hover:text-base-content transition-colors select-none">
+                          <div className="flex items-center gap-2">
+                            <FiCpu className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/50" />
+                            <span>
+                              Proses pemikiran & tools{" "}
+                              {msg.tools && msg.tools.length > 0
+                                ? `(${msg.tools.length})`
+                                : ""}
+                            </span>
                           </div>
-                        )}
+                          <FiChevronDown className="w-4 h-4 transition-transform group-open:rotate-180 opacity-50" />
+                        </summary>
 
-                        {/* Tools */}
-                        {msg.tools && msg.tools.length > 0 && (
-                          <div className="space-y-2">
-                            {msg.tools.map((tool: any, idx: number) => (
-                              <div
-                                key={idx}
-                                className="bg-base-100 rounded border border-base-300 p-2 font-mono text-xs"
-                              >
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="font-bold opacity-80 break-all">
-                                    {tool.name}(
-                                    {tool.input ? (
-                                      <span className="font-normal text-[10px] text-base-content/60">
-                                        {typeof tool.input === "object"
-                                          ? JSON.stringify(tool.input)
-                                          : String(tool.input)}
+                        <div className="p-3 pt-0 text-sm border-t border-base-300/50 mt-1">
+                          {/* Thought */}
+                          {msg.thought && (
+                            <div className="mb-3 text-base-content/70 italic text-[12px] sm:text-[13px] leading-relaxed">
+                              "{msg.thought}"
+                            </div>
+                          )}
+
+                          {/* Tools */}
+                          {msg.tools && msg.tools.length > 0 && (
+                            <div className="space-y-2">
+                              {msg.tools.map((tool: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="bg-base-100 rounded border border-base-300 p-2 font-mono text-xs"
+                                >
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="font-bold opacity-80 break-all">
+                                      {tool.name}(
+                                      {tool.input ? (
+                                        <span className="font-normal text-[10px] text-base-content/60">
+                                          {typeof tool.input === "object"
+                                            ? JSON.stringify(tool.input)
+                                            : String(tool.input)}
+                                        </span>
+                                      ) : (
+                                        ""
+                                      )}
+                                      )
+                                    </span>
+                                    {tool.status === "running" ? (
+                                      <span className="flex items-center gap-1 text-warning">
+                                        <span className="loading loading-spinner loading-xs w-3 h-3"></span>
+                                        running
                                       </span>
                                     ) : (
-                                      ""
+                                      <span className="flex items-center gap-1 text-success">
+                                        <FiCheckCircle className="w-3 h-3" />
+                                        success
+                                      </span>
                                     )}
-                                    )
-                                  </span>
-                                  {tool.status === "running" ? (
-                                    <span className="flex items-center gap-1 text-warning">
-                                      <span className="loading loading-spinner loading-xs w-3 h-3"></span>
-                                      running
-                                    </span>
-                                  ) : (
-                                    <span className="flex items-center gap-1 text-success">
-                                      <FiCheckCircle className="w-3 h-3" />
-                                      success
-                                    </span>
+                                  </div>
+                                  {tool.result && (
+                                    <div className="text-base-content/60 border-l-2 border-base-300 pl-2 mt-1 max-h-32 overflow-y-auto overflow-x-auto whitespace-pre-wrap break-all">
+                                      {tool.result}
+                                    </div>
                                   )}
                                 </div>
-                                {tool.result && (
-                                  <div className="text-base-content/60 border-l-2 border-base-300 pl-2 mt-1 max-h-32 overflow-y-auto overflow-x-auto whitespace-pre-wrap break-all">
-                                    {tool.result}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </details>
-                  )}
-
-                {/* Final Text */}
-                {msg.content ? (
-                  <div
-                    className={`leading-relaxed w-full min-w-0 ${
-                      msg.role === "user"
-                        ? "bg-primary text-primary-content px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] break-words text-[13px] sm:text-[15px]"
-                        : "py-1 text-base-content prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-1 prose-li:my-0 prose-p:text-[13px] sm:prose-p:text-[15px] prose-li:text-[13px] sm:prose-li:text-[15px] prose-table:text-[12px] sm:prose-table:text-[14px] text-[13px] sm:text-[15px]"
-                    }`}
-                  >
-                    {msg.role === "user" ? (
-                      msg.content
-                    ) : (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          table: ({ node, ...props }) => (
-                            <div className="overflow-x-auto w-full my-4 rounded-lg border border-base-300 not-prose">
-                              <table
-                                className="table table-zebra table-sm w-full m-0 text-[12px] sm:text-[14px]"
-                                {...props}
-                              />
+                              ))}
                             </div>
-                          ),
-                          pre: ({ node, ...props }) => (
-                            <div className="overflow-x-auto w-full rounded-lg">
-                              <pre {...props} />
-                            </div>
-                          ),
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
+                          )}
+                        </div>
+                      </details>
                     )}
-                  </div>
-                ) : (
-                  // Jika belum ada teks sama sekali (masih mikir awal atau lagi nunggu hasil tool)
-                  msg.role === "ai" && (
-                    <div className="flex items-center gap-2 text-[13px] sm:text-sm text-base-content/50 italic font-medium py-1 w-full">
-                      <span className="loading loading-dots loading-xs sm:loading-sm"></span>
-                      {msg.tools && msg.tools.length > 0
-                        ? "Sedang memproses data..."
-                        : "Sedang berpikir..."}
+
+                  {/* Final Text */}
+                  {msg.content ? (
+                    <div
+                      className={`leading-relaxed w-full min-w-0 ${
+                        msg.role === "user"
+                          ? "bg-primary text-primary-content px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] break-words text-[13px] sm:text-[15px]"
+                          : "py-1 text-base-content prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-1 prose-li:my-0 prose-p:text-[13px] sm:prose-p:text-[15px] prose-li:text-[13px] sm:prose-li:text-[15px] prose-table:text-[12px] sm:prose-table:text-[14px] text-[13px] sm:text-[15px]"
+                      }`}
+                    >
+                      {msg.role === "user" ? (
+                        msg.content
+                      ) : (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            table: ({ node, ...props }) => (
+                              <div className="overflow-x-auto w-full my-4 rounded-lg border border-base-300 not-prose">
+                                <table
+                                  className="table table-zebra table-sm w-full m-0 text-[12px] sm:text-[14px]"
+                                  {...props}
+                                />
+                              </div>
+                            ),
+                            pre: ({ node, ...props }) => (
+                              <div className="overflow-x-auto w-full rounded-lg">
+                                <pre {...props} />
+                              </div>
+                            ),
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      )}
                     </div>
-                  )
-                )}
+                  ) : (
+                    // Jika belum ada teks sama sekali (masih mikir awal atau lagi nunggu hasil tool)
+                    msg.role === "ai" && (
+                      <div className="flex items-center gap-2 text-[13px] sm:text-sm text-base-content/50 italic font-medium py-1 w-full">
+                        <span className="loading loading-dots loading-xs sm:loading-sm"></span>
+                        {msg.tools && msg.tools.length > 0
+                          ? "Sedang memproses data..."
+                          : "Sedang berpikir..."}
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
           </div>
         )}
 
@@ -524,11 +524,6 @@ export function ChatView({ isAdmin = false }: { isAdmin?: boolean }) {
           )}
         </form>
         <div className="flex items-center justify-between mt-2">
-          <div className="flex-1 text-center sm:text-left">
-            <span className="text-[10px] sm:text-[11px] text-base-content/40 font-medium">
-              AI dapat melakukan kesalahan. Harap periksa kembali hasil laporan.
-            </span>
-          </div>
           {!isAdmin && messages.length > 0 && (
             <button
               onClick={handleClearChat}
@@ -536,7 +531,7 @@ export function ChatView({ isAdmin = false }: { isAdmin?: boolean }) {
               className="btn btn-ghost btn-xs text-error/80 hover:bg-error/10 hover:text-error gap-1 font-medium shrink-0 ml-2"
             >
               <FiTrash2 className="w-3 h-3" />
-              <span className="hidden sm:inline">Hapus Riwayat</span>
+              Hapus Riwayat
             </button>
           )}
         </div>
