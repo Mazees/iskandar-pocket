@@ -232,3 +232,23 @@ export async function tool_get_riwayat_iuran_per_keluarga(nama_keluarga: string)
   }
 }
 
+// 9. Tool: Mendapatkan daftar semua keluarga
+export async function tool_get_list_keluarga() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("keluarga")
+      .select("nama_keluarga")
+      .order("nama_keluarga", { ascending: true });
+
+    if (error) throw error;
+
+    return JSON.stringify({
+      status: "success",
+      total_keluarga: data.length,
+      daftar_keluarga: data.map((k) => k.nama_keluarga),
+    });
+  } catch (err: any) {
+    return JSON.stringify({ status: "error", message: err.message });
+  }
+}
