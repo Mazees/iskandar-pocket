@@ -323,7 +323,7 @@ export function ChatView({ isAdmin = false }: { isAdmin?: boolean }) {
       )}
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto bg-base-100/50 flex flex-col">
+      <div className="flex-1 overflow-y-auto bg-base-100/50 flex flex-col hide-scrollbar pb-28 sm:pb-32">
         {messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-base-content/40 space-y-3 p-4 sm:p-6">
             <FiCpu className="w-10 h-10 sm:w-12 sm:h-12 opacity-50" />
@@ -486,54 +486,55 @@ export function ChatView({ isAdmin = false }: { isAdmin?: boolean }) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 max-w-4xl mx-auto w-full bg-base-100 z-10 border-t border-base-300/50">
-        <form
-          onSubmit={handleSubmit}
-          className="relative flex items-end shadow-sm bg-base-100 border border-base-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all"
-        >
-          <textarea
-            className="w-full hide-scrollbar bg-transparent border-0 py-3.5 pl-4 pr-14 focus:outline-none focus:ring-0 resize-none h-14 min-h-[56px] text-[13px] sm:text-[15px] leading-relaxed"
-            placeholder="Tanya Pocky..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-            rows={1}
-            disabled={isLoading}
-          />
-          {isLoading ? (
-            <button
-              type="button"
-              onClick={handleAbort}
-              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-error shadow-sm"
-            >
-              <div className="w-3 h-3 rounded-sm bg-current"></div>
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-primary shadow-sm"
-              disabled={!input.trim()}
-            >
-              <FiSend className="w-4 h-4 mx-auto my-auto" />
-            </button>
-          )}
-        </form>
-        <div className="flex items-center justify-between mt-2">
-          {!isAdmin && messages.length > 0 && (
-            <button
-              onClick={handleClearChat}
-              type="button"
-              className="btn btn-ghost btn-xs text-error/80 hover:bg-error/10 hover:text-error gap-1 font-medium shrink-0 ml-2"
-            >
-              <FiTrash2 className="w-3 h-3" />
-              Hapus Riwayat
-            </button>
-          )}
+      <div className="fixed sm:absolute bottom-0 left-0 w-full p-4 bg-base-100/95 backdrop-blur-sm z-20 border-t border-base-300/50">
+        <div className="max-w-4xl mx-auto w-full">
+          <form
+            onSubmit={handleSubmit}
+            className="relative flex items-end shadow-sm bg-base-100 border border-base-300 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all"
+          >
+            <textarea
+              className="w-full hide-scrollbar bg-transparent border-0 py-3.5 pl-4 pr-14 focus:outline-none focus:ring-0 resize-none h-14 min-h-[56px] text-[13px] sm:text-[15px] leading-relaxed"
+              placeholder="Tanya Pocky..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+              rows={1}
+              disabled={isLoading}
+            />
+            {isLoading ? (
+              <button
+                type="button"
+                onClick={handleAbort}
+                className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-error shadow-sm"
+              >
+                <div className="w-3 h-3 rounded-sm bg-current"></div>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className={`absolute right-2 top-1/2 -translate-y-1/2 btn btn-sm btn-circle btn-primary shadow-sm ${!input.trim() ? "opacity-50" : ""}`}
+              >
+                <FiSend className="w-4 h-4 mx-auto my-auto" />
+              </button>
+            )}
+          </form>
+          <div className="flex items-center justify-between mt-2 px-1">
+            {!isAdmin && messages.length > 0 && (
+              <button
+                onClick={handleClearChat}
+                type="button"
+                className="btn btn-ghost btn-xs text-error/80 hover:bg-error/10 hover:text-error gap-1 font-medium shrink-0 ml-2"
+              >
+                <FiTrash2 className="w-3 h-3" />
+                Hapus Riwayat
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
