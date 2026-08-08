@@ -3,8 +3,7 @@
 import { createTool } from "react-agent-js";
 import {
   tool_get_saldo_kas,
-  tool_get_tunggakan_bulan_ini,
-  tool_get_lunas_bulan_ini,
+  tool_get_iuran_periode,
   tool_get_transaksi_terakhir,
   tool_get_iuran_terakhir,
   tool_get_info_nominal_wajib,
@@ -20,14 +19,9 @@ export const baseAgentTools = [
     async () => await tool_get_saldo_kas()
   ),
   createTool(
-    "get_keluarga_nunggak",
-    "Mendapatkan daftar nama keluarga yang BELUM bayar/menunggak iuran bulan ini.",
-    async () => await tool_get_tunggakan_bulan_ini()
-  ),
-  createTool(
-    "get_keluarga_lunas",
-    "Mendapatkan daftar nama keluarga yang SUDAH lunas membayar iuran bulan ini.",
-    async () => await tool_get_lunas_bulan_ini()
+    "get_iuran_periode",
+    "Mendapatkan daftar seluruh keluarga beserta status pembayaran iuran mereka (lunas/belum bayar) dan nominalnya pada periode bulan tertentu. Parameter periode berformat YYYY-MM (contoh: 2026-08).",
+    async (periode: string) => await tool_get_iuran_periode(periode)
   ),
   createTool(
     "get_transaksi_umum",

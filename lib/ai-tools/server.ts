@@ -31,45 +31,50 @@ export async function tool_get_saldo_kas() {
   }
 }
 
-// 2. Tool: Cek Keluarga yang Belum Bayar Bulan Ini
-export async function tool_get_tunggakan_bulan_ini() {
+// 2. Tool: Cek Laporan Status Iuran Seluruh Keluarga per Periode
+export async function tool_get_iuran_periode(periode: string) {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("v_status_iuran_bulan_ini")
-      .select("nama_keluarga, sudah_setor")
-      .eq("sudah_setor", false); // Hanya ambil yang belum bayar
+    
+    // Validasi format periode YYYY-MM
+    if (!/^\d{4}-\d{2}$/.test(periode)) {
+      return JSON.stringify({ status: "error", message: "Format periode harus YYYY-MM (contoh: 2026-08)" });
+    }
+    
+    // Ambil semua keluarga
+    const { data: keluargaList, error: kelError } = await supabase.from("keluarga").select("id, nama_keluarga");
+    if (kelError) throw kelError;
+    
+    // Ambil iuran pada periode tersebut
+    const { data: iuranList, error: iuranError } = await supabase
+      .from("iuran")
+      .select("keluarga_id, nominal")
+      .eq("periode", periode);
+    if (iuranError) throw iuranError;
 
-    if (error) throw error;
-
-    return JSON.stringify({
-      status: "success",
-      jumlah_keluarga_belum_bayar: data.length,
-      daftar_keluarga: data.map((d) => d.nama_keluarga),
+    // Jumlahkan nominal per keluarga
+    const mapIuran = new Map();
+    iuranList.forEach(i => {
+      mapIuran.set(i.keluarga_id, (mapIuran.get(i.keluarga_id) || 0) + i.nominal);
     });
-  } catch (err: any) {
-    return JSON.stringify({ status: "error", message: err.message });
-  }
-}
 
-// 3. Tool: Cek Keluarga yang Sudah Lunas Bulan Ini
-export async function tool_get_lunas_bulan_ini() {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("v_status_iuran_bulan_ini")
-      .select("nama_keluarga, total_setor_bulan_ini")
-      .eq("sudah_setor", true); 
-
-    if (error) throw error;
+    const result = keluargaList.map(k => {
+      const nominal = mapIuran.get(k.id) || 0;
+      return {
+        id_keluarga: k.id,
+        nama_keluarga: k.nama_keluarga,
+        nominal_dibayar: nominal,
+        status: nominal > 0 ? "Lunas" : "Belum Bayar"
+      };
+    });
 
     return JSON.stringify({
       status: "success",
-      jumlah_keluarga_lunas: data.length,
-      daftar_keluarga: data.map((d) => ({
-        nama: d.nama_keluarga,
-        nominal_dibayar: d.total_setor_bulan_ini
-      })),
+      periode: periode,
+      total_keluarga: result.length,
+      jumlah_lunas: result.filter(r => r.status === "Lunas").length,
+      jumlah_belum_bayar: result.filter(r => r.status === "Belum Bayar").length,
+      daftar_iuran: result,
     });
   } catch (err: any) {
     return JSON.stringify({ status: "error", message: err.message });
