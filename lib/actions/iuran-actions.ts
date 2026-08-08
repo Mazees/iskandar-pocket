@@ -13,24 +13,6 @@ const IuranSchema = z.object({
   keterangan: z.string().optional(),
 });
 
-/**
- * Helper Server-Side: Mengambil nominal wajib iuran yang berlaku pada periode tertentu (format 'YYYY-MM')
- */
-async function getNominalWajibForPeriod(supabase: any, periodeStr: string) {
-  // Karena konfigurasi iuran berbasis bulan, kita bandingkan terhadap awal bulan `${periodeStr}-01`
-  const firstDateOfMonth = `${periodeStr}-01`;
-
-  const { data } = await supabase
-    .from("configuration")
-    .select("nominal_iuran_bulanan")
-    .lte("berlaku_mulai", firstDateOfMonth)
-    .order("berlaku_mulai", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  return Number(data?.nominal_iuran_bulanan || 100000);
-}
 
 /**
  * Server Action: Catat Setoran Iuran Baru dengan Algoritma Smart FIFO Allocation
@@ -82,17 +64,17 @@ export async function createIuran(formData: FormData) {
     return { error: "Belum ada konfigurasi nominal iuran. Silakan atur di Settings." };
   }
 
-  // 4. Ambil histori iuran keluarga ini
+  // 4. Ambil rekap total iuran keluarga ini menggunakan Aggregate Function Supabase (GROUP BY periode)
   const { data: historiIuran } = await supabase
     .from("iuran")
-    .select("periode, nominal")
+    .select("periode, nominal.sum()")
     .eq("keluarga_id", keluarga_id);
 
-  // Rekap total nominal terbayar per periode (YYYY-MM)
+  // Map hasilnya menjadi dictionary sederhana: { "2026-07": 50000 }
   const setoranPerPeriode: Record<string, number> = {};
   (historiIuran || []).forEach((row: any) => {
-    setoranPerPeriode[row.periode] =
-      (setoranPerPeriode[row.periode] || 0) + Number(row.nominal);
+    // Karena kita pakai .sum(), hasil angkanya ada di properti 'sum'
+    setoranPerPeriode[row.periode] = Number(row.sum || 0);
   });
 
   // Helper: cari nominal wajib yang berlaku untuk suatu periode dari array konfigurasi
