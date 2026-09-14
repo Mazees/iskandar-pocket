@@ -164,17 +164,23 @@ group by k.id, k.nama_keluarga;
 -- ---------------------------------------------------------
 create or replace view v_rekap_bulan_ini as
 select
-    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk
+    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk (kecuali pindah saldo)
     (
         coalesce((select sum(nominal) from iuran where periode = to_char(current_date, 'YYYY-MM')), 0)
-      + coalesce((select sum(nominal) from transaksi where jenis = 'masuk' and to_char(tanggal, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')), 0)
+      + coalesce((select sum(nominal) from transaksi 
+                 where jenis = 'masuk' 
+                   and to_char(tanggal, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')
+                   and (kategori is null or kategori not in ('Transfer Masuk', 'Transfer Keluar'))
+                   and (keterangan is null or keterangan not ilike 'Pindah saldo%')), 0)
     ) as total_pemasukan,
-    -- Total Pengeluaran: Transaksi Kas Keluar
+    -- Total Pengeluaran: Transaksi Kas Keluar (kecuali pindah saldo)
     coalesce((
         select sum(nominal) 
         from transaksi 
         where jenis = 'keluar' 
           and to_char(tanggal, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')
+          and (kategori is null or kategori not in ('Transfer Masuk', 'Transfer Keluar'))
+          and (keterangan is null or keterangan not ilike 'Pindah saldo%')
     ), 0) as total_pengeluaran;
 
 -- ---------------------------------------------------------
@@ -182,17 +188,23 @@ select
 -- ---------------------------------------------------------
 create or replace view v_rekap_tahun_ini as
 select
-    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk tahun ini
+    -- Total Pemasukan: Iuran bulanan + Transaksi Kas Masuk tahun ini (kecuali pindah saldo)
     (
         coalesce((select sum(nominal) from iuran where periode like to_char(current_date, 'YYYY') || '-%'), 0)
-      + coalesce((select sum(nominal) from transaksi where jenis = 'masuk' and to_char(tanggal, 'YYYY') = to_char(current_date, 'YYYY')), 0)
+      + coalesce((select sum(nominal) from transaksi 
+                 where jenis = 'masuk' 
+                   and to_char(tanggal, 'YYYY') = to_char(current_date, 'YYYY')
+                   and (kategori is null or kategori not in ('Transfer Masuk', 'Transfer Keluar'))
+                   and (keterangan is null or keterangan not ilike 'Pindah saldo%')), 0)
     ) as total_pemasukan,
-    -- Total Pengeluaran: Transaksi Kas Keluar tahun ini
+    -- Total Pengeluaran: Transaksi Kas Keluar tahun ini (kecuali pindah saldo)
     coalesce((
         select sum(nominal) 
         from transaksi 
         where jenis = 'keluar' 
           and to_char(tanggal, 'YYYY') = to_char(current_date, 'YYYY')
+          and (kategori is null or kategori not in ('Transfer Masuk', 'Transfer Keluar'))
+          and (keterangan is null or keterangan not ilike 'Pindah saldo%')
     ), 0) as total_pengeluaran;
 
 -- ---------------------------------------------------------
