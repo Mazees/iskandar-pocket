@@ -1,6 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { PublicOverviewView } from "@/components/laporan/public-overview-view";
 import { PublicNavbar } from "@/components/layout/public-navbar";
+import {
+  getDateRangeFromMonth,
+  calculateRekapKeuangan,
+  buildStatusIuranBulanan,
+  buildMatriksIuranTahunan,
+} from "@/lib/utils/finance";
 
 export const metadata = {
   title: "Laporan Transparansi Kas — ISPOCKET",
@@ -11,7 +17,9 @@ interface PublicLaporanPageProps {
   searchParams: Promise<{ bulan?: string; tahun?: string }>;
 }
 
-export default async function PublicLaporanPage({ searchParams }: PublicLaporanPageProps) {
+export default async function PublicLaporanPage({
+  searchParams,
+}: PublicLaporanPageProps) {
   const supabase = await createClient();
   const params = await searchParams;
 
@@ -19,15 +27,10 @@ export default async function PublicLaporanPage({ searchParams }: PublicLaporanP
   const selectedBulan = params.bulan || currentDate.toISOString().slice(0, 7); // e.g. "2026-08"
   const selectedTahun = params.tahun || currentDate.getFullYear().toString(); // e.g. "2026"
 
-  // 1. Ambil data Pocket, Rekap, dan Transaksi Terakhir (Persis seperti Dashboard)
+  // 1. Ambil data Pocket dan Transaksi Terakhir
   const { data: listPocketRaw } = await supabase
     .from("v_saldo_pocket")
     .select("*");
-
-  const { data: rekapBulanIni } = await supabase
-    .from("v_rekap_bulan_ini")
-    .select("*")
-    .single();
 
   const { data: transaksiTerakhirRaw } = await supabase
     .from("transaksi")
@@ -55,13 +58,20 @@ export default async function PublicLaporanPage({ searchParams }: PublicLaporanP
     .select("id, nama_keluarga")
     .order("nama_keluarga", { ascending: true });
 
-  // 3. Hitung Status Bulanan (Tabel 1) untuk selectedBulan
+  // 3. Iuran & Transaksi untuk selectedBulan
   const { data: iuranBulanSelected } = await supabase
     .from("iuran")
     .select("keluarga_id, nominal")
     .eq("periode", selectedBulan);
 
-  // Ambil tarif wajib untuk selectedBulan
+  const { startDate, endDate } = getDateRangeFromMonth(selectedBulan);
+  const { data: txBulanSelected } = await supabase
+    .from("transaksi")
+    .select("jenis, nominal, keterangan, kategori")
+    .gte("tanggal", startDate)
+    .lte("tanggal", endDate);
+
+  // 4. Ambil tarif wajib untuk selectedBulan
   const firstDateOfSelectedBulan = `${selectedBulan}-01`;
   const { data: configSelectedBulan } = await supabase
     .from("configuration")
@@ -76,92 +86,34 @@ export default async function PublicLaporanPage({ searchParams }: PublicLaporanP
     configSelectedBulan?.nominal_iuran_bulanan || 100000,
   );
 
-  const totalSetorMap: Record<string, number> = {};
-  (iuranBulanSelected || []).forEach((row: any) => {
-    totalSetorMap[row.keluarga_id] =
-      (totalSetorMap[row.keluarga_id] || 0) + Number(row.nominal);
-  });
+  // 5. Susun Status Bulanan
+  const statusBulanIni = buildStatusIuranBulanan(
+    listKeluarga || [],
+    iuranBulanSelected || [],
+    targetNominalBulanan,
+  );
 
-  const statusBulanIni = (listKeluarga || []).map((k: any) => {
-    const totalSetor = totalSetorMap[k.id] || 0;
-    return {
-      keluarga_id: k.id,
-      nama_keluarga: k.nama_keluarga,
-      total_setor_bulan_ini: totalSetor,
-      sudah_setor: totalSetor > 0,
-      lunas_bulan_ini: totalSetor >= targetNominalBulanan,
-    };
-  });
-
-  // 4. Hitung Matriks 12 Bulan (Tabel 2) untuk selectedTahun
+  // 6. Matriks 12 Bulan untuk selectedTahun
   const { data: iuranTahunSelected } = await supabase
     .from("iuran")
     .select("keluarga_id, periode, nominal")
     .gte("periode", `${selectedTahun}-01`)
     .lte("periode", `${selectedTahun}-12`);
 
-  const monthKeys = [
-    "jan",
-    "feb",
-    "mar",
-    "apr",
-    "mei",
-    "jun",
-    "jul",
-    "agu",
-    "sep",
-    "okt",
-    "nov",
-    "des",
-  ];
+  const statusTahunIni = buildMatriksIuranTahunan(
+    listKeluarga || [],
+    iuranTahunSelected || [],
+  );
 
-  const matrixMap: Record<string, any> = {};
-  (listKeluarga || []).forEach((k: any) => {
-    matrixMap[k.id] = {
-      keluarga_id: k.id,
-      nama_keluarga: k.nama_keluarga,
-      jan: 0,
-      feb: 0,
-      mar: 0,
-      apr: 0,
-      mei: 0,
-      jun: 0,
-      jul: 0,
-      agu: 0,
-      sep: 0,
-      okt: 0,
-      nov: 0,
-      des: 0,
-      total_setor_tahun_ini: 0,
-    };
-  });
-
-  (iuranTahunSelected || []).forEach((row: any) => {
-    if (matrixMap[row.keluarga_id] && row.periode) {
-      const mIndex = parseInt(row.periode.split("-")[1], 10) - 1;
-      if (mIndex >= 0 && mIndex < 12) {
-        const mKey = monthKeys[mIndex];
-        const val = Number(row.nominal);
-        matrixMap[row.keluarga_id][mKey] += val;
-        matrixMap[row.keluarga_id].total_setor_tahun_ini += val;
-      }
-    }
-  });
-
-  const statusTahunIni = Object.values(matrixMap);
-
-  // 5. Hitung statistik kartu atas
+  // 7. Hitung statistik kartu atas secara dinamis (bebas mutasi pindah saldo)
   const totalSaldo =
     (listPocketRaw as any[])?.reduce(
       (acc, item) => acc + Number(item.saldo || 0),
       0,
     ) ?? 0;
-  const totalPemasukanBulanIni = Number(
-    (rekapBulanIni as any)?.total_pemasukan ?? 0,
-  );
-  const totalPengeluaran = Number(
-    (rekapBulanIni as any)?.total_pengeluaran ?? 0,
-  );
+
+  const { totalPemasukan: totalPemasukanBulanIni, totalPengeluaran } =
+    calculateRekapKeuangan(iuranBulanSelected || [], txBulanSelected || []);
 
   const formattedPocket = (listPocketRaw || []).map((p: any) => ({
     pocket_id: p.pocket_id,
@@ -185,7 +137,11 @@ export default async function PublicLaporanPage({ searchParams }: PublicLaporanP
   );
 
   const [yStr, mStr] = selectedBulan.split("-");
-  const selectedDateObj = new Date(parseInt(yStr, 10), parseInt(mStr, 10) - 1, 1);
+  const selectedDateObj = new Date(
+    parseInt(yStr, 10),
+    parseInt(mStr, 10) - 1,
+    1,
+  );
   const currentMonthName = selectedDateObj.toLocaleString("id-ID", {
     month: "long",
   });
