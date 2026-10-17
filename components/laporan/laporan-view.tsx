@@ -42,6 +42,7 @@ export interface LaporanTransaksiItem {
   id: string;
   tanggal: string;
   jenis: "masuk" | "keluar";
+  kategori?: string;
   nominal: number;
   keterangan?: string;
   bukti_url?: string[];
@@ -155,22 +156,25 @@ export function LaporanView({
         keterangan: t.keterangan || "",
         nominal: t.nominal,
       })),
-      rekapTahunan: modeFilter === "tahun" && statusTahunIni ? statusTahunIni.map((t) => ({
-        nama_keluarga: t.nama_keluarga,
-        jan: Number(t.jan || 0),
-        feb: Number(t.feb || 0),
-        mar: Number(t.mar || 0),
-        apr: Number(t.apr || 0),
-        mei: Number(t.mei || 0),
-        jun: Number(t.jun || 0),
-        jul: Number(t.jul || 0),
-        agu: Number(t.agu || 0),
-        sep: Number(t.sep || 0),
-        okt: Number(t.okt || 0),
-        nov: Number(t.nov || 0),
-        des: Number(t.des || 0),
-        total: Number(t.total_setor_tahun_ini || 0),
-      })) : undefined,
+      rekapTahunan:
+        modeFilter === "tahun" && statusTahunIni
+          ? statusTahunIni.map((t) => ({
+              nama_keluarga: t.nama_keluarga,
+              jan: Number(t.jan || 0),
+              feb: Number(t.feb || 0),
+              mar: Number(t.mar || 0),
+              apr: Number(t.apr || 0),
+              mei: Number(t.mei || 0),
+              jun: Number(t.jun || 0),
+              jul: Number(t.jul || 0),
+              agu: Number(t.agu || 0),
+              sep: Number(t.sep || 0),
+              okt: Number(t.okt || 0),
+              nov: Number(t.nov || 0),
+              des: Number(t.des || 0),
+              total: Number(t.total_setor_tahun_ini || 0),
+            }))
+          : undefined,
     };
   }, [
     periodeLabelFormatted,

@@ -5,6 +5,10 @@ import {
   LaporanStatusKKItem,
   LaporanTransaksiItem,
 } from "@/components/laporan/laporan-view";
+import {
+  calculateRekapKeuangan,
+  buildMatriksIuranTahunan,
+} from "@/lib/utils/finance";
 
 export const metadata = {
   title: "Laporan Transparansi Kas — ISPOCKET",
@@ -76,6 +80,7 @@ export default async function DashboardLaporanPage({
   );
 
   // 3. Ambil riwayat transaksi kas pada periode terpilih
+  // 3. Ambil riwayat transaksi kas pada periode terpilih (termasuk kolom kategori)
   let queryTx = supabase
     .from("transaksi")
     .select(
@@ -83,6 +88,7 @@ export default async function DashboardLaporanPage({
       id,
       tanggal,
       jenis,
+      kategori,
       nominal,
       keterangan,
       bukti_url,
@@ -140,6 +146,7 @@ export default async function DashboardLaporanPage({
     id: t.id,
     tanggal: t.tanggal,
     jenis: t.jenis,
+    kategori: t.kategori || undefined,
     nominal: Number(t.nominal || 0),
     keterangan: t.keterangan || undefined,
     bukti_url: t.bukti_url || undefined,
@@ -149,40 +156,17 @@ export default async function DashboardLaporanPage({
     },
   }));
 
-  const totalTransaksiMasuk = formattedTransaksi
-    .filter((t) => t.jenis === "masuk")
-    .reduce((acc, t) => acc + t.nominal, 0);
-
-  const totalPengeluaran = formattedTransaksi
-    .filter((t) => t.jenis === "keluar")
-    .reduce((acc, t) => acc + t.nominal, 0);
+  // Hitung total kas masuk & keluar dengan mengecualikan transfer saldo secara otomatis
+  const { totalTransaksiMasuk, totalPengeluaran } = calculateRekapKeuangan(
+    [],
+    formattedTransaksi,
+  );
 
   let statusTahunIni: any[] | undefined = undefined;
   if (params.tahun) {
-    const monthKeys = ["jan", "feb", "mar", "apr", "mei", "jun", "jul", "agu", "sep", "okt", "nov", "des"];
-    const matrixMap: Record<string, any> = {};
-    (listKeluarga || []).forEach((k: any) => {
-      matrixMap[k.id] = {
-        keluarga_id: k.id,
-        nama_keluarga: k.nama_keluarga,
-        jan: 0, feb: 0, mar: 0, apr: 0, mei: 0, jun: 0, jul: 0, agu: 0, sep: 0, okt: 0, nov: 0, des: 0,
-        total_setor_tahun_ini: 0,
-      };
-    });
-    
-    (iuranPeriodeRaw || []).forEach((row: any) => {
-      if (matrixMap[row.keluarga_id] && row.periode) {
-        const mIndex = parseInt(row.periode.split("-")[1], 10) - 1;
-        if (mIndex >= 0 && mIndex < 12) {
-          const mKey = monthKeys[mIndex];
-          const val = Number(row.nominal);
-          matrixMap[row.keluarga_id][mKey] += val;
-          matrixMap[row.keluarga_id].total_setor_tahun_ini += val;
-        }
-      }
-    });
-    statusTahunIni = Object.values(matrixMap).sort((a, b) =>
-      a.nama_keluarga.localeCompare(b.nama_keluarga),
+    statusTahunIni = buildMatriksIuranTahunan(
+      listKeluarga || [],
+      iuranPeriodeRaw || [],
     );
   }
 
