@@ -150,7 +150,7 @@ export const adminAgentTools = [
   // --- TRANSAKSI ---
   createTool(
     "create_transaksi",
-    "Mencatat transaksi masuk/keluar. Berikan parameter dalam bentuk JSON string: {\"jenis\": \"masuk|keluar\", \"kategori\": \"...\", \"nominal\": 100000, \"tanggal\": \"YYYY-MM-DD\", \"nama_pocket\": \"...\", \"keterangan\": \"...\"}",
+    "Mencatat transaksi masuk/keluar. Berikan parameter dalam bentuk JSON string: {\"jenis\": \"masuk|keluar\", \"nominal\": 100000, \"tanggal\": \"YYYY-MM-DD\", \"nama_pocket\": \"...\", \"keterangan\": \"...\"}",
     async (query: string) => {
       try {
         const args = JSON.parse(query);
@@ -160,7 +160,6 @@ export const adminAgentTools = [
         
         const formData = new FormData();
         formData.append("jenis", args.jenis);
-        formData.append("kategori", args.kategori);
         formData.append("nominal", String(args.nominal));
         formData.append("tanggal", args.tanggal);
         formData.append("pocket_id", pockData.id);
@@ -199,7 +198,7 @@ export const adminAgentTools = [
   ),
   createTool(
     "delete_transaksi",
-    "Menghapus transaksi terakhir di suatu pocket dengan kategori tertentu. Berikan JSON string: {\"nama_pocket\": \"...\", \"kategori\": \"...\"}",
+    "Menghapus transaksi terakhir di suatu pocket. Berikan JSON string: {\"nama_pocket\": \"...\"}",
     async (query: string) => {
       try {
         const args = JSON.parse(query);
@@ -207,8 +206,8 @@ export const adminAgentTools = [
         const { data: pockData } = await supabase.from("pocket").select("id").ilike("nama_pocket", args.nama_pocket).single();
         if (!pockData) return JSON.stringify({ error: `Pocket ${args.nama_pocket} tidak ditemukan.` });
         
-        const { data: txData } = await supabase.from("transaksi").select("id").eq("pocket_id", pockData.id).ilike("kategori", `%${args.kategori}%`).order("created_at", { ascending: false }).limit(1).single();
-        if (!txData) return JSON.stringify({ error: `Transaksi kategori ${args.kategori} di pocket ${args.nama_pocket} tidak ditemukan.` });
+        const { data: txData } = await supabase.from("transaksi").select("id").eq("pocket_id", pockData.id).order("created_at", { ascending: false }).limit(1).single();
+        if (!txData) return JSON.stringify({ error: `Transaksi terakhir di pocket ${args.nama_pocket} tidak ditemukan.` });
         
         const res = await deleteTransaksi(txData.id);
         return JSON.stringify(res);

@@ -6,7 +6,6 @@
 export interface TransaksiLike {
   jenis: "masuk" | "keluar" | string;
   nominal: number | string;
-  kategori?: string | null;
   keterangan?: string | null;
 }
 
@@ -52,14 +51,11 @@ export interface MatriksIuranTahunanItem {
  * Deteksi apakah transaksi merupakan mutasi internal/pindah saldo.
  */
 export function isTransferTransaction(t: {
-  kategori?: string | null;
   keterangan?: string | null;
 }): boolean {
-  const isTransferKat =
-    !!t.kategori && ["Transfer Masuk", "Transfer Keluar"].includes(t.kategori);
   const isTransferKet =
     !!t.keterangan && t.keterangan.toLowerCase().startsWith("pindah saldo");
-  return isTransferKat || isTransferKet;
+  return isTransferKet;
 }
 
 /**
@@ -208,4 +204,3 @@ export function buildMatriksIuranTahunan(
     a.nama_keluarga.localeCompare(b.nama_keluarga),
   );
 }
-
