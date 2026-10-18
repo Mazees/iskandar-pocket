@@ -1,6 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import {
+  buildStatusIuranBulanan,
+  calculateRekapKeuangan,
+  getDateRangeFromMonth,
+} from "@/lib/utils/finance";
 
 /**
  * TOOLS UNTUK ASISTEN AI
@@ -52,21 +57,28 @@ export async function tool_get_iuran_periode(periode: string) {
       .eq("periode", periode);
     if (iuranError) throw iuranError;
 
-    // Jumlahkan nominal per keluarga
-    const mapIuran = new Map();
-    iuranList.forEach(i => {
-      mapIuran.set(i.keluarga_id, (mapIuran.get(i.keluarga_id) || 0) + i.nominal);
-    });
+    const { data: configuration, error: configurationError } = await supabase
+      .from("configuration")
+      .select("nominal_iuran_bulanan")
+      .lte("berlaku_mulai", `${periode}-01`)
+      .order("berlaku_mulai", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    const result = keluargaList.map(k => {
-      const nominal = mapIuran.get(k.id) || 0;
-      return {
-        id_keluarga: k.id,
-        nama_keluarga: k.nama_keluarga,
-        nominal_dibayar: nominal,
-        status: nominal > 0 ? "Lunas" : "Belum Bayar"
-      };
-    });
+    if (configurationError) throw configurationError;
+
+    const statusIuran = buildStatusIuranBulanan(
+      keluargaList || [],
+      iuranList || [],
+      Number(configuration?.nominal_iuran_bulanan || 100000),
+    );
+    const result = statusIuran.map((item) => ({
+      id_keluarga: item.keluarga_id,
+      nama_keluarga: item.nama_keluarga,
+      nominal_dibayar: item.total_setor_bulan_ini,
+      status: item.lunas_bulan_ini ? "Lunas" : item.sudah_setor ? "Kurang" : "Belum Bayar",
+    }));
 
     return JSON.stringify({
       status: "success",
@@ -163,37 +175,48 @@ export async function tool_get_info_nominal_wajib() {
 export async function tool_get_laporan_transaksi_periode(periode: string) {
   try {
     const supabase = await createClient();
-    let startDate = "";
-    let endDate = "";
+    let startDate: string;
+    let endDate: string;
+    let iuranQuery = supabase.from("iuran").select("nominal");
 
-    if (periode.length === 4) {
+    if (/^\d{4}$/.test(periode)) {
       startDate = `${periode}-01-01`;
       endDate = `${periode}-12-31`;
-    } else if (periode.length === 7) {
-      const [year, month] = periode.split("-");
-      startDate = `${periode}-01`;
-      const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
-      endDate = `${periode}-${lastDay}`;
+      iuranQuery = iuranQuery
+        .gte("periode", `${periode}-01`)
+        .lte("periode", `${periode}-12`);
+    } else if (/^\d{4}-(0[1-9]|1[0-2])$/.test(periode)) {
+      const dateRange = getDateRangeFromMonth(periode);
+      startDate = dateRange.startDate;
+      endDate = dateRange.endDate;
+      iuranQuery = iuranQuery
+        .eq("periode", periode);
     } else {
       return JSON.stringify({ status: "error", message: "Format periode harus YYYY atau YYYY-MM" });
     }
 
-    const { data, error } = await supabase
+    const [{ data, error }, { data: iuranList, error: iuranError }] = await Promise.all([
+      supabase
       .from("transaksi")
       .select("tanggal, jenis, nominal, keterangan")
       .gte("tanggal", startDate)
-      .lte("tanggal", endDate);
+      .lte("tanggal", endDate),
+      iuranQuery,
+    ]);
 
     if (error) throw error;
+    if (iuranError) throw iuranError;
 
-    const totalMasuk = data.filter(d => d.jenis === "masuk").reduce((acc, curr) => acc + curr.nominal, 0);
-    const totalKeluar = data.filter(d => d.jenis === "keluar").reduce((acc, curr) => acc + curr.nominal, 0);
+    const rekap = calculateRekapKeuangan(iuranList || [], data || []);
 
     return JSON.stringify({
       status: "success",
       periode: periode,
-      total_transaksi_masuk: totalMasuk,
-      total_transaksi_keluar: totalKeluar,
+      total_iuran: rekap.totalIuran,
+      total_transaksi_masuk: rekap.totalTransaksiMasuk,
+      total_pemasukan: rekap.totalPemasukan,
+      total_pengeluaran: rekap.totalPengeluaran,
+      saldo_bersih: rekap.saldoBersih,
       detail_transaksi: data,
     });
   } catch (err: any) {

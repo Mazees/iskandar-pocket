@@ -48,7 +48,6 @@ export default async function TransaksiPage() {
       id: item.id,
       tanggal: item.tanggal,
       jenis: item.jenis,
-      kategori: item.kategori || "Umum",
       nominal: Number(item.nominal || 0),
       keterangan: item.keterangan || undefined,
       bukti_url: item.bukti_url || undefined,

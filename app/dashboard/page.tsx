@@ -85,7 +85,7 @@ export default async function DashboardOverviewPage(props: DashboardPageProps) {
   const { startDate, endDate } = getDateRangeFromMonth(selectedBulan);
   const { data: txBulanSelected } = await supabase
     .from("transaksi")
-    .select("jenis, nominal, keterangan, kategori")
+    .select("jenis, nominal, keterangan")
     .gte("tanggal", startDate)
     .lte("tanggal", endDate);
 

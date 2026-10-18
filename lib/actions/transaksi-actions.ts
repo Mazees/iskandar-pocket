@@ -221,7 +221,6 @@ export async function transferSaldo(formData: FormData) {
   // 1. Buat record PENGELUARAN dari Pocket Asal
   const outRecord = {
     jenis: "keluar",
-    kategori: "Transfer Keluar",
     nominal: nominal,
     pocket_id: fromPocketId,
     tanggal: tanggal,
@@ -232,7 +231,6 @@ export async function transferSaldo(formData: FormData) {
   // 2. Buat record PEMASUKAN ke Pocket Tujuan
   const inRecord = {
     jenis: "masuk",
-    kategori: "Transfer Masuk",
     nominal: nominal,
     pocket_id: toPocketId,
     tanggal: tanggal,

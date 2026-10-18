@@ -80,7 +80,7 @@ export default async function DashboardLaporanPage({
   );
 
   // 3. Ambil riwayat transaksi kas pada periode terpilih
-  // 3. Ambil riwayat transaksi kas pada periode terpilih (termasuk kolom kategori)
+  // 3. Ambil riwayat transaksi kas pada periode terpilih
   let queryTx = supabase
     .from("transaksi")
     .select(
@@ -88,7 +88,6 @@ export default async function DashboardLaporanPage({
       id,
       tanggal,
       jenis,
-      kategori,
       nominal,
       keterangan,
       bukti_url,
@@ -146,7 +145,6 @@ export default async function DashboardLaporanPage({
     id: t.id,
     tanggal: t.tanggal,
     jenis: t.jenis,
-    kategori: t.kategori || undefined,
     nominal: Number(t.nominal || 0),
     keterangan: t.keterangan || undefined,
     bukti_url: t.bukti_url || undefined,

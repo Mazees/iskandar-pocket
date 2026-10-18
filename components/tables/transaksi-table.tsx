@@ -30,7 +30,6 @@ export interface TransaksiItem {
   id: string;
   tanggal: string;
   jenis: "masuk" | "keluar";
-  kategori: string;
   nominal: number;
   keterangan?: string;
   bukti_url?: string[];
